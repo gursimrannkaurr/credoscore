@@ -61,7 +61,7 @@ A computerised and explainable system removes these drawbacks. It applies the sa
 
 ## 1.5 Proposed Software / Project
 
-The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, a dependency-free Python scoring function deployed as a Vercel serverless function, and two JSON artifacts produced by an offline training pipeline. The live application is available at [LIVE URL].
+The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, a dependency-free Python scoring function deployed as a Vercel serverless function, and two JSON artifacts produced by an offline training pipeline. The live application is available at https://credoscore-gk.vercel.app.
 
 ### 1.5.1 Objectives of the Project
 
