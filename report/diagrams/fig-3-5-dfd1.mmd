@@ -1,0 +1,30 @@
+flowchart TB
+    LO(["Loan officer"])
+    RA(["Risk analyst"])
+
+    P1["1.0<br/>Validate input"]
+    P2["2.0<br/>Encode features"]
+    P3["3.0<br/>Score ensemble"]
+    P4["4.0<br/>Calibrate and band"]
+    P5["5.0<br/>Explain"]
+    P6["6.0<br/>Serve portfolio analytics"]
+
+    D1[("D1 model.json")]
+    D2[("D2 portfolio.json")]
+    D3[("D3 german_credit.csv")]
+
+    LO -- "raw applicant fields" --> P1
+    P1 -- "cleaned fields" --> P2
+    P2 -- "37-column vector" --> P3
+    D1 --- P2
+    D1 --- P3
+    P3 -- "raw margin" --> P4
+    D1 --- P4
+    P4 -- "probability, band, score" --> P5
+    P5 -- "per-feature contributions" --> LO
+    P4 -- "decision" --> LO
+
+    RA -- "cutoff, filters" --> P6
+    D2 --- P6
+    D3 -. "offline training only" .-> D1
+    P6 -- "bands, deciles, segments" --> RA

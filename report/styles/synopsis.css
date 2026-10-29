@@ -1,0 +1,29 @@
+@import "report.css";
+
+/* Synopsis-specific additions on top of the main report's stylesheet. */
+
+.synopsis-body h2 { break-before: auto; }
+.page-start { break-before: page; }
+
+.cover-two-col { display: flex; justify-content: space-between; gap: 24pt; margin-top: 20pt; text-align: left; }
+.cover-two-col .col { width: 48%; }
+.cover-two-col p { text-align: left; margin: 0 0 4pt; }
+
+/* Front page matching the user-supplied "SYNOPSIS FRONT PAGE.pdf" layout exactly: Calibri/Segoe UI, centred, no logo. */
+.synopsis-cover { font-family: Calibri, "Segoe UI", Arial, sans-serif; text-align: center; padding-top: 72pt; }
+.synopsis-cover p { text-align: center; margin: 0; }
+.synopsis-cover .institute { font-size: 20pt; font-weight: bold; line-height: 1.3; }
+.synopsis-cover .dept { font-size: 12pt; font-style: italic; margin-top: 10pt; }
+.synopsis-cover .synopsis-label { font-size: 18pt; font-weight: bold; color: #990011; margin-top: 40pt; }
+.synopsis-cover .on-label { font-size: 18pt; margin-top: 4pt; }
+.synopsis-cover .brand-name { font-size: 16pt; font-weight: bold; font-family: "Segoe UI", Calibri, Arial, sans-serif; color: #0f4761; margin-top: 4pt; letter-spacing: 0.02em; }
+.synopsis-cover .proj-title { font-size: 20pt; font-weight: bold; font-family: "Segoe UI", Calibri, Arial, sans-serif; margin-top: 8pt; }
+.synopsis-cover .proj-title .quote { color: #0f4761; }
+.synopsis-cover .submitted-note { font-size: 12pt; margin-top: 28pt; }
+.synopsis-cover .submitted-note .str-line { font-weight: bold; }
+.synopsis-cover .cover-two-col { margin-top: 36pt; }
+.synopsis-cover .cover-two-col .label { font-weight: bold; font-size: 10pt; }
+.synopsis-cover .cover-two-col .name { font-family: "Times New Roman", Times, serif; font-size: 10.6pt; }
+.synopsis-cover .cover-two-col .detail { font-size: 10pt; }
+
+.code-caption { font-weight: bold; font-size: 10.5pt; margin: 10pt 0 2pt; text-align: left; }

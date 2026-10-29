@@ -1,0 +1,1190 @@
+[
+  {
+    "id": 1,
+    "case": "Valid typical applicant",
+    "expected": "200 with full result shape",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.5718,
+      "risk_band": "high",
+      "score": 536,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 5000.0,
+          "contribution": 0.0746
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0667
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 2500.0,
+          "contribution": 0.0537
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 24.0,
+          "contribution": 0.031
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0277
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0196
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 35.0,
+          "contribution": -0.014
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0065
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0054
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0025
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0018
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": -0.0007
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 2,
+    "case": "Valid strong-file applicant",
+    "expected": "200, low PD, low/medium band",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.0325,
+      "risk_band": "low",
+      "score": 832,
+      "decision": "approve",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 7000.0,
+          "contribution": -0.0634
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 50.0,
+          "contribution": -0.0575
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "radio_tv",
+          "contribution": -0.0356
+        },
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 1500.0,
+          "contribution": -0.0289
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "critical",
+          "contribution": -0.0238
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "none",
+          "contribution": -0.0211
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "over_1000",
+          "contribution": -0.02
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 10.0,
+          "contribution": -0.0159
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 12.0,
+          "contribution": -0.0092
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0081
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "management",
+          "contribution": 0.006
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": -0.0027
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 3,
+    "case": "Valid stretched-file applicant",
+    "expected": "200, high PD, decline likely",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.9589,
+      "risk_band": "high",
+      "score": 323,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 15000.0,
+          "contribution": 0.1811
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 800.0,
+          "contribution": 0.1575
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 48.0,
+          "contribution": 0.0614
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 22.0,
+          "contribution": 0.0551
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0535
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "less_than_0",
+          "contribution": 0.04
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 0.0,
+          "contribution": 0.0279
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "business",
+          "contribution": 0.0191
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "unskilled_nonresident",
+          "contribution": 0.0167
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "rent",
+          "contribution": 0.0165
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "delayed_past",
+          "contribution": 0.0156
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0017
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 4,
+    "case": "Missing 'age'",
+    "expected": "400 error for field age",
+    "status_code": 400,
+    "actual": {
+      "error": "age",
+      "message": "'age' is required."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 5,
+    "case": "Missing 'checking_status'",
+    "expected": "400 error for field checking_status",
+    "status_code": 400,
+    "actual": {
+      "error": "checking_status",
+      "message": "'checking_status' is required."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 6,
+    "case": "Missing 'loan_amount'",
+    "expected": "400 error for field loan_amount",
+    "status_code": 400,
+    "actual": {
+      "error": "loan_amount",
+      "message": "'loan_amount' is required."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 7,
+    "case": "Wrong type: age as string '35'",
+    "expected": "400 error, age must be a number",
+    "status_code": 400,
+    "actual": {
+      "error": "age",
+      "message": "'age' must be a number."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 8,
+    "case": "Bool as number: existing_credits=true",
+    "expected": "400 error (bool rejected as number)",
+    "status_code": 400,
+    "actual": {
+      "error": "existing_credits",
+      "message": "'existing_credits' must be a number."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 9,
+    "case": "NaN string for monthly_income",
+    "expected": "400 error, must be a number",
+    "status_code": 400,
+    "actual": {
+      "error": "monthly_income",
+      "message": "'monthly_income' must be a number."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 10,
+    "case": "Unknown category: housing='mansion'",
+    "expected": "400 error, unknown category",
+    "status_code": 400,
+    "actual": {
+      "error": "housing",
+      "message": "'housing' must be one of ['free', 'own', 'rent'], got 'mansion'."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 11,
+    "case": "Unknown category: purpose='vacation' (A47 dropped from UI, API must still reject)",
+    "expected": "400 error, unknown category",
+    "status_code": 400,
+    "actual": {
+      "error": "purpose",
+      "message": "'purpose' must be one of ['business', 'car_new', 'car_used', 'domestic_appliances', 'education', 'furniture_equipment', 'other', 'radio_tv', 'repairs', 'retraining'], got 'vacation'."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 12,
+    "case": "Age boundary: 17 (below min 18)",
+    "expected": "400 error, out of bounds",
+    "status_code": 400,
+    "actual": {
+      "error": "age",
+      "message": "'age' must be between 18 and 100."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 13,
+    "case": "Age boundary: 18 (at min)",
+    "expected": "200, accepted",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.7487,
+      "risk_band": "high",
+      "score": 438,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 5000.0,
+          "contribution": 0.1089
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 2500.0,
+          "contribution": 0.1037
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0606
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 18.0,
+          "contribution": 0.0569
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0404
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 24.0,
+          "contribution": 0.0292
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0232
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0139
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": 0.0031
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0018
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0013
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": -0.0008
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 14,
+    "case": "Age boundary: 100 (at max)",
+    "expected": "200, accepted",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.5925,
+      "risk_band": "high",
+      "score": 524,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 5000.0,
+          "contribution": 0.0837
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0656
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 2500.0,
+          "contribution": 0.0435
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 24.0,
+          "contribution": 0.0346
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0276
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0196
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0065
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0054
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 100.0,
+          "contribution": 0.0053
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0025
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0018
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": -0.0004
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 15,
+    "case": "Age boundary: 101 (above max 100)",
+    "expected": "400 error, out of bounds",
+    "status_code": 400,
+    "actual": {
+      "error": "age",
+      "message": "'age' must be between 18 and 100."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 16,
+    "case": "Duration boundary: 0 (below min 1)",
+    "expected": "400 error, out of bounds",
+    "status_code": 400,
+    "actual": {
+      "error": "duration_months",
+      "message": "'duration_months' must be between 1 and 120."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 17,
+    "case": "Duration boundary: 121 (above max 120)",
+    "expected": "400 error, out of bounds",
+    "status_code": 400,
+    "actual": {
+      "error": "duration_months",
+      "message": "'duration_months' must be between 1 and 120."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 18,
+    "case": "Installment rule at the boundary (implied installment == 4x income)",
+    "expected": "200, accepted (rule uses > to reject)",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.9145,
+      "risk_band": "high",
+      "score": 347,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 48000.0,
+          "contribution": 0.284
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 1000.0,
+          "contribution": 0.1229
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0583
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 12.0,
+          "contribution": 0.0559
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0463
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0222
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 35.0,
+          "contribution": 0.0145
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0061
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": 0.0044
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.002
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0015
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0001
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 19,
+    "case": "Installment rule just past the boundary (implied installment > 4x income)",
+    "expected": "400 error on loan_amount",
+    "status_code": 400,
+    "actual": {
+      "error": "loan_amount",
+      "message": "This loan amount and duration imply a monthly installment many times the applicant's income; please check the inputs."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 20,
+    "case": "Invalid JSON body",
+    "expected": "400 error, body must be valid JSON",
+    "status_code": 400,
+    "actual": {
+      "error": "body",
+      "message": "Request body must be valid JSON."
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 21,
+    "case": "OPTIONS preflight",
+    "expected": "204 with CORS headers",
+    "status_code": 204,
+    "actual": null,
+    "response_headers": {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 22,
+    "case": "CORS header present on POST response",
+    "expected": "Access-Control-Allow-Origin: *",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.5718,
+      "risk_band": "high",
+      "score": 536,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 5000.0,
+          "contribution": 0.0746
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0667
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 2500.0,
+          "contribution": 0.0537
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 24.0,
+          "contribution": 0.031
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0277
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0196
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 35.0,
+          "contribution": -0.014
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0065
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0054
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0025
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0018
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": -0.0007
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 23,
+    "case": "Response has all expected keys",
+    "expected": "all of probability_of_default, risk_band, score, decision, cutoff, contributions, base_rate, model_version",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.5718,
+      "risk_band": "high",
+      "score": 536,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 5000.0,
+          "contribution": 0.0746
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0667
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 2500.0,
+          "contribution": 0.0537
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 24.0,
+          "contribution": 0.031
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "car_new",
+          "contribution": 0.0277
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "0_to_200",
+          "contribution": 0.0196
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 35.0,
+          "contribution": -0.014
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 4.0,
+          "contribution": 0.0065
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "skilled",
+          "contribution": -0.0054
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0025
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0018
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "paid_duly",
+          "contribution": -0.0007
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 24,
+    "case": "PD in [0,1] and score == round(850 - 550*p)",
+    "expected": "both hold",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.9589,
+      "risk_band": "high",
+      "score": 323,
+      "decision": "decline",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 15000.0,
+          "contribution": 0.1811
+        },
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 800.0,
+          "contribution": 0.1575
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 48.0,
+          "contribution": 0.0614
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 22.0,
+          "contribution": 0.0551
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "under_100",
+          "contribution": 0.0535
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "less_than_0",
+          "contribution": 0.04
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 0.0,
+          "contribution": 0.0279
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "business",
+          "contribution": 0.0191
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "unskilled_nonresident",
+          "contribution": 0.0167
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "rent",
+          "contribution": 0.0165
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "delayed_past",
+          "contribution": 0.0156
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": 0.0017
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  },
+  {
+    "id": 25,
+    "case": "Sum of contributions == p - p_base within 1e-3",
+    "expected": "holds",
+    "status_code": 200,
+    "actual": {
+      "probability_of_default": 0.0325,
+      "risk_band": "low",
+      "score": 832,
+      "decision": "approve",
+      "cutoff": 0.25,
+      "contributions": [
+        {
+          "feature": "monthly_income",
+          "label": "Monthly income",
+          "value": 7000.0,
+          "contribution": -0.0634
+        },
+        {
+          "feature": "age",
+          "label": "Age",
+          "value": 50.0,
+          "contribution": -0.0575
+        },
+        {
+          "feature": "purpose",
+          "label": "Loan purpose",
+          "value": "radio_tv",
+          "contribution": -0.0356
+        },
+        {
+          "feature": "loan_amount",
+          "label": "Loan amount",
+          "value": 1500.0,
+          "contribution": -0.0289
+        },
+        {
+          "feature": "credit_history",
+          "label": "Credit history",
+          "value": "critical",
+          "contribution": -0.0238
+        },
+        {
+          "feature": "checking_status",
+          "label": "Checking account status",
+          "value": "none",
+          "contribution": -0.0211
+        },
+        {
+          "feature": "savings_status",
+          "label": "Savings account status",
+          "value": "over_1000",
+          "contribution": -0.02
+        },
+        {
+          "feature": "employment_years",
+          "label": "Years employed",
+          "value": 10.0,
+          "contribution": -0.0159
+        },
+        {
+          "feature": "duration_months",
+          "label": "Loan duration",
+          "value": 12.0,
+          "contribution": -0.0092
+        },
+        {
+          "feature": "housing",
+          "label": "Housing situation",
+          "value": "own",
+          "contribution": -0.0081
+        },
+        {
+          "feature": "job_type",
+          "label": "Job type",
+          "value": "management",
+          "contribution": 0.006
+        },
+        {
+          "feature": "existing_credits",
+          "label": "Existing credit lines",
+          "value": 1.0,
+          "contribution": -0.0027
+        }
+      ],
+      "base_rate": 0.3,
+      "model_version": "1.0.0"
+    },
+    "response_headers": {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*"
+    },
+    "pass": true,
+    "status": "PASS"
+  }
+]

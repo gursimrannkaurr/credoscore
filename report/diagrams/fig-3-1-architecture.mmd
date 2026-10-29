@@ -1,0 +1,28 @@
+flowchart TB
+    subgraph T1["Browser"]
+        PAGES["Next.js pages"]
+        ISLANDS["React client islands<br/>(assess form, cutoff slider)"]
+    end
+
+    subgraph T2["Vercel"]
+        SSR["Next.js server rendering"]
+        PREDICT["Python function<br/>/api/predict"]
+        PORT["Python function<br/>/api/portfolio"]
+    end
+
+    subgraph T3["Artifacts"]
+        MODELJSON["model.json"]
+        PORTJSON["portfolio.json"]
+    end
+
+    subgraph OFFLINE["Offline training (not deployed)"]
+        TRAIN["ml/train.py<br/>(pandas, scikit-learn)"]
+    end
+
+    PAGES --> SSR
+    ISLANDS --> PREDICT
+    SSR --> PORTJSON
+    PREDICT --> MODELJSON
+    PORT --> PORTJSON
+    TRAIN -- writes --> MODELJSON
+    TRAIN -- writes --> PORTJSON

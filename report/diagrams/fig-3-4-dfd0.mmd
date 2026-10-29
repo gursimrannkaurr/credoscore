@@ -1,0 +1,23 @@
+flowchart LR
+    LO(["Loan officer"])
+    RA(["Risk analyst"])
+    MM(["Model maintainer"])
+
+    SYS["0<br/>Loan Default<br/>Risk Predictor"]
+
+    D1[("D1 model.json")]
+    D2[("D2 portfolio.json")]
+    D3[("D3 german_credit.csv")]
+
+    LO -- "applicant details" --> SYS
+    SYS -- "score, decision, drivers" --> LO
+
+    RA -- "cutoff, segment queries" --> SYS
+    SYS -- "portfolio analytics" --> RA
+
+    MM -- "retrains and exports" --> SYS
+    SYS -- "model metrics" --> MM
+
+    SYS --- D1
+    SYS --- D2
+    SYS --- D3

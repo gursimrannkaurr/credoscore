@@ -1,0 +1,27 @@
+flowchart TB
+    SYS["Loan Default Risk Predictor"]
+
+    SYS --> TRAIN["Training pipeline"]
+    TRAIN --> T1["Data preparation"]
+    TRAIN --> T2["Benchmarking"]
+    TRAIN --> T3["Tuning"]
+    TRAIN --> T4["Calibration"]
+    TRAIN --> T5["Export"]
+
+    SYS --> API["Scoring API"]
+    API --> A1["Validation"]
+    API --> A2["Tree walk"]
+    API --> A3["Platt scaling"]
+    API --> A4["Explanation"]
+    API --> A5["Decision"]
+
+    SYS --> WEB["Web interface"]
+    WEB --> W1["Brief"]
+    WEB --> W2["Assess"]
+    WEB --> W3["The book"]
+    WEB --> W4["Methodology"]
+
+    SYS --> TEST["Testing"]
+    TEST --> X1["Notebook tests"]
+    TEST --> X2["API tests"]
+    TEST --> X3["UI tests"]

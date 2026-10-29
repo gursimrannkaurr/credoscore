@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CredoScore one-pager</title>
+<style>
+  @page { size: A4; margin: 30pt 34pt; }
+  * { box-sizing: border-box; }
+  html { font-family: Calibri, "Segoe UI", Arial, sans-serif; color: #141414; font-size: 9.6pt; }
+  body { margin: 0; }
+  h1 { font-size: 19pt; margin: 0 0 1pt; color: #0f4761; }
+  .tagline { font-size: 10.5pt; color: #444; margin: 0 0 10pt; font-style: italic; }
+  h2 {
+    font-size: 11pt; margin: 0 0 5pt; padding-bottom: 2pt;
+    border-bottom: 1.3pt solid #0f4761; color: #0f4761; break-after: avoid;
+  }
+  section { margin-bottom: 9pt; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20pt; }
+  .col3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 14pt; }
+  ul { margin: 0; padding-left: 13pt; }
+  li { margin-bottom: 2.4pt; line-height: 1.33; }
+  li::marker { color: #0f4761; }
+  p { margin: 0 0 4pt; line-height: 1.35; }
+  .qa dt { font-weight: bold; color: #0f4761; margin-top: 5pt; }
+  .qa dd { margin: 1pt 0 0; line-height: 1.33; }
+  .band {
+    background: #f3f6f8; border: 0.75pt solid #cfe0e8; border-radius: 4pt;
+    padding: 6pt 9pt; margin-bottom: 9pt; font-size: 9.3pt;
+  }
+  .pagebreak { break-before: page; }
+  .foot { margin-top: 10pt; font-size: 7.8pt; color: #777; text-align: center; }
+  .pill { display: inline-block; background: #0f4761; color: #fff; font-size: 7.6pt; font-weight: bold; padding: 1pt 5pt; border-radius: 8pt; margin-right: 4pt; }
+</style>
+</head>
+<body>
+
+<h1>CredoScore: Loan Default Risk Predictor</h1>
+<p class="tagline">A one-page plain-English brief: what it does, how it was built, what was tested, and the questions a professor is likely to ask.</p>
+
+<div class="band">
+<strong>In one line:</strong> it is a website where you enter a loan applicant's details (age, income, loan amount, credit history, etc.) and it tells you how likely that person is to default, in plain numbers, with the reasons behind the number.
+</div>
+
+<div class="cols">
+<section>
+<h2>What the project actually is</h2>
+<ul>
+<li>A web app called <strong>CredoScore</strong> (full name: <em>Loan Default Risk Predictor</em>).</li>
+<li>You fill in 12 simple details about a loan applicant (age, job, income, loan amount, how long the loan is for, credit history, etc.).</li>
+<li>It gives back three things: a <strong>percentage chance of default</strong>, a <strong>plain recommendation</strong> (approve / approve with conditions / review / decline), and a <strong>list of reasons</strong> for that number, ranked by how much each one mattered.</li>
+<li>There's also a "book" page that shows how the model performs across 1,000 past applicants, and a "methodology" page that explains how it was built and tested.</li>
+</ul>
+</section>
+
+<section>
+<h2>What data it learned from</h2>
+<ul>
+<li>A public dataset from a German bank, collected in 1994: <strong>1,000 real loan applications</strong>, 700 that were repaid and 300 that defaulted.</li>
+<li>It's a well-known, standard dataset used worldwide to teach and test credit-risk models. It is not made up, not scraped, and it comes with an open licence.</li>
+<li>Out of the 20 details recorded per applicant, we kept the 12 most useful ones and deliberately <strong>left out gender/marital status</strong> so the model can't lean on it.</li>
+</ul>
+</section>
+</div>
+
+<section>
+<h2>The 12 things it actually looks at</h2>
+<div class="col3">
+<ul>
+<li>Age</li>
+<li>How long they've had their current job</li>
+<li>Monthly income</li>
+<li>Loan amount requested</li>
+</ul>
+<ul>
+<li>How many months to repay it</li>
+<li>Number of other loans they already have</li>
+<li>Job type (skilled, unskilled, management, etc.)</li>
+<li>Housing (rent, own, or free housing)</li>
+</ul>
+<ul>
+<li>What the loan is for (car, education, business, etc.)</li>
+<li>Their past credit history (paid on time before? late before?)</li>
+<li>How much is in their checking account</li>
+<li>How much is in their savings account</li>
+</ul>
+</div>
+</section>
+
+<div class="cols">
+<section>
+<h2>Which "algorithm" we used, and why</h2>
+<ul>
+<li>We didn't just pick one method and hope. We actually <strong>tried four different prediction methods</strong> and compared them fairly on the same 1,000 applicants, split into 5 equal groups so every method was tested the same way.</li>
+<li>The four: a simple scoring formula (logistic regression), a "committee of trees" that votes (random forest), two versions of a method called <strong>gradient boosting</strong>, and a well-known industry method called XGBoost.</li>
+<li>Gradient boosting won: it builds a few hundred very small, very simple decision trees, one after another, where each new tree focuses on fixing the mistakes of the ones before it. Added together, they make one strong prediction.</li>
+<li>We then fine-tuned its settings automatically (tried 40 different combinations) before locking in the final version.</li>
+</ul>
+</section>
+
+<section>
+<h2>How we actually built and run it</h2>
+<ul>
+<li>The model was trained once, offline, using standard data-science tools (Python, pandas, scikit-learn).</li>
+<li>Instead of shipping that heavy software to the live website, we <strong>exported the finished model as a small text file</strong> (a list of simple yes/no questions, like a decision tree written out).</li>
+<li>The live website reads that file and answers each applicant with basic arithmetic, so no AI software needs to run live, which makes it fast, cheap to host, and simple to deploy.</li>
+<li>On top of the raw prediction, we added a calibration step so that when it says "30% chance of default," that number is trustworthy: roughly 30 out of 100 similar applicants really do default.</li>
+<li>It also breaks down <em>why</em> it gave that number, for example "loan amount pushed risk up 7 points, savings pushed it down 3 points", and those reasons always add up exactly to the final number, nothing is hidden or approximated.</li>
+</ul>
+</section>
+</div>
+
+<section>
+<h2>Testing: what we ran, what broke, and how it got fixed</h2>
+<ul>
+<li>We ran <strong>56 automated tests</strong> in total: 13 checking the model's maths is correct, 25 checking the website rejects bad or missing input properly, and 18 checking the actual screens work as expected. All 56 pass.</li>
+<li><strong>Something that broke and got fixed:</strong> early on, the "why did it decide this" breakdown didn't add up to the right total. The cause was a rounding mistake in how we calculated each factor's contribution. A dedicated test caught it, we traced it to the starting point of the calculation being wrong, and fixed it so the numbers now add up exactly, every time.</li>
+<li><strong>Another fix:</strong> the form let you pick "vacation" as a loan purpose, but the model was never trained on that category, so it would reject the request. We just removed that option from the form instead of guessing.</li>
+<li><strong>Another fix:</strong> if the scoring service went down, two of the pages used to just spin forever with no error message. We changed them to load their data up front instead of over the network, so they now work even if that service is off, and the one page that still needs it shows a clear error instead of hanging.</li>
+<li>We also deliberately tried to break it: missing fields, negative numbers, huge loan amounts, nonsense categories. It always responds with a clear error message and never crashes.</li>
+</ul>
+</section>
+
+<h2>Likely professor questions &amp; plain-English answers</h2>
+<dl class="qa">
+
+<dt>Q: Why gradient boosting and not a simpler method, or a fancier one like deep learning?</dt>
+<dd>A: We tested a simple method (logistic regression) and it was noticeably worse. Deep learning needs a lot more data than our 1,000 applicants to be worth it, and it would've made the "why did you decide this" explanations much harder to trust. Gradient boosting was the sweet spot: strong accuracy, and every decision can be explained exactly, factor by factor.</dd>
+
+<dt>Q: How good is the model, really?</dt>
+<dd>A: On applicants it never saw during training, it scores 0.79 out of 1 on telling risky and safe applicants apart (1.0 would be a perfect psychic, 0.5 would be a coin flip). Its probabilities are also well-calibrated: when it says "X% chance," reality matches within about 2 percentage points.</dd>
+
+<dt>Q: Is the dataset realistic for today?</dt>
+<dd>A: It's from Germany in 1994, so the exact numbers (in old German currency) are dated. We say that openly on the site and in the report. The point of the project isn't "this exact model is ready for a real bank," it's demonstrating the full correct process: clean data, fair testing, calibrated probabilities, honest explanations, and proper deployment, which is the same process a real bank would use on their own current data.</dd>
+
+<dt>Q: What happens if someone enters wrong or missing information?</dt>
+<dd>A: The form checks everything twice, once in the browser and once again on the server, so you can't send incomplete or nonsense data even by tampering with the page. Every rejection comes back with a specific, readable reason, not a crash or a blank error.</dd>
+
+<dt>Q: Is this fair to use, could it be biased?</dt>
+<dd>A: We deliberately removed gender and marital status from what the model is allowed to see, as a precaution. We're upfront that we have not run a full, formal fairness audit beyond that, that's listed as a known limitation and as future work, not hidden.</dd>
+
+<dt>Q: Where does it actually run, and what does it cost to host?</dt>
+<dd>A: It's deployed on Vercel. The website is built with Next.js/React; the scoring itself runs as a tiny, dependency-free Python function, since it only needs to read that exported model file and do arithmetic, not run a full AI library. That keeps it fast and cheap to run.</dd>
+
+<dt>Q: What would you improve if you kept going?</dt>
+<dd>A: A proper fairness audit, training on more recent data, letting someone score a whole spreadsheet of applicants at once instead of one at a time, and adding monitoring so we'd notice if the model's accuracy drifted over time.</dd>
+
+</dl>
+
+<p class="foot">CredoScore: Loan Default Risk Predictor. Prepared as a plain-English project brief, not a technical document.</p>
+
+</body>
+</html>

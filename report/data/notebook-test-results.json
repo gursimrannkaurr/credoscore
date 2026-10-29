@@ -1,0 +1,97 @@
+{
+  "source": "notebook.ipynb re-executed via `py -3.12 -m jupyter nbconvert --to notebook --execute notebook.ipynb --output-dir report/data --output notebook-run.ipynb`; output saved as report/data/notebook-run.ipynb",
+  "summary": "13/13 tests passed.",
+  "tests": [
+    {
+      "id": 1,
+      "name": "Artifact integrity",
+      "status": "PASS",
+      "detail": "version=1.0.0, trees=250, base_value=-0.8473, platt_a=0.7961, platt_b=-0.1132, all node values finite=True"
+    },
+    {
+      "id": 2,
+      "name": "Parity (stdlib vs. sklearn, all 1000 rows)",
+      "status": "PASS",
+      "detail": "max |python_prob - sklearn_prob| = 3.33e-16 across 1000 rows (threshold 1e-9)"
+    },
+    {
+      "id": 3,
+      "name": "Handler smoke test",
+      "status": "PASS",
+      "detail": "status=200, keys=['base_rate', 'contributions', 'cutoff', 'decision', 'model_version', 'probability_of_default', 'risk_band', 'score']"
+    },
+    {
+      "id": 4,
+      "name": "Strong applicant -> Low band, PD below cutoff",
+      "status": "PASS",
+      "detail": "PD=0.0673, band=low, cutoff=0.25"
+    },
+    {
+      "id": 5,
+      "name": "Weak applicant -> High band",
+      "status": "PASS",
+      "detail": "PD=0.9645, band=high, decision=decline"
+    },
+    {
+      "id": 6,
+      "name": "Directional sanity (loan amount)",
+      "status": "PASS",
+      "detail": "PD(loan=2000)=0.3954, PD(loan=15000)=0.8503"
+    },
+    {
+      "id": 7,
+      "name": "Additivity of path contributions",
+      "status": "PASS",
+      "detail": "max |base + sum(contributions) - raw_margin| = 5.77e-15 over 100 sampled rows"
+    },
+    {
+      "id": 8,
+      "name": "Runtime contributions agree with offline TreeSHAP",
+      "status": "PASS",
+      "detail": "93/100 applicants (93%) have >=3 of their top-5 factors matching between the runtime's path contributions and TreeSHAP"
+    },
+    {
+      "id": 9,
+      "name": "Validation errors return 400 with a useful message",
+      "status": "PASS",
+      "detail": "missing field -> 400 ('age' is required.); unknown category -> 400 ('housing' must be one of ['free', 'own', 'rent'], got 'mansion'.); wrong type -> 400 ('age' must be a number.)"
+    },
+    {
+      "id": 10,
+      "name": "Boundary values handled without a 500",
+      "status": "PASS",
+      "detail": "statuses for 6 boundary cases: [400, 200, 200, 200, 400, 400]"
+    },
+    {
+      "id": 11,
+      "name": "Quality gate (out-of-fold ROC-AUC >= 0.75, KS >= 0.35)",
+      "status": "PASS",
+      "detail": "ROC-AUC=0.7928, KS=0.4776, Brier=0.1601 (lower Brier is better; a model predicting the base rate for everyone scores 0.2100)"
+    },
+    {
+      "id": 12,
+      "name": "Calibration within 2pp (weighted) + portfolio endpoint consistency",
+      "status": "PASS",
+      "detail": "weighted mean |predicted - observed| = 0.0195, band counts sum to 1000, GET /api/portfolio -> 200",
+      "decile_table": [
+        { "decile": 1, "count": 100, "predicted_pd": 0.0449, "observed_rate": 0.0700 },
+        { "decile": 2, "count": 100, "predicted_pd": 0.0810, "observed_rate": 0.0700 },
+        { "decile": 3, "count": 100, "predicted_pd": 0.1195, "observed_rate": 0.1200 },
+        { "decile": 4, "count": 100, "predicted_pd": 0.1609, "observed_rate": 0.1700 },
+        { "decile": 5, "count": 100, "predicted_pd": 0.2077, "observed_rate": 0.1800 },
+        { "decile": 6, "count": 100, "predicted_pd": 0.2696, "observed_rate": 0.2300 },
+        { "decile": 7, "count": 100, "predicted_pd": 0.3408, "observed_rate": 0.3600 },
+        { "decile": 8, "count": 100, "predicted_pd": 0.4473, "observed_rate": 0.4600 },
+        { "decile": 9, "count": 100, "predicted_pd": 0.5769, "observed_rate": 0.5800 },
+        { "decile": 10, "count": 100, "predicted_pd": 0.7512, "observed_rate": 0.7600 }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Latency (1000 predictions)",
+      "status": "PASS",
+      "detail": "mean=1.019ms, p95=2.805ms, max=17.836ms over 1000 calls",
+      "note": "Latency is machine- and run-dependent; these are the numbers from this re-execution, which differ from the figures previously recorded in the fact sheet (mean 0.729ms, p95 0.907ms, max 2.767ms). Use this run's numbers since they are the ones this execution actually produced."
+    }
+  ]
+}

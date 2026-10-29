@@ -1,0 +1,164 @@
+[
+  {
+    "id": "UI1",
+    "module": "assess",
+    "case": "Load page",
+    "data": "http://localhost:3000/assess, fresh load",
+    "expected": "Form shows the typical preset; empty slip visible",
+    "actual": "\"Typical file\" chip is pressed (highlighted) by default, the 12-field form is pre-populated with the typical-file values, and the risk slip on the right shows the empty state (\"—.—%\", empty gauge, \"Pick a sample file or fill in the form, then press Score this applicant.\")",
+    "status": "Pass"
+  },
+  {
+    "id": "UI2",
+    "module": "assess",
+    "case": "Click \"Strong file\"",
+    "data": "Click the Strong file preset chip",
+    "expected": "Fields change; preset chip pressed",
+    "actual": "Strong file chip becomes pressed/highlighted (green outline), Typical/Stretched chips un-press, and all 12 fields repopulate (age 50, years employed 10, job type Management/self-employed, housing Owns, income 7000, loan amount 1500, duration 12, purpose Radio/television, credit history Critical account/other credits, checking No checking account, savings Over 1,000 DM, existing credit lines 1)",
+    "status": "Pass"
+  },
+  {
+    "id": "UI3",
+    "module": "assess",
+    "case": "Submit strong",
+    "data": "Strong file preset, submitted",
+    "expected": "Result appears; band Low; decision Approve",
+    "actual": "Result rendered: PD 3.3%, risk band \"Low risk\", recommendation \"Approve\" at the 25% cutoff, score 832/850. Waterfall shows 9 contribution rows sorted by magnitude, footer correctly names biggest push up (Job type, +0.6pp) and biggest push down (Monthly income, −6.3pp)",
+    "status": "Pass"
+  },
+  {
+    "id": "UI4",
+    "module": "assess",
+    "case": "Submit stretched",
+    "data": "Stretched file preset (age 22, 0 yrs employed, business purpose, delayed-payment credit history, checking below 0 DM), submitted",
+    "expected": "Band High; decision Decline",
+    "actual": "Result rendered: PD 95.9%, risk band \"High risk\", recommendation \"Decline\" at the 25% cutoff, score 323/850",
+    "status": "Pass"
+  },
+  {
+    "id": "UI5",
+    "module": "assess",
+    "case": "Clear Age, submit",
+    "data": "Age field cleared (empty), submit clicked",
+    "expected": "Inline \"Required.\" under Age; Age focused; no request sent",
+    "actual": "\"Required.\" message appears under the Age field, the field is outlined in the error colour, document.activeElement confirmed to be the Age input with aria-invalid=\"true\", and the result panel kept the previous stale result (no new request fired)",
+    "status": "Pass"
+  },
+  {
+    "id": "UI6",
+    "module": "assess",
+    "case": "Age = 15",
+    "data": "Age set to 15, submit clicked",
+    "expected": "Range message",
+    "actual": "\"Enter a value from 18 to 100.\" message appears under the Age field; no request sent",
+    "status": "Pass"
+  },
+  {
+    "id": "UI7",
+    "module": "assess",
+    "case": "Loan 100000, months 6, income 500",
+    "data": "Age reset to 35 (valid), monthly income 500, loan amount 100000, duration 6 months, submit clicked",
+    "expected": "Instalment rule message on Amount",
+    "actual": "\"The monthly instalment (amount ÷ months) can't be more than four times monthly income.\" message appears under the Amount field; no request sent",
+    "status": "Pass"
+  },
+  {
+    "id": "UI8",
+    "module": "assess",
+    "case": "Stop the Python server, submit",
+    "data": "Form reset to Typical file (valid data). Python dev server (PID on :8001/:8002) killed with taskkill, confirmed down via curl (connection refused), then \"Score this applicant\" clicked",
+    "expected": "Friendly network or server error in the form; no crash",
+    "actual": "Form displayed \"The scoring service returned an error (HTTP 500).\" inline above the submit button. No white-screen crash, no uncaught console errors (checked via read_console_messages). Python server was restarted afterward (py -3.12 ml/dev_server.py) and verified back up on :8001/:8002; a retry submit then succeeded and rendered a normal result",
+    "status": "Pass"
+  },
+  {
+    "id": "UI9",
+    "module": "assess",
+    "case": "Move cutoff slider",
+    "data": "Typical file result (PD 57.2%), dragged the What-if cutoff slider from 25% to 49%",
+    "expected": "Decision stamp changes live; \"Back to 25%\" appears",
+    "actual": "Decision stamp changed live from \"Decline\" (25%) to \"Refer for review\" (49%), matching the decisionAt() rule (0.49 < 0.572 < 0.784). A \"Back to 25%\" link appeared next to the slider and, when clicked, returned the cutoff to 25% and the stamp back to \"Decline\"",
+    "status": "Pass"
+  },
+  {
+    "id": "UI10",
+    "module": "assess",
+    "case": "Waterfall",
+    "data": "Typical file result, inspected the \"What moved this score\" waterfall and cross-checked via a direct POST to /api/predict with the docs example payload (age 35, 4 yrs, skilled, own, 2500/5000/24, car_new, paid_duly, 0_to_200, under_100, 1)",
+    "expected": "Rows sorted by size; footer sentences correct; numbers sum to PD (check in DevTools)",
+    "actual": "Rows are sorted descending by |contribution|. Footer sentences correctly name the largest positive and largest negative driver. DevTools check: for the docs example, API returned probability_of_default 0.5718 (matches R0 fact sheet exactly), and sum(contributions) = 0.2590; base_value in probability space is 0.3126 (model baseline PD, distinct from the flat base_rate=0.30 field); 0.3126 + 0.2590 = 0.5716, within 0.0002 of the returned PD (floating-point rounding only). Additivity confirmed exact",
+    "status": "Pass"
+  },
+  {
+    "id": "UI11",
+    "module": "assess",
+    "case": "Theme toggle",
+    "data": "Clicked the theme toggle on / (dark->light), then navigated away and back / reloaded",
+    "expected": "Persists across reload, no flash",
+    "actual": "After toggling to light and reloading, document.documentElement.dataset.theme and localStorage.theme both read \"light\". The inline THEME_SCRIPT in <head> (read in app/layout.tsx) runs before first paint and sets data-theme synchronously, so there is no flash of the wrong theme on reload",
+    "status": "Pass"
+  },
+  {
+    "id": "UI12",
+    "module": "assess",
+    "case": "Mobile 375",
+    "data": "Code review of components/assess/assess-workbench.tsx (the claude-in-chrome resize_window tool could not change the actual browser viewport in this sandboxed environment — window.innerWidth stayed fixed at ~1536px after repeated resize_window calls to 360x800, 800x700 and 400x600, confirmed via screenshot and window.innerWidth/outerWidth checks)",
+    "expected": "Result scrolls into view after submit",
+    "actual": "Confirmed in code: on submit, assess-workbench.tsx calls `if (window.matchMedia(\"(max-width: 1023px)\").matches) ref.current?.scrollIntoView({ behavior: reduce ? \"auto\" : \"smooth\", block: \"start\" })`, i.e. the result panel is scrolled into view only below the lg breakpoint, which is correct (on desktop the result sits beside the form and needs no scroll). Could not be visually re-verified at a true 375px viewport because of the resize_window tool limitation described above; this is a code-level verification, not a live-pixel one",
+    "status": "Pass (verified by code review; live mobile-viewport confirmation blocked by a browser-tool limitation, noted above)"
+  },
+  {
+    "id": "UI13",
+    "module": "portfolio",
+    "case": "/portfolio cutoff explorer",
+    "data": "Loaded /portfolio, read the cutoff explorer at its default 25% cutoff, then dragged the slider to 40%",
+    "expected": "Dragging updates the 4 readouts; at 25%: 517 approved, 67 defaults, 250 good declined, 0.585",
+    "actual": "At the default 25% cutoff the four readouts read exactly: Approved 517 (51.7% of 1,000), Defaults let through 67 (13.0% of approvals), Good applicants declined 250, Cost per applicant 0.585 — matching the expected values exactly. Dragging the slider to 40% updated all four readouts live: Approved 712, Defaults let through 125, Good applicants declined 113, Cost per applicant 0.738",
+    "status": "Pass"
+  },
+  {
+    "id": "UI14",
+    "module": "portfolio",
+    "case": "/portfolio segment tabs",
+    "data": "Loaded /portfolio § Segments, inspected Purpose tab, then clicked Housing tab",
+    "expected": "Switch correctly; small-sample tags on n < 25",
+    "actual": "Purpose tab (default) correctly tags \"Other\" (n=12), \"Repairs\" (n=22) and \"Domestic appliances\" (n=12) as SMALL SAMPLE, while larger-n rows (New car n=234, Business n=97, etc.) are untagged. Clicking Housing switched the tab underline and swapped in the Housing rows (Lives rent-free n=108, Rents n=179, Owns n=713), none tagged small-sample since all have n >= 25",
+    "status": "Pass"
+  },
+  {
+    "id": "UI15",
+    "module": "model",
+    "case": "/model TOC",
+    "data": "Loaded /model, scrolled through sections, and clicked the \"Calibration\" TOC link",
+    "expected": "Scroll-spy highlights the current section; anchor links work",
+    "actual": "The TOC highlight (border-brand / bg-secondary / text-ink classes) moves from \"Scorecard\" to \"Benchmark\" as the page scrolls past those sections (confirmed by reading each link's className via JS), confirming the scroll-spy mechanism is active. Clicking the \"Calibration\" TOC link jumped the page directly to \"§ 05 Calibration\" and updated the URL to /model#calibration",
+    "status": "Pass"
+  },
+  {
+    "id": "UI16",
+    "module": "site",
+    "case": "404",
+    "data": "Navigated to http://localhost:3000/nope",
+    "expected": "Custom not-found renders",
+    "actual": "Custom not-found page rendered with h1 \"This page isn't in the book.\", site nav/footer intact, no console errors, no horizontal overflow",
+    "status": "Pass"
+  },
+  {
+    "id": "UI17",
+    "module": "assess",
+    "case": "Keyboard only",
+    "data": "Clicked once to set a focus baseline, then used only Tab and Enter: tabbed through nav, preset chips, all 12 form fields (including native <select>s), and the submit button, then pressed Return",
+    "expected": "Can complete an assessment with Tab, Space and Enter",
+    "actual": "Tab order moved predictably through every control (visible focus ring on each stop, confirmed in screenshots), landed exactly on the \"Score this applicant\" button, and pressing Return submitted the form: result rendered with PD 57.2%, High risk, Decline, score 536/850 — identical to the mouse-driven typical-file result from UI10. Native <select> elements (Job type, Housing, Purpose, Credit history, Checking/Savings account) are standard HTML selects and are operable with Space/Arrow keys by default",
+    "status": "Pass"
+  },
+  {
+    "id": "UI18",
+    "module": "assess",
+    "case": "Purpose dropdown",
+    "data": "Opened the Purpose select on /assess",
+    "expected": "No \"Vacation\" option",
+    "actual": "Options listed: New car, Used car, Furniture/equipment, Radio/television, Domestic appliances, Repairs, Education, Retraining, Business, Other. No Vacation option present, matching the lib/types.ts Purpose union (vacation removed) and the api/predict.py validation list",
+    "status": "Pass"
+  }
+]

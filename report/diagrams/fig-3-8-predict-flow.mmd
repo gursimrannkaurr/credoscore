@@ -1,0 +1,15 @@
+flowchart TD
+    A["POST body"] --> B{"JSON valid?"}
+    B -- "No" --> E400A["400 error"]
+    B -- "Yes" --> C{"All 12 fields present?"}
+    C -- "No" --> E400B["400 error"]
+    C -- "Yes" --> D{"Types and bounds ok?"}
+    D -- "No" --> E400C["400 error"]
+    D -- "Yes" --> F{"Instalment rule ok?<br/>(loan / duration &le; 4 x income)"}
+    F -- "No" --> E400D["400 error"]
+    F -- "Yes" --> G["Build 37-column vector"]
+    G --> H["Walk 250 trees"]
+    H --> I["Platt scaling"]
+    I --> J["Band, score, decision"]
+    J --> K["Compute contributions"]
+    K --> L["200 response"]

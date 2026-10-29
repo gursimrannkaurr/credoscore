@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Approve: p < 15%
+    [*] --> ApproveConditions: 15% <= p < 25%
+    [*] --> ReferReview: 25% <= p < 40%
+    [*] --> Decline: p >= 40%
+
+    Approve : Approve
+    ApproveConditions : Approve with conditions
+    ReferReview : Refer for review
+    Decline : Decline
+
+    Approve --> [*]
+    ApproveConditions --> [*]
+    ReferReview --> [*]
+    Decline --> [*]

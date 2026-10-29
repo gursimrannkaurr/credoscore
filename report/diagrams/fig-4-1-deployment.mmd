@@ -1,0 +1,5 @@
+flowchart LR
+    DEV["Developer"] -- "git push / vercel CLI" --> GH["GitHub / Vercel CLI"]
+    GH --> BUILD["Vercel build<br/>Next.js + Python functions<br/>(excludeFiles: training, data, docs, report)"]
+    BUILD --> EDGE["Edge network"]
+    EDGE --> USER["User browser"]

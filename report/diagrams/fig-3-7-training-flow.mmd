@@ -1,0 +1,11 @@
+flowchart TD
+    A["Load raw data<br/>(german_credit.csv)"] --> B["Map category codes<br/>(A71-A75 etc.)"]
+    B --> C["Engineer features<br/>(employment buckets, monthly_income)"]
+    C --> D["5-fold CV benchmark<br/>(logistic, RF, GB, XGBoost)"]
+    D --> E["Randomized search<br/>(n_iter 40, scored on ROC-AUC)"]
+    E --> F["Fit Platt scaling<br/>on out-of-fold margins"]
+    F --> G["Refit on all 1,000 rows"]
+    G --> H{"Parity check<br/>&lt; 1e-9?"}
+    H -- "No" --> I["Stop and investigate"]
+    H -- "Yes" --> J["Write model.json"]
+    H -- "Yes" --> K["Write portfolio.json"]
