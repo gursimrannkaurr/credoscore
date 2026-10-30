@@ -8,7 +8,7 @@ import os
 import pymupdf
 
 ROOT = r"C:\Users\harsh\Desktop\HARSH\WEB-DEV-PROJECTS\ml-project"
-COVER_SRC = rf"{ROOT}\FRONT PAGE RREPORT.pdf"
+COVER_SRC = rf"{ROOT}\report front page.pdf"
 TARGET = rf"{ROOT}\Loan_Default_Risk_Predictor_STR_Report.pdf"
 TMP = rf"{ROOT}\report\dist\report-with-real-cover.pdf"
 
