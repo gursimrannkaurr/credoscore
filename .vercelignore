@@ -1,0 +1,21 @@
+# Deployment needs the application source and exported model artifacts only.
+# Local documents and authoring tools must not enter the deployment upload.
+.git/
+.next/
+.vercel/
+node_modules/
+.env*
+*.pdf
+*.PDF
+*.ogg
+*.m4a
+*.mp3
+*.wav
+*.tsbuildinfo
+notebook.ipynb
+report/
+docs/
+ml/
+data/
+AGENTS.md
+CLAUDE.md
