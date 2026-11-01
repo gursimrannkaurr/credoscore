@@ -1,6 +1,5 @@
 // Shared types between the frontend and the two Python endpoints.
-// Keep these in sync with api/predict.py and api/portfolio.py by hand —
-// the project is intentionally small enough that a generated client would
+// Keep these in sync with api/predict.py and api/portfolio.py by hand, // the project is intentionally small enough that a generated client would
 // be more ceremony than the two request shapes are worth.
 
 export type JobType =

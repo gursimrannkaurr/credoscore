@@ -1,10 +1,12 @@
-// Renders each report/diagrams/*.mmd to a black-and-white PNG via mermaid
-// (loaded from node_modules) inside a blank puppeteer page.
+// Render the fixed reference-style SVG layouts in reference-diagrams.mjs.
+// Other figures (flowcharts and sequence) use their Mermaid source.
+// Save editable SVG and print-resolution PNG for every figure.
 
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile, rename } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import puppeteer from "puppeteer-core";
+import { referenceDiagram } from "./reference-diagrams.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -82,10 +84,13 @@ async function run() {
     const name = file.replace(/\.mmd$/, "");
     const source = await readFile(path.join(DIAGRAMS_DIR, file), "utf-8");
     try {
-      const svg = await page.evaluate(async (src, id) => {
+      const svg = referenceDiagram(name) ?? await page.evaluate(async (src, id) => {
         const { svg } = await mermaid.render(id, src);
         return svg;
       }, source, `graph-${name.replace(/[^a-z0-9]/gi, "")}`);
+
+      // Save editable vectors alongside print-resolution PNGs.
+      await writeFile(path.join(OUT_DIR, `${name}.svg`), svg);
 
       await page.evaluate((svgMarkup) => {
         document.body.innerHTML = "";
@@ -100,7 +105,10 @@ async function run() {
 
       const target = await page.waitForSelector("#render-target");
       const outPath = path.join(OUT_DIR, `${name}.png`);
-      await target.screenshot({ path: outPath });
+      // Replace atomically so an open preview cannot cause a partial PNG write.
+      const png = await target.screenshot();
+      await writeFile(`${outPath}.tmp`, png);
+      await rename(`${outPath}.tmp`, outPath);
       results.push([name, "ok"]);
       console.log(`  ok: ${name}.png`);
     } catch (err) {

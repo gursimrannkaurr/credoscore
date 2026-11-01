@@ -5,7 +5,7 @@ Serves the precomputed, out-of-fold portfolio aggregates from
 model/portfolio.json. All the numbers here were computed once at training
 time (see ml/train.py) using cross_val_predict, so every score behind these
 aggregates is genuinely out-of-sample. This endpoint does no computation of
-its own — it reads a small JSON file and returns it, which is why it needs
+its own, it reads a small JSON file and returns it, which is why it needs
 no dependencies either.
 """
 

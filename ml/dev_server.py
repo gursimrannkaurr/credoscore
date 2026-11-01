@@ -6,7 +6,7 @@ separate serverless functions in production, each at its own path
 (/api/predict, /api/portfolio, /api/predict-compare). Locally, this script
 runs the three *actual* production handler classes unmodified, each behind
 its own tiny stdlib HTTP server, and next.config.ts rewrites those three
-paths to them in development. Nothing here ships to production — it exists
+paths to them in development. Nothing here ships to production, it exists
 purely so `npm run dev` gives a fully working app without the Vercel CLI.
 
 Run with:  py ml/dev_server.py
@@ -28,8 +28,8 @@ import predict  # noqa: E402
 
 # predict-compare.py has a hyphen in its filename (to match Vercel's
 # file-path-is-the-route convention for /api/predict-compare), which isn't
-# a valid Python module name — `import predict-compare` would be a syntax
-# error — so it's loaded by file path instead of by name.
+# a valid Python module name, `import predict-compare` would be a syntax
+# error, so it's loaded by file path instead of by name.
 _spec = importlib.util.spec_from_file_location("predict_compare", API_DIR / "predict-compare.py")
 predict_compare = importlib.util.module_from_spec(_spec)
 assert _spec.loader is not None
@@ -47,7 +47,7 @@ def serve(handler_cls, port: int, name: str) -> None:
 
 
 if __name__ == "__main__":
-    print("Loan Default Risk Predictor — local API server")
+    print("Loan Default Risk Predictor: local API server")
     print("=" * 50)
 
     t1 = threading.Thread(target=serve, args=(predict.handler, PREDICT_PORT, "predict"), daemon=True)

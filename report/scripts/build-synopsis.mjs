@@ -16,7 +16,7 @@ const md = new MarkdownIt({ html: true, linkify: false, typographer: false });
 function render() {
   const src = readFileSync(join(ROOT, "synopsis", "synopsis.md"), "utf8");
   const html = md.render(src);
-  const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Loan Default Risk Predictor — Synopsis Report</title><link rel="stylesheet" href="../styles/synopsis.css"></head><body>${html}</body></html>`;
+  const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Loan Default Risk Predictor: Synopsis Report</title><link rel="stylesheet" href="../styles/synopsis.css"></head><body>${html}</body></html>`;
   writeFileSync(join(DIST, "synopsis.html"), doc);
 }
 

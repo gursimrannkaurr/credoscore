@@ -143,7 +143,7 @@ The six numeric fields pass through unscaled, so the full feature vector that th
 
 ### 3.2.2 DFD
 
-Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. Model files also supply the encoding and calibration settings; these supporting connections are omitted from the overview for clarity.
+Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. The model-file connections supply the encoding settings, fitted trees and calibration parameters.
 
 ![Figure 3.4 Context Level DFD (Level 0)](../assets/figures/fig-3-4-dfd0.png)
 
@@ -160,7 +160,7 @@ Figure 3.4 is the context-level diagram (Level 0), which treats scoring and anal
 | 5.0 | Explain | Groups the per-feature contributions by source field and rescales them so they sum exactly to the probability minus the base rate. |
 | 6.0 | Serve portfolio analytics | Reads D2 and returns the precomputed cutoff curve, deciles, calibration bins, feature importance and segments without any further computation. |
 
-Data stores: D1 model.json (the fitted ensemble and its metadata), D2 portfolio.json (the precomputed, out-of-fold portfolio aggregates), and D3 german_credit.csv (the training dataset, read only by the offline training pipeline).
+Data stores: D1 contains the exported model files and their encoding and calibration metadata; D2 is portfolio.json, containing the precomputed, out-of-fold portfolio aggregates. The training dataset is read only by the separate offline pipeline and is outside this runtime DFD.
 
 #### Use Case Diagram
 
@@ -186,7 +186,7 @@ Figure 3.7 is the flowchart of the offline training pipeline. Figure 3.8 is the 
 
 ![Figure 3.8 Flowchart of the scoring process](../assets/figures/fig-3-8-predict-flow.png)
 
-The simplified decision diagram uses the default cutoff of 25%; its boundaries change when the cutoff is adjusted.
+The decision-state diagram uses the default cutoff of 25%; its boundaries change when the cutoff is adjusted.
 
 ![Figure 3.9 State diagram of an applicant's decision](../assets/figures/fig-3-9-decision-state.png)
 

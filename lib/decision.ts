@@ -8,7 +8,7 @@ export function bandFor(pd: number): RiskBand {
   return "high";
 }
 
-// Mirrors decision_for() in api/predict.py — keep the multipliers in sync.
+// Mirrors decision_for() in api/predict.py, keep the multipliers in sync.
 export function decisionAt(pd: number, cutoff: number): Decision {
   if (pd < cutoff * 0.6) return "approve";
   if (pd < cutoff) return "approve_with_conditions";

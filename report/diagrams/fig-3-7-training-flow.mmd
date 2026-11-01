@@ -1,9 +1,19 @@
-flowchart TB
- S([Start]) --> A[Load and prepare data]
- A --> B[Compare and tune models]
- B --> C[Calibrate and fit models]
- C --> D{Export parity<br/>check passes?}
- D -->|No| E[Investigate mismatch]
- E --> C
- D -->|Yes| F[Export model and portfolio files]
- F --> G([End])
+flowchart TD
+    A("Load raw data<br/>(german_credit.csv)") --> B("Map category codes<br/>(A71-A75 etc.)")
+    B --> C("Engineer features<br/>(employment buckets, monthly_income)")
+    C --> D("5-fold CV benchmark<br/>(logistic, RF, GB, XGBoost)")
+    D --> E("Randomized search<br/>(n_iter 40, scored on ROC-AUC)")
+    E --> F("Fit Platt scaling<br/>on out-of-fold margins")
+    F --> G("Refit on all 1,000 rows")
+    G --> H{"Parity check<br/>&lt; 1e-9?"}
+    H -- "No" --> I("Stop and investigate")
+    H -- "Yes" --> J("Write model.json")
+    H -- "Yes" --> K("Write portfolio.json")
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class A,B,C,D,E,F,G root
+    class H,I mid
+    class J,K leaf

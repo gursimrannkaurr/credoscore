@@ -7,7 +7,7 @@
 // Usage: node report/scripts/render-code-shots.mjs
 //
 // Each entry below is {id, lang, code, caption}. `caption` is NOT baked into
-// the image — it is metadata only, echoed to the console so a later wave can
+// the image, it is metadata only, echoed to the console so a later wave can
 // copy it into the report Markdown as an ordinary "Figure N.N: ..." caption
 // below the <id>.png image, matching the report's existing convention.
 //
@@ -38,7 +38,7 @@ const ENTRIES = [
   {
     id: "score-tree-walk",
     lang: "python",
-    caption: "Figure 3.16: score() — walking the tree ensemble to accumulate the raw margin and its factor contributions",
+    caption: "Figure 3.16: score(), walking the tree ensemble to accumulate the raw margin and its factor contributions",
     code: `def score(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, float]]:
     # sklearn routes a tie left on "<="; XGBoost's histogram splitter places
     # thresholds exactly on real values, so it needs a strict "<" instead.
@@ -73,7 +73,7 @@ const ENTRIES = [
   {
     id: "decision-rule",
     lang: "python",
-    caption: "Figure 3.17: decision_for() and score_to_display() — the cutoff rule and the 300-850 score mapping",
+    caption: "Figure 3.17: decision_for() and score_to_display(), the cutoff rule and the 300-850 score mapping",
     code: `def decision_for(probability: float, cutoff: float) -> str:
     if probability < cutoff * 0.6:
         return "approve"
@@ -92,7 +92,7 @@ def score_to_display(probability: float) -> int:
   {
     id: "score-forest",
     lang: "python",
-    caption: "Figure 3.19: score_forest() — averaging leaf probabilities across 300 trees instead of additive boosting",
+    caption: "Figure 3.19: score_forest(), averaging leaf probabilities across 300 trees instead of additive boosting",
     code: `def score_forest(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, float]]:
     """Returns (mean_probability, {}) for a Random Forest artifact.
 
@@ -118,7 +118,7 @@ def score_to_display(probability: float) -> int:
   {
     id: "synopsis-frontend-validate",
     lang: "typescript",
-    caption: "components/assess/assess-form.tsx — client-side field validation before a request is sent to the scoring API",
+    caption: "components/assess/assess-form.tsx, client-side field validation before a request is sent to the scoring API",
     code: `function validate(form: FormState): Errors {
   const errors: Errors = {};
   for (const f of NUMERIC_FIELDS) {
@@ -141,7 +141,7 @@ def score_to_display(probability: float) -> int:
   {
     id: "synopsis-backend-validate",
     lang: "python",
-    caption: "api/predict.py — server-side validation of the twelve required fields before the model is scored",
+    caption: "api/predict.py, server-side validation of the twelve required fields before the model is scored",
     code: `for field in model["numeric_features"]:
     if field not in payload:
         raise ValidationError(field, f"'{field}' is required.")

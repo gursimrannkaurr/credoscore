@@ -1,6 +1,6 @@
 // Captures the ~16 report screenshots from the live Next.js site.
 // Both dev servers (next dev on :3000, ml/dev_server.py on :8001/:8002) must
-// already be running — see AGENTS.md / the execution plan's global rules.
+// already be running, see AGENTS.md / the execution plan's global rules.
 
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -213,7 +213,7 @@ async function run() {
   await browser.close();
 
   console.log("\nSummary:");
-  for (const [label, status] of results) console.log(`  ${status === "ok" ? "OK  " : "FAIL"}  ${label}${status !== "ok" ? " — " + status : ""}`);
+  for (const [label, status] of results) console.log(`  ${status === "ok" ? "OK  " : "FAIL"}  ${label}${status !== "ok" ? ", " + status : ""}`);
   const failed = results.filter(([, s]) => s !== "ok");
   if (failed.length) {
     console.error(`\n${failed.length} of ${results.length} shots failed.`);

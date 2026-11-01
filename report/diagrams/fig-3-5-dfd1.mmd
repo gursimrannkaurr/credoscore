@@ -1,11 +1,38 @@
 flowchart TB
- L[Loan officer] -->|Applicant details| P1(1.0 Validate input)
- P1 -->|Valid input| P2(2.0 Encode features)
- P2 -->|Feature vector| P3(3.0 Score ensemble)
- D1[(D1 Model files)] --> P3
- P3 -->|Raw score| P4(4.0 Calibrate and band)
- P4 -->|Risk result| P5(5.0 Explain result)
- P5 -->|Result and drivers| L
- R[Risk analyst] -->|Query| P6(6.0 Portfolio analytics)
- D2[(D2 Portfolio file)] --> P6
- P6 -->|Summary| R
+    LO(["Loan officer"])
+    RA(["Risk analyst"])
+
+    P1("1.0<br/>Validate input")
+    P2("2.0<br/>Encode features")
+    P3("3.0<br/>Score ensemble")
+    P4("4.0<br/>Calibrate and band")
+    P5("5.0<br/>Explain")
+    P6("6.0<br/>Serve portfolio analytics")
+
+    D1[("D1 model.json")]
+    D2[("D2 portfolio.json")]
+    D3[("D3 german_credit.csv")]
+
+    LO -- "raw applicant fields" --> P1
+    P1 -- "cleaned fields" --> P2
+    P2 -- "37-column vector" --> P3
+    D1 --- P2
+    D1 --- P3
+    P3 -- "raw margin" --> P4
+    D1 --- P4
+    P4 -- "probability, band, score" --> P5
+    P5 -- "per-feature contributions" --> LO
+    P4 -- "decision" --> LO
+
+    RA -- "cutoff, filters" --> P6
+    D2 --- P6
+    D3 -. "offline training only" .-> D1
+    P6 -- "bands, deciles, segments" --> RA
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class LO,RA mid
+    class P1,P2,P3,P4,P5,P6 root
+    class D1,D2,D3 leaf

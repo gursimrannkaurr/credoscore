@@ -63,13 +63,7 @@ A representative selection of six screens is given below, from the landing page 
 
 <div class="annexure-shot">
 
-![Figure A-9 The model benchmark on the methodology page](../assets/screens/a13-model-benchmark.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-10 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
+![Figure A-9 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
 
 </div>
 
@@ -231,23 +225,3 @@ Each row's bar is drawn out from a centre line, growing right for a risk-raising
       </ol>
 ```
 
-#### A-3.5 api/predict.py (score_forest)
-
-The Random Forest artifact is walked by a separate function from the two additive models, since it combines trees by averaging leaf probabilities rather than by boosting:
-
-```python
-def score_forest(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, float]]:
-    total = 0.0
-    trees = model["trees"]
-
-    for tree in trees:
-        node = 0
-        while tree["left"][node] != -1:
-            feature_idx = tree["feature"][node]
-            threshold = tree["threshold"][node]
-            go_left = vector[feature_idx] <= threshold
-            node = tree["left"][node] if go_left else tree["right"][node]
-        total += tree["value"][node]
-
-    return total / len(trees), {}
-```

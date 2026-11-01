@@ -1,5 +1,5 @@
 """Monochrome, academic-styled charts for the report, built from
-model/portfolio.json only — never from retyped numbers.
+model/portfolio.json only, never from retyped numbers.
 
 Run with PY312 (matplotlib + pandas are installed only for that
 interpreter): PY312 -I report/scripts/make_charts.py
@@ -63,7 +63,7 @@ def savefig(fig, name: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.10 — ROC curve
+# Fig 3.10, ROC curve
 # ---------------------------------------------------------------------------
 def chart_roc() -> None:
     roc = portfolio["roc_curve"]
@@ -84,7 +84,7 @@ def chart_roc() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.11 — Calibration reliability diagram
+# Fig 3.11, Calibration reliability diagram
 # ---------------------------------------------------------------------------
 def chart_calibration() -> None:
     cal = portfolio["calibration"]
@@ -107,7 +107,7 @@ def chart_calibration() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.12 — Feature importance, horizontal bars
+# Fig 3.12, Feature importance, horizontal bars
 # ---------------------------------------------------------------------------
 def chart_importance() -> None:
     items = sorted(portfolio["feature_importance"], key=lambda r: r["importance"])
@@ -125,7 +125,7 @@ def chart_importance() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.13 — Decile bars (observed) + line (predicted)
+# Fig 3.13, Decile bars (observed) + line (predicted)
 # ---------------------------------------------------------------------------
 def chart_deciles() -> None:
     deciles = portfolio["deciles"]
@@ -145,7 +145,7 @@ def chart_deciles() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.14 — Cutoff trade-off: approval rate, bad rate among approved, cost
+# Fig 3.14, Cutoff trade-off: approval rate, bad rate among approved, cost
 # ---------------------------------------------------------------------------
 def chart_cutoff() -> None:
     curve = portfolio["cutoff_curve"]
@@ -192,7 +192,7 @@ def chart_cutoff() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Fig 3.15 — Benchmark dot + error bar, tuned model as a star
+# Fig 3.15, Benchmark dot + error bar, tuned model as a star
 # ---------------------------------------------------------------------------
 def chart_benchmark() -> None:
     bench = portfolio["benchmark"]

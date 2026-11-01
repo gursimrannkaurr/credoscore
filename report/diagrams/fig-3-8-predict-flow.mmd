@@ -1,10 +1,23 @@
-flowchart TB
- S([Start]) --> A[Receive applicant details]
- A --> B{Input valid?}
- B -->|No| E[Return validation error]
- B -->|Yes| C[Encode and score applicant]
- C --> D[Calibrate default probability]
- D --> F[Assign decision and explain]
- F --> G[Return risk result]
- G --> H([End])
- E --> H
+flowchart TD
+    A("POST body") --> B{"JSON valid?"}
+    B -- "No" --> E400A("400 error")
+    B -- "Yes" --> C{"All 12 fields present?"}
+    C -- "No" --> E400B("400 error")
+    C -- "Yes" --> D{"Types and bounds ok?"}
+    D -- "No" --> E400C("400 error")
+    D -- "Yes" --> F{"Instalment rule ok?<br/>(loan / duration &le; 4 x income)"}
+    F -- "No" --> E400D("400 error")
+    F -- "Yes" --> G("Build 37-column vector")
+    G --> H("Walk 250 trees")
+    H --> I("Platt scaling")
+    I --> J("Band, score, decision")
+    J --> K("Compute contributions")
+    K --> L("200 response")
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class A,G,H,I,J,K root
+    class B,C,D,F,E400A,E400B,E400C,E400D mid
+    class L leaf

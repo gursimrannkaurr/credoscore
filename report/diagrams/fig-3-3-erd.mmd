@@ -1,6 +1,49 @@
 erDiagram
- APPLICANT ||--|| LOAN_APPLICATION : submits
- LOAN_APPLICATION ||--|| CREDIT_POSITION : includes
- LOAN_APPLICATION ||--|{ PREDICTION : receives
- MODEL_ARTIFACT ||--o{ PREDICTION : produces
- PREDICTION ||--|{ CONTRIBUTION : explains
+    APPLICANT ||--o{ LOAN_APPLICATION : submits
+    LOAN_APPLICATION ||--|| CREDIT_POSITION : has
+    LOAN_APPLICATION ||--|| PREDICTION : receives
+    MODEL_ARTIFACT ||--o{ PREDICTION : produces
+    PREDICTION ||--o{ CONTRIBUTION : explains
+
+    APPLICANT {
+        int age
+        float employment_years
+        string job_type
+        string housing
+    }
+
+    LOAN_APPLICATION {
+        float monthly_income
+        float loan_amount
+        int duration_months
+        string purpose
+        int existing_credits
+    }
+
+    CREDIT_POSITION {
+        string credit_history
+        string checking_status
+        string savings_status
+    }
+
+    MODEL_ARTIFACT {
+        string model_version
+        float platt_a
+        float platt_b
+        float cutoff
+        float base_rate
+    }
+
+    PREDICTION {
+        float probability_of_default
+        string risk_band
+        int score
+        string decision
+    }
+
+    CONTRIBUTION {
+        string feature
+        string label
+        float value
+        float contribution
+    }

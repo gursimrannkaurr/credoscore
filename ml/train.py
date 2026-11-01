@@ -160,7 +160,7 @@ def ks_statistic(y_true: np.ndarray, y_score: np.ndarray) -> float:
 
 def main() -> None:
     print("=" * 70)
-    print("LOAN DEFAULT RISK PREDICTOR — TRAINING PIPELINE")
+    print("LOAN DEFAULT RISK PREDICTOR: TRAINING PIPELINE")
     print("=" * 70)
 
     df = load_clean_dataset()
@@ -177,7 +177,7 @@ def main() -> None:
     # 3. Four-model benchmark under identical folds
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("BENCHMARK — 5-fold stratified cross-validation, identical folds")
+    print("BENCHMARK: 5-fold stratified cross-validation, identical folds")
     print("-" * 70)
 
     candidates = {
@@ -200,9 +200,9 @@ def main() -> None:
     }
 
     # Cross-validated manually (rather than via sklearn's scoring="..." string
-    # scorers) so every candidate — including XGBoost, whose sklearn wrapper
+    # scorers) so every candidate, including XGBoost, whose sklearn wrapper
     # does not fully implement the estimator-tag interface newer scikit-learn
-    # scorers expect — is benchmarked the same way: fit on the fold's train
+    # scorers expect, is benchmarked the same way: fit on the fold's train
     # split, score its held-out fold via predict_proba, pool across folds.
     benchmark_results = {}
     # Kept around after the loop so the Random Forest and XGBoost export
@@ -245,7 +245,7 @@ def main() -> None:
     # 4. Hyperparameter search on the selected family (Gradient Boosting)
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("HYPERPARAMETER SEARCH — Gradient Boosting, RandomizedSearchCV")
+    print("HYPERPARAMETER SEARCH: Gradient Boosting, RandomizedSearchCV")
     print("-" * 70)
 
     param_distributions = {
@@ -278,7 +278,7 @@ def main() -> None:
     # metrics and to fit a single global Platt-scaling transform.
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("CALIBRATION — out-of-fold raw margins -> Platt scaling")
+    print("CALIBRATION: out-of-fold raw margins -> Platt scaling")
     print("-" * 70)
 
     final_gb = GradientBoostingClassifier(random_state=RANDOM_STATE, **best_params)
@@ -315,7 +315,7 @@ def main() -> None:
     # 5. Export to a dependency-free JSON artifact
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("EXPORT — flattening the fitted ensemble into JSON")
+    print("EXPORT: flattening the fitted ensemble into JSON")
     print("-" * 70)
 
     preprocessor = final_pipe.named_steps["prep"]
@@ -359,7 +359,7 @@ def main() -> None:
 
     # Recover the constant init (base) score. sklearn's default init for
     # log-loss classification is a constant prior log-odds, identical for
-    # every row — verified below rather than assumed.
+    # every row, verified below rather than assumed.
     X_transformed = preprocessor.transform(X)
     if hasattr(X_transformed, "toarray"):
         X_transformed = X_transformed.toarray()
@@ -381,7 +381,7 @@ def main() -> None:
     base_value = float(np.mean(base_candidates))
     base_spread = float(np.max(base_candidates) - np.min(base_candidates))
     print(f"  Base value: {base_value:.6f}  (spread across samples: {base_spread:.2e})")
-    assert base_spread < 1e-6, "Base value is not constant — export logic needs revisiting"
+    assert base_spread < 1e-6, "Base value is not constant, export logic needs revisiting"
 
     artifact = {
         "model_version": "1.0.0",
@@ -429,11 +429,11 @@ def main() -> None:
     # XGBoost: refit on full data, export as an additive log-odds tree
     # ensemble. XGBoost bakes its own learning rate into each leaf's
     # stored value at training time, so the exported learning_rate is
-    # 1.0 and the runtime walk just sums leaf values — the exact same
+    # 1.0 and the runtime walk just sums leaf values, the exact same
     # score() function used for Gradient Boosting, unmodified.
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("EXPORT — XGBoost, flattening via trees_to_dataframe()")
+    print("EXPORT: XGBoost, flattening via trees_to_dataframe()")
     print("-" * 70)
 
     xgb_hyperparams = {
@@ -458,7 +458,7 @@ def main() -> None:
     # the float64 transformed matrix misroutes a handful of rows whose raw
     # value sits exactly on a bin edge once rounded (verified empirically:
     # without this cast a few rows differ by whole leaf values, ~0.3 margin
-    # units — a real routing bug, not noise). Casting to float32 first
+    # units, a real routing bug, not noise). Casting to float32 first
     # reproduces XGBoost's own arithmetic almost exactly.
     X_transformed_xgb = X_transformed_xgb.astype(np.float32)
 
@@ -492,7 +492,7 @@ def main() -> None:
 
     def xgb_tree_sum(row_idx: int) -> float:
         # Unlike sklearn's "<=" convention, XGBoost's split rule sends a row
-        # left (Yes) only on a strict "<" — verified empirically against a
+        # left (Yes) only on a strict "<", verified empirically against a
         # small fitted booster before relying on it here.
         total = 0.0
         for t in xgb_trees:
@@ -517,9 +517,9 @@ def main() -> None:
     # GB's own recovery clears 1e-6 easily because sklearn keeps everything
     # in float64. XGBoost's booster is float32 throughout, so even a
     # mathematically-constant base score is measured with ~1e-6 noise here
-    # (verified empirically above) — 1e-5 is the tolerance that reflects
+    # (verified empirically above), 1e-5 is the tolerance that reflects
     # that reality rather than pretending for a tighter one.
-    assert base_spread_xgb < 1e-5, "XGBoost base value is not constant — export logic needs revisiting"
+    assert base_spread_xgb < 1e-5, "XGBoost base value is not constant, export logic needs revisiting"
 
     platt_xgb = LogisticRegression()
     platt_xgb.fit(oof_margins_xgb.reshape(-1, 1), y)
@@ -579,11 +579,11 @@ def main() -> None:
     # Random Forest: refit on full data, export for an averaging-based
     # runtime (score_forest()), a genuine methodological contrast to the
     # two additive-boosting models above. No base_value, no learning
-    # rate — each tree's leaf already stores P(class=1) directly, and
+    # rate, each tree's leaf already stores P(class=1) directly, and
     # the ensemble result is the mean across all 300 trees.
     # -----------------------------------------------------------------
     print("\n" + "-" * 70)
-    print("EXPORT — Random Forest, flattening per-tree leaf probabilities")
+    print("EXPORT: Random Forest, flattening per-tree leaf probabilities")
     print("-" * 70)
 
     rf_hyperparams = {"n_estimators": 300, "max_depth": 6, "class_weight": "balanced"}
@@ -626,8 +626,7 @@ def main() -> None:
             total += t["value"][node]
         return total / len(rf_trees)
 
-    # "raw" here means the averaged leaf probability (0-1), not a margin —
-    # Platt scaling only needs a feature monotonically related to the true
+    # "raw" here means the averaged leaf probability (0-1), not a margin,     # Platt scaling only needs a feature monotonically related to the true
     # outcome, it doesn't care about the feature's original scale.
     oof_raw_rf = oof_by_model["random_forest"]
     platt_rf = LogisticRegression()

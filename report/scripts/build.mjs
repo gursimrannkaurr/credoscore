@@ -59,7 +59,7 @@ function render(pages) {
     .replace('<div class="lof"></div>', `<div class="lof">${lof}</div>`)
     .replace('<div class="lot"></div>', `<div class="lot">${lot}</div>`);
 
-  const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Loan Default Risk Predictor — Summer Training Report</title><link rel="stylesheet" href="../styles/report.css"></head><body>${html}</body></html>`;
+  const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Loan Default Risk Predictor: Summer Training Report</title><link rel="stylesheet" href="../styles/report.css"></head><body>${html}</body></html>`;
   writeFileSync(join(DIST, "report.html"), doc);
   writeFileSync(join(DIST, "targets.json"), JSON.stringify(ordered, null, 1));
 }
