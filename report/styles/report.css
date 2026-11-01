@@ -79,3 +79,6 @@ pre code { font-size: inherit; }
 .annexure-shot img { max-height: 195pt; border: 0.5pt solid #000; }
 
 .cert-figure img { max-height: 480pt; max-width: 100%; border: 0.75pt solid #000; }
+
+/* Keep simplified design diagrams legible at A4 print size. */
+figure img[src*="assets/figures/"] { max-height: 340pt; }

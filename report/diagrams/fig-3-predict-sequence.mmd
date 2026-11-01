@@ -1,21 +1,13 @@
 sequenceDiagram
-    participant User
-    participant Assess as Assess page (Next.js)
-    participant API as /api/predict-compare
-    participant Model as Model artifacts
-
-    User->>Assess: 1. Submit applicant form
-    activate Assess
-    Assess->>API: 2. POST applicant payload
-    activate API
-    API->>API: 3. Validate fields and bounds
-    API->>Model: 4. Build 37-column feature vector
-    activate Model
-    API->>API: 5. Walk trees - Gradient Boosting, XGBoost, Random Forest
-    Model-->>API: 6. Raw margins / raw scores per model
-    deactivate Model
-    API->>API: 7. Calibrate each model (Platt scaling)
-    API-->>Assess: 8. Return PD, band, decision, contributions per model
-    deactivate API
-    Assess->>User: 9. Render risk slip and comparison panel
-    deactivate Assess
+ participant U as User
+ participant W as Web interface
+ participant A as Scoring API
+ participant M as Model files
+ U->>W: Enter applicant details
+ W->>A: Submit request
+ A->>A: Validate input
+ A->>M: Read trained models
+ M-->>A: Model data
+ A->>A: Score, calibrate and explain
+ A-->>W: Risk results
+ W-->>U: Display assessment

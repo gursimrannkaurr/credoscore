@@ -70,7 +70,7 @@ The system has no transactional database. Its data design covers the training da
 
 ### 3.2.1 ERD
 
-An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction per deployed model; a prediction is explained by one or more per-factor contributions. The relationships are drawn in Figure 3.3.
+An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction per deployed model; a prediction is explained by one or more per-factor contributions. The diagram shows conceptual relationships; field details appear in the tables below, and applicant records are not persisted. The relationships are drawn in Figure 3.3.
 
 ![Figure 3.3 Entity Relationship Diagram of the Loan Default Risk Predictor](../assets/figures/fig-3-3-erd.png)
 
@@ -143,7 +143,7 @@ The six numeric fields pass through unscaled, so the full feature vector that th
 
 ### 3.2.2 DFD
 
-Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1.
+Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. Model files also supply the encoding and calibration settings; these supporting connections are omitted from the overview for clarity.
 
 ![Figure 3.4 Context Level DFD (Level 0)](../assets/figures/fig-3-4-dfd0.png)
 
@@ -185,6 +185,8 @@ Figure 3.7 is the flowchart of the offline training pipeline. Figure 3.8 is the 
 ![Figure 3.7 Flowchart of the training process](../assets/figures/fig-3-7-training-flow.png)
 
 ![Figure 3.8 Flowchart of the scoring process](../assets/figures/fig-3-8-predict-flow.png)
+
+The simplified decision diagram uses the default cutoff of 25%; its boundaries change when the cutoff is adjusted.
 
 ![Figure 3.9 State diagram of an applicant's decision](../assets/figures/fig-3-9-decision-state.png)
 

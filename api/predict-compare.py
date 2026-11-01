@@ -2,32 +2,37 @@
 POST /api/predict-compare
 
 Scores a single loan applicant against all three models that are actually
-deployed in production — Gradient Boosting (model/model.json), XGBoost
-(model/model_xgboost.json) and Random Forest (model/model_random_forest.json)
-— and returns all three results in one response, so the UI can show whether
+deployed in production: Gradient Boosting (model/model.json), XGBoost
+(model/model_xgboost.json) and Random Forest (model/model_random_forest.json).
+Returns all three results in one response, so the UI can show whether
 three independently trained models agree.
 
 Shares its validation, vector-building and tree-walking code with
 api/predict.py via a plain sibling import rather than a new api/_scoring.py
 module. Vercel's Python builder (see vercel.json's `functions["api/**/*.py"]`
 glob and docs/07-deployment.md) treats *every* .py file under api/ as its
-own file-based function regardless of a leading underscore — there's no
-documented "private module" convention for Vercel Python the way there is
-for some JS frameworks — so a module named api/_scoring.py would itself be
-deployed as a route (/api/_scoring) with no `handler` class, which is at
-best dead weight and at worst a build-time surprise. Importing straight
-from api/predict.py avoids that risk entirely: both files live in the same
-function directory, and a sibling import within api/ is Vercel's own
-documented, supported pattern.
+own file-based function regardless of a leading underscore, so a module
+named api/_scoring.py would itself be deployed as a route (/api/_scoring)
+with no `handler` class. Importing from api/predict.py avoids that.
+
+Each Python function is bundled in isolation on Vercel, so predict.py is
+not on sys.path by default even though it lives in the same directory;
+`vercel.json` explicitly includes it in this function's bundle
+(functions["api/**/*.py"].includeFiles), and the path insert below makes
+sure Python can actually find it once it's there.
 """
 
 from __future__ import annotations
 
 import json
 import math
+import os
+import sys
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from predict import (
     FEATURE_LABELS,
@@ -51,7 +56,7 @@ RF_PATH = MODEL_DIR / "model_random_forest.json"
 
 def _additive_result(vector: list[float], model: dict[str, Any], cleaned: dict[str, Any]) -> dict[str, Any]:
     """Full response shape (with contributions) for an additive boosting
-    model — shared by Gradient Boosting and XGBoost, since both are scored
+    model, shared by Gradient Boosting and XGBoost, since both are scored
     with the same score() walker."""
     raw_margin, contributions_by_idx = score(vector, model)
     probability = 1.0 / (1.0 + math.exp(-(model["platt_a"] * raw_margin + model["platt_b"])))
@@ -93,7 +98,7 @@ def _additive_result(vector: list[float], model: dict[str, Any], cleaned: dict[s
 
 
 def _forest_result(vector: list[float], model: dict[str, Any]) -> dict[str, Any]:
-    """Response shape for Random Forest: no contributions key — by design,
+    """Response shape for Random Forest: no contributions key, by design.
     Random Forest gets no driver breakdown in this phase (see score_forest's
     docstring in api/predict.py)."""
     raw_probability, _contributions = score_forest(vector, model)
@@ -165,7 +170,7 @@ class handler(BaseHTTPRequestHandler):
             self._send_json(200, result)
         except ValidationError as exc:
             self._send_json(400, {"error": exc.field, "message": exc.message})
-        except Exception as exc:  # noqa: BLE001 — last-resort guard, never a 500 for bad input
+        except Exception as exc:  # noqa: BLE001: last-resort guard, never a 500 for bad input
             self._send_json(400, {"error": "unknown", "message": str(exc)})
 
     def log_message(self, format: str, *args: Any) -> None:  # noqa: A002

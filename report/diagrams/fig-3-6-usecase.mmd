@@ -1,34 +1,19 @@
 flowchart LR
-    LO(["Loan officer"])
-    RA(["Risk analyst"])
-    MM(["Model maintainer"])
-
-    subgraph System["Loan Default Risk Predictor"]
-        UC1(["Enter applicant details"])
-        UC2(["Load sample file"])
-        UC3(["Score applicant"])
-        UC4(["View score drivers"])
-        UC5(["Run what-if on cutoff"])
-        UC6(["View portfolio analytics"])
-        UC7(["Review methodology"])
-        UC8(["Retrain and export model"])
-    end
-
-    LO --> UC1
-    LO --> UC2
-    LO --> UC3
-    LO --> UC4
-    LO --> UC5
-
-    RA --> UC6
-    RA --> UC7
-
-    MM --> UC8
-    MM --> UC7
-
-    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
-    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
-    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
-
-    class LO,RA,MM mid
-    class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8 leaf
+ L[Loan officer]
+ R[Risk analyst]
+ M[Model maintainer]
+ subgraph S[Loan Default Risk Predictor]
+ U1([Assess applicant])
+ U2([Review risk drivers])
+ U3([Adjust decision cutoff])
+ U4([Explore portfolio])
+ U5([Review methodology])
+ U6([Retrain models])
+ end
+ L --- U1
+ L --- U2
+ L --- U3
+ R --- U4
+ R --- U5
+ M --- U5
+ M --- U6

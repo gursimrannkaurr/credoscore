@@ -30,7 +30,7 @@ def load_model(path: Path = MODEL_PATH) -> dict[str, Any]:
 
     Generalised (still path-keyed, defaulting to the Gradient Boosting
     artifact) so a warm serverless instance that scores against more than
-    one model — see api/predict-compare.py — doesn't re-read disk on every
+    one model (see api/predict-compare.py) doesn't re-read disk on every
     request for models it already loaded.
     """
     key = str(path)
@@ -40,7 +40,7 @@ def load_model(path: Path = MODEL_PATH) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# Feature vector construction — mirrors the sklearn ColumnTransformer exactly:
+# Feature vector construction: mirrors the sklearn ColumnTransformer exactly,
 # numeric columns (in order), then one one-hot block per categorical column
 # (in the category order captured at training time).
 # ---------------------------------------------------------------------------
@@ -137,14 +137,14 @@ def score(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, 
     The left/right split comparison is **not** the same convention for every
     model type: sklearn (Gradient Boosting) routes a row left on
     ``value <= threshold``, but XGBoost routes left only on a strict
-    ``value < threshold``. This is not a cosmetic difference — XGBoost's
+    ``value < threshold``. This is not a cosmetic difference: XGBoost's
     histogram-based splitter frequently places a threshold exactly on a real
     data value (rather than at a midpoint, the way sklearn's CART does), so
     ties at the boundary are common, not rare. Measured directly against the
     shipped model_xgboost.json over all 1,000 training rows, using ``<=``
     instead of the training-time ``<`` flips the routing on every single row
     at at least one of the 200 trees, with probability-of-default differing
-    by as much as 0.65 between the two conventions — nowhere close to
+    by as much as 0.65 between the two conventions, nowhere close to
     negligible. ``model["model_type"]`` (present in every exported artifact)
     is what decides the operator here, so the one shared function still
     handles every model type correctly without a per-caller special case.
@@ -180,7 +180,7 @@ def score_forest(vector: list[float], model: dict[str, Any]) -> tuple[float, dic
     Random Forest combines trees by *averaging* predicted leaf
     probabilities, not by additive boosting, so this walk is deliberately
     simpler than score(): no learning rate, no accumulation across the
-    nodes on a path — only the leaf each tree lands on matters, and the
+    nodes on a path. Only the leaf each tree lands on matters, and the
     final value is the mean of those leaf values across all trees. The
     empty dict keeps this function's return shape identical to score()'s
     so callers don't need a special case beyond "which function to call."
@@ -335,7 +335,7 @@ class handler(BaseHTTPRequestHandler):
             self._send_json(200, result)
         except ValidationError as exc:
             self._send_json(400, {"error": exc.field, "message": exc.message})
-        except Exception as exc:  # noqa: BLE001 — last-resort guard, never a 500 for bad input
+        except Exception as exc:  # noqa: BLE001: last-resort guard, never a 500 for bad input
             self._send_json(400, {"error": "unknown", "message": str(exc)})
 
     def log_message(self, format: str, *args: Any) -> None:  # noqa: A002

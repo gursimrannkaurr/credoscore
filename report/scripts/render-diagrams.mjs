@@ -42,19 +42,21 @@ async function run() {
       themeVariables: {
         fontFamily: "Times New Roman",
         fontSize: "16px",
-        // Neutral defaults for anything NOT explicitly given a per-diagram
-        // classDef (e.g. decision diamonds, data-store cylinders, actor
-        // stadiums). Diagrams carry their own Office-pastel classDef/class
-        // assignments (root/mid/leaf), which always take precedence over
-        // these theme defaults.
-        primaryColor: "#F2F2F2",
-        primaryBorderColor: "#595959",
-        primaryTextColor: "#1F1F1F",
-        lineColor: "#595959",
-        secondaryColor: "#DCE6F1",
-        tertiaryColor: "#FDE9D9",
+        primaryColor: "#EEF2F8",
+        primaryBorderColor: "#444444",
+        primaryTextColor: "#111111",
+        lineColor: "#444444",
+        secondaryColor: "#FFF5DC",
+        tertiaryColor: "#F2F2F2",
         background: "#ffffff",
-        mainBkg: "#F2F2F2",
+        mainBkg: "#EEF2F8",
+        clusterBkg: "#FAFAFA",
+        clusterBorder: "#999999",
+        actorBkg: "#EEF2F8",
+        actorBorder: "#444444",
+        actorTextColor: "#111111",
+        signalColor: "#444444",
+        signalTextColor: "#111111",
         // Gantt-specific pastel section/task colours (fig-2-1-gantt.mmd has
         // no per-task classDef support, so it relies on these directly).
         sectionBkgColor: "#DCE6F1",
@@ -68,7 +70,9 @@ async function run() {
         gridColor: "#BFBFBF",
         todayLineColor: "#C55A11",
       },
-      flowchart: { htmlLabels: false, curve: "basis" },
+      flowchart: { htmlLabels: false, curve: "linear", nodeSpacing: 22, rankSpacing: 30, padding: 10 },
+      er: { entityPadding: 12, nodeSpacing: 30, rankSpacing: 35 },
+      sequence: { actorMargin: 25, messageMargin: 20, diagramMarginX: 10, diagramMarginY: 10, useMaxWidth: false },
     });
   });
 

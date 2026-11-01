@@ -1,31 +1,7 @@
 flowchart LR
-    LO(["Loan officer"])
-    RA(["Risk analyst"])
-    MM(["Model maintainer"])
-
-    SYS("0<br/>Loan Default<br/>Risk Predictor")
-
-    D1[("D1 model.json")]
-    D2[("D2 portfolio.json")]
-    D3[("D3 german_credit.csv")]
-
-    LO -- "applicant details" --> SYS
-    SYS -- "score, decision, drivers" --> LO
-
-    RA -- "cutoff, segment queries" --> SYS
-    SYS -- "portfolio analytics" --> RA
-
-    MM -- "retrains and exports" --> SYS
-    SYS -- "model metrics" --> MM
-
-    SYS --- D1
-    SYS --- D2
-    SYS --- D3
-
-    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
-    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
-    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
-
-    class LO,RA,MM mid
-    class SYS root
-    class D1,D2,D3 leaf
+ L[Loan officer] -->|Applicant details| S(("Risk Predictor"))
+ S -->|Risk result| L
+ R[Risk analyst] -->|Portfolio query| S
+ S -->|Analytics| R
+ M[Model maintainer] -->|Updated artifacts| S
+ S -->|Model metrics| M

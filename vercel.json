@@ -2,9 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/**/*.py": {
-      "excludeFiles": "{ml/**,data/**,docs/**,report/**,notebook.ipynb,node_modules/**,.next/**}"
-    },
-    "api/predict-compare.py": {
+      "excludeFiles": "{ml/**,data/**,docs/**,report/**,notebook.ipynb,node_modules/**,.next/**}",
       "includeFiles": "api/predict.py"
     }
   }
