@@ -2,12 +2,12 @@ flowchart TB
     LO(["Loan officer"])
     RA(["Risk analyst"])
 
-    P1["1.0<br/>Validate input"]
-    P2["2.0<br/>Encode features"]
-    P3["3.0<br/>Score ensemble"]
-    P4["4.0<br/>Calibrate and band"]
-    P5["5.0<br/>Explain"]
-    P6["6.0<br/>Serve portfolio analytics"]
+    P1("1.0<br/>Validate input")
+    P2("2.0<br/>Encode features")
+    P3("3.0<br/>Score ensemble")
+    P4("4.0<br/>Calibrate and band")
+    P5("5.0<br/>Explain")
+    P6("6.0<br/>Serve portfolio analytics")
 
     D1[("D1 model.json")]
     D2[("D2 portfolio.json")]
@@ -28,3 +28,11 @@ flowchart TB
     D2 --- P6
     D3 -. "offline training only" .-> D1
     P6 -- "bands, deciles, segments" --> RA
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class LO,RA mid
+    class P1,P2,P3,P4,P5,P6 root
+    class D1,D2,D3 leaf

@@ -13,6 +13,7 @@ const SECTIONS = [
   { id: "calibration", label: "Calibration" },
   { id: "drivers", label: "Drivers" },
   { id: "cutoff", label: "Cutoff" },
+  { id: "three-models", label: "Three models" },
   { id: "limitations", label: "Limitations" },
 ];
 

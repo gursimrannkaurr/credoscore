@@ -1,5 +1,13 @@
 flowchart LR
-    DEV["Developer"] -- "git push / vercel CLI" --> GH["GitHub / Vercel CLI"]
-    GH --> BUILD["Vercel build<br/>Next.js + Python functions<br/>(excludeFiles: training, data, docs, report)"]
-    BUILD --> EDGE["Edge network"]
-    EDGE --> USER["User browser"]
+    DEV("Developer") -- "git push / vercel CLI" --> GH("GitHub / Vercel CLI")
+    GH --> BUILD("Vercel build<br/>Next.js + Python functions<br/>(excludeFiles: training, data, docs, report)")
+    BUILD --> EDGE("Edge network")
+    EDGE --> USER("User browser")
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class DEV,USER mid
+    class GH,BUILD root
+    class EDGE leaf

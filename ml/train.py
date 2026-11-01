@@ -44,6 +44,8 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW_FILE = Path(__file__).resolve().parent / "raw" / "german.data"
 DATA_OUT = ROOT / "data" / "german_credit.csv"
 MODEL_OUT = ROOT / "model" / "model.json"
+XGBOOST_MODEL_OUT = ROOT / "model" / "model_xgboost.json"
+RANDOM_FOREST_MODEL_OUT = ROOT / "model" / "model_random_forest.json"
 PORTFOLIO_OUT = ROOT / "model" / "portfolio.json"
 
 RANDOM_STATE = 42
@@ -203,6 +205,11 @@ def main() -> None:
     # scorers expect — is benchmarked the same way: fit on the fold's train
     # split, score its held-out fold via predict_proba, pool across folds.
     benchmark_results = {}
+    # Kept around after the loop so the Random Forest and XGBoost export
+    # blocks below can fit Platt scaling on genuine out-of-fold values
+    # instead of refitting a second identical CV loop.
+    oof_by_model: dict[str, np.ndarray] = {}
+    oof_margins_xgb = np.zeros(len(y), dtype=float)
     for name, estimator in candidates.items():
         oof = np.zeros(len(y), dtype=float)
         fold_aucs = []
@@ -213,6 +220,17 @@ def main() -> None:
             oof[val_idx] = fold_proba
             fold_aucs.append(roc_auc_score(y[val_idx], fold_proba))
 
+            if name == "xgboost":
+                # XGBoost's export is an additive log-odds margin, not a
+                # probability, so Platt scaling for it needs the raw
+                # out-of-fold margin captured here, not predict_proba.
+                X_val_transformed = pipe.named_steps["prep"].transform(X.iloc[val_idx])
+                if hasattr(X_val_transformed, "toarray"):
+                    X_val_transformed = X_val_transformed.toarray()
+                oof_margins_xgb[val_idx] = pipe.named_steps["clf"].predict(
+                    X_val_transformed, output_margin=True,
+                )
+
         auc_mean, auc_std = float(np.mean(fold_aucs)), float(np.std(fold_aucs))
         pr_auc = float(average_precision_score(y, oof))
         benchmark_results[name] = {
@@ -220,6 +238,7 @@ def main() -> None:
             "roc_auc_std": auc_std,
             "pr_auc_mean": pr_auc,
         }
+        oof_by_model[name] = oof
         print(f"  {name:20s}  ROC-AUC {auc_mean:.4f} ± {auc_std:.4f}   PR-AUC {pr_auc:.4f}")
 
     # -----------------------------------------------------------------
@@ -405,6 +424,258 @@ def main() -> None:
     max_diff = float(np.max(np.abs(sklearn_probs - python_probs)))
     print(f"  Parity check (pure-Python vs sklearn, full dataset): max diff = {max_diff:.2e}")
     assert max_diff < 1e-9, "Parity check failed"
+
+    # -----------------------------------------------------------------
+    # XGBoost: refit on full data, export as an additive log-odds tree
+    # ensemble. XGBoost bakes its own learning rate into each leaf's
+    # stored value at training time, so the exported learning_rate is
+    # 1.0 and the runtime walk just sums leaf values — the exact same
+    # score() function used for Gradient Boosting, unmodified.
+    # -----------------------------------------------------------------
+    print("\n" + "-" * 70)
+    print("EXPORT — XGBoost, flattening via trees_to_dataframe()")
+    print("-" * 70)
+
+    xgb_hyperparams = {
+        "n_estimators": 200,
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "scale_pos_weight": float((y == 0).sum() / (y == 1).sum()),
+    }
+    final_xgb = XGBClassifier(
+        eval_metric="logloss", random_state=RANDOM_STATE, **xgb_hyperparams,
+    )
+    xgb_pipe = Pipeline([("prep", build_preprocessor()), ("clf", final_xgb)])
+    xgb_pipe.fit(X, y)
+
+    xgb_preprocessor = xgb_pipe.named_steps["prep"]
+    xgb_clf = xgb_pipe.named_steps["clf"]
+    X_transformed_xgb = xgb_preprocessor.transform(X)
+    if hasattr(X_transformed_xgb, "toarray"):
+        X_transformed_xgb = X_transformed_xgb.toarray()
+    # XGBoost's histogram builder bins features internally as float32, and
+    # trees_to_dataframe()'s Split column is float32 too. Comparing against
+    # the float64 transformed matrix misroutes a handful of rows whose raw
+    # value sits exactly on a bin edge once rounded (verified empirically:
+    # without this cast a few rows differ by whole leaf values, ~0.3 margin
+    # units — a real routing bug, not noise). Casting to float32 first
+    # reproduces XGBoost's own arithmetic almost exactly.
+    X_transformed_xgb = X_transformed_xgb.astype(np.float32)
+
+    tdf = xgb_clf.get_booster().trees_to_dataframe()
+    n_trees_xgb = int(tdf["Tree"].max()) + 1
+    xgb_trees: list[dict] = []
+    for t in range(n_trees_xgb):
+        sub = tdf[tdf["Tree"] == t]
+        node_count = int(sub["Node"].max()) + 1
+        feature = [-1] * node_count
+        threshold = [0.0] * node_count
+        left = [-1] * node_count
+        right = [-1] * node_count
+        value = [0.0] * node_count
+        id_to_node = {row.ID: int(row.Node) for row in sub.itertuples()}
+        for row in sub.itertuples():
+            node = int(row.Node)
+            if row.Feature == "Leaf":
+                # Leaf rows' Gain column holds the leaf's stored weight,
+                # already eta-scaled by XGBoost at training time.
+                value[node] = float(row.Gain)
+            else:
+                feature[node] = int(row.Feature[1:])
+                threshold[node] = float(row.Split)
+                left[node] = id_to_node[row.Yes]
+                right[node] = id_to_node[row.No]
+        xgb_trees.append({
+            "feature": feature, "threshold": threshold,
+            "left": left, "right": right, "value": value,
+        })
+
+    def xgb_tree_sum(row_idx: int) -> float:
+        # Unlike sklearn's "<=" convention, XGBoost's split rule sends a row
+        # left (Yes) only on a strict "<" — verified empirically against a
+        # small fitted booster before relying on it here.
+        total = 0.0
+        for t in xgb_trees:
+            node = 0
+            while t["left"][node] != -1:
+                if X_transformed_xgb[row_idx, t["feature"][node]] < t["threshold"][node]:
+                    node = t["left"][node]
+                else:
+                    node = t["right"][node]
+            total += t["value"][node]
+        return total
+
+    # Recover base_value empirically, exactly like Gradient Boosting:
+    # never trust base_score parsing, it's fragile across xgboost versions.
+    raw_margin_xgb_full = xgb_clf.predict(X_transformed_xgb, output_margin=True)
+    base_candidates_xgb = [
+        float(raw_margin_xgb_full[i]) - xgb_tree_sum(i) for i in (0, 1, 2, len(y) - 1)
+    ]
+    base_value_xgb = float(np.mean(base_candidates_xgb))
+    base_spread_xgb = float(np.max(base_candidates_xgb) - np.min(base_candidates_xgb))
+    print(f"  Base value (XGBoost): {base_value_xgb:.6f}  (spread across samples: {base_spread_xgb:.2e})")
+    # GB's own recovery clears 1e-6 easily because sklearn keeps everything
+    # in float64. XGBoost's booster is float32 throughout, so even a
+    # mathematically-constant base score is measured with ~1e-6 noise here
+    # (verified empirically above) — 1e-5 is the tolerance that reflects
+    # that reality rather than pretending for a tighter one.
+    assert base_spread_xgb < 1e-5, "XGBoost base value is not constant — export logic needs revisiting"
+
+    platt_xgb = LogisticRegression()
+    platt_xgb.fit(oof_margins_xgb.reshape(-1, 1), y)
+    platt_a_xgb = float(platt_xgb.coef_[0, 0])
+    platt_b_xgb = float(platt_xgb.intercept_[0])
+    oof_probs_xgb = sigmoid(platt_a_xgb * oof_margins_xgb + platt_b_xgb)
+
+    oof_auc_xgb = roc_auc_score(y, oof_probs_xgb)
+    oof_ap_xgb = average_precision_score(y, oof_probs_xgb)
+    oof_ks_xgb = ks_statistic(y, oof_probs_xgb)
+    oof_brier_xgb = brier_score_loss(y, oof_probs_xgb)
+    print(f"  Platt scaling (XGBoost): A={platt_a_xgb:.6f}  B={platt_b_xgb:.6f}")
+    print(f"  Out-of-fold (XGBoost)  ROC-AUC={oof_auc_xgb:.4f}  PR-AUC={oof_ap_xgb:.4f}"
+          f"  KS={oof_ks_xgb:.4f}  Brier={oof_brier_xgb:.4f}")
+
+    xgb_artifact = {
+        "model_version": "1.0.0",
+        "model_type": "xgboost",
+        "trained_on_rows": int(len(y)),
+        "numeric_features": NUMERIC_FEATURES,
+        "categorical_features": CATEGORICAL_FEATURES,
+        "categories": categories,
+        "learning_rate": 1.0,
+        "base_value": base_value_xgb,
+        "platt_a": platt_a_xgb,
+        "platt_b": platt_b_xgb,
+        "trees": xgb_trees,
+        "base_rate": float(y.mean()),
+        "cutoff": 0.25,
+        "metrics": {
+            "roc_auc": oof_auc_xgb,
+            "pr_auc": oof_ap_xgb,
+            "ks_statistic": oof_ks_xgb,
+            "brier_score": oof_brier_xgb,
+        },
+        "hyperparameters": xgb_hyperparams,
+    }
+    XGBOOST_MODEL_OUT.parent.mkdir(parents=True, exist_ok=True)
+    XGBOOST_MODEL_OUT.write_text(json.dumps(xgb_artifact))
+    size_kb_xgb = XGBOOST_MODEL_OUT.stat().st_size / 1024
+    print(f"  XGBoost artifact written to {XGBOOST_MODEL_OUT}  ({size_kb_xgb:.1f} KB, {len(xgb_trees)} trees)")
+
+    def xgb_python_predict(row_idx: int) -> float:
+        raw = base_value_xgb + xgb_tree_sum(row_idx)
+        return 1.0 / (1.0 + math.exp(-(platt_a_xgb * raw + platt_b_xgb)))
+
+    sklearn_probs_xgb = sigmoid(platt_a_xgb * raw_margin_xgb_full + platt_b_xgb)
+    python_probs_xgb = np.array([xgb_python_predict(i) for i in range(len(y))])
+    max_diff_xgb = float(np.max(np.abs(sklearn_probs_xgb - python_probs_xgb)))
+    print(f"  Parity check (XGBoost, pure-Python vs real margin, full dataset): max diff = {max_diff_xgb:.2e}")
+    # Same float32-vs-float64 reality as the base-value recovery above:
+    # GB's 1e-9 bar assumes float64 throughout, which XGBoost's booster
+    # does not give us. 1e-5 is used here for the same measured reason.
+    assert max_diff_xgb < 1e-5, "XGBoost parity check failed"
+
+    # -----------------------------------------------------------------
+    # Random Forest: refit on full data, export for an averaging-based
+    # runtime (score_forest()), a genuine methodological contrast to the
+    # two additive-boosting models above. No base_value, no learning
+    # rate — each tree's leaf already stores P(class=1) directly, and
+    # the ensemble result is the mean across all 300 trees.
+    # -----------------------------------------------------------------
+    print("\n" + "-" * 70)
+    print("EXPORT — Random Forest, flattening per-tree leaf probabilities")
+    print("-" * 70)
+
+    rf_hyperparams = {"n_estimators": 300, "max_depth": 6, "class_weight": "balanced"}
+    final_rf = RandomForestClassifier(random_state=RANDOM_STATE, **rf_hyperparams)
+    rf_pipe = Pipeline([("prep", build_preprocessor()), ("clf", final_rf)])
+    rf_pipe.fit(X, y)
+
+    rf_preprocessor = rf_pipe.named_steps["prep"]
+    rf_clf = rf_pipe.named_steps["clf"]
+    X_transformed_rf = rf_preprocessor.transform(X)
+    if hasattr(X_transformed_rf, "toarray"):
+        X_transformed_rf = X_transformed_rf.toarray()
+
+    rf_trees: list[dict] = []
+    for rf_estimator in rf_clf.estimators_:
+        rf_tree = rf_estimator.tree_
+        node_count = rf_tree.node_count
+        values = []
+        for node in range(node_count):
+            counts = rf_tree.value[node][0]
+            total = counts.sum()
+            values.append(float(counts[1] / total) if total > 0 else 0.0)
+        rf_trees.append({
+            "feature": rf_tree.feature.tolist(),
+            "threshold": rf_tree.threshold.tolist(),
+            "left": rf_tree.children_left.tolist(),
+            "right": rf_tree.children_right.tolist(),
+            "value": values,
+        })
+
+    def rf_mean_leaf_prob(row_idx: int) -> float:
+        total = 0.0
+        for t in rf_trees:
+            node = 0
+            while t["left"][node] != -1:
+                if X_transformed_rf[row_idx, t["feature"][node]] <= t["threshold"][node]:
+                    node = t["left"][node]
+                else:
+                    node = t["right"][node]
+            total += t["value"][node]
+        return total / len(rf_trees)
+
+    # "raw" here means the averaged leaf probability (0-1), not a margin —
+    # Platt scaling only needs a feature monotonically related to the true
+    # outcome, it doesn't care about the feature's original scale.
+    oof_raw_rf = oof_by_model["random_forest"]
+    platt_rf = LogisticRegression()
+    platt_rf.fit(oof_raw_rf.reshape(-1, 1), y)
+    platt_a_rf = float(platt_rf.coef_[0, 0])
+    platt_b_rf = float(platt_rf.intercept_[0])
+    oof_probs_rf = sigmoid(platt_a_rf * oof_raw_rf + platt_b_rf)
+
+    oof_auc_rf = roc_auc_score(y, oof_probs_rf)
+    oof_ap_rf = average_precision_score(y, oof_probs_rf)
+    oof_ks_rf = ks_statistic(y, oof_probs_rf)
+    oof_brier_rf = brier_score_loss(y, oof_probs_rf)
+    print(f"  Platt scaling (Random Forest): A={platt_a_rf:.6f}  B={platt_b_rf:.6f}")
+    print(f"  Out-of-fold (Random Forest)  ROC-AUC={oof_auc_rf:.4f}  PR-AUC={oof_ap_rf:.4f}"
+          f"  KS={oof_ks_rf:.4f}  Brier={oof_brier_rf:.4f}")
+
+    rf_artifact = {
+        "model_version": "1.0.0",
+        "model_type": "random_forest",
+        "trained_on_rows": int(len(y)),
+        "numeric_features": NUMERIC_FEATURES,
+        "categorical_features": CATEGORICAL_FEATURES,
+        "categories": categories,
+        "learning_rate": None,
+        "base_value": 0.0,
+        "platt_a": platt_a_rf,
+        "platt_b": platt_b_rf,
+        "trees": rf_trees,
+        "base_rate": float(y.mean()),
+        "cutoff": 0.25,
+        "metrics": {
+            "roc_auc": oof_auc_rf,
+            "pr_auc": oof_ap_rf,
+            "ks_statistic": oof_ks_rf,
+            "brier_score": oof_brier_rf,
+        },
+        "hyperparameters": rf_hyperparams,
+    }
+    RANDOM_FOREST_MODEL_OUT.parent.mkdir(parents=True, exist_ok=True)
+    RANDOM_FOREST_MODEL_OUT.write_text(json.dumps(rf_artifact))
+    size_kb_rf = RANDOM_FOREST_MODEL_OUT.stat().st_size / 1024
+    print(f"  Random Forest artifact written to {RANDOM_FOREST_MODEL_OUT}  ({size_kb_rf:.1f} KB, {len(rf_trees)} trees)")
+
+    sklearn_probs_rf = rf_clf.predict_proba(X_transformed_rf)[:, 1]
+    python_probs_rf = np.array([rf_mean_leaf_prob(i) for i in range(len(y))])
+    max_diff_rf = float(np.max(np.abs(sklearn_probs_rf - python_probs_rf)))
+    print(f"  Parity check (Random Forest, pure-Python vs real predict_proba, full dataset): max diff = {max_diff_rf:.2e}")
+    assert max_diff_rf < 1e-9, "Random Forest parity check failed"
 
     # -----------------------------------------------------------------
     # Portfolio aggregates for the dashboard (all out-of-fold / honest)

@@ -51,22 +51,22 @@ The table shows that no single existing approach combines a calibrated probabili
 A computerised, explainable system is needed because the present mix of manual and black-box approaches suffers from the following drawbacks:
 
 - Manual decisions are inconsistent, since two officers can read the same application differently.
-- A plain score, whether from a scorecard or a black-box model, gives no reason the applicant or the officer can inspect.
-- Black-box models are rarely checked for calibration, so a quoted probability of default may not match the true default rate at that score.
-- The cost of a missed default and the cost of a wrongly declined applicant are different, and few manual or black-box processes make that trade-off explicit or adjustable.
-- There is no easy way for an officer to ask "what would change if the cutoff moved", since re-running a scorecard or a black-box model by hand for every cutoff is impractical.
-- Portfolio-level questions, such as how the bad rate is split across risk bands or whether the model ranks applicants well, are difficult to answer without a system that logs and aggregates every scored application.
+- A plain score, from a scorecard or a black-box model, gives no reason the applicant or officer can inspect.
+- Black-box models are rarely checked for calibration, so a quoted probability may not match the true default rate.
+- A missed default and a wrongly declined applicant cost differently, and few processes make that trade-off explicit or adjustable.
+- There is no easy way to ask "what would change if the cutoff moved", since re-running a model by hand for every cutoff is impractical.
+- Portfolio-level questions, such as how the bad rate splits across bands, are hard to answer without a system that aggregates every scored application.
 
-A computerised and explainable system removes these drawbacks. It applies the same calibrated model to every applicant, produces a probability and a factor-by-factor reason for it in a fraction of a second, lets the cutoff be moved and its consequences inspected instantly, and aggregates every historical prediction into the portfolio-level view a risk analyst needs.
+A computerised and explainable system removes these drawbacks: it applies the same calibrated model to every applicant, produces a probability and a factor-by-factor reason in a fraction of a second, lets the cutoff be moved and inspected instantly, and aggregates every prediction into the portfolio view a risk analyst needs.
 
 ## 1.5 Proposed Software / Project
 
-The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, a dependency-free Python scoring function deployed as a Vercel serverless function, and two JSON artifacts produced by an offline training pipeline. The live application is available at https://credoscore-gk.vercel.app.
+The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, dependency-free Python scoring functions deployed as Vercel serverless functions (three models scored on request), and the JSON artifacts produced by an offline training pipeline. The live application is available at https://credoscore-gk.vercel.app.
 
 ### 1.5.1 Objectives of the Project
 
 1. To collect the twelve applicant, loan and credit-position fields needed to score a loan application, with client-side and server-side validation.
-2. To train and benchmark a gradient boosting model against logistic regression, random forest and XGBoost, and to calibrate its output into a genuine probability of default.
+2. To benchmark four candidate models, deploy three of them to production (gradient boosting, XGBoost and random forest), and score them together on every request for cross-verified agreement rather than one model's self-reported accuracy.
 3. To return, for every scored applicant, a probability of default, a risk band, a credit-style score and a lending recommendation.
 4. To explain every prediction with a factor-by-factor contribution that sums exactly to the predicted probability.
 5. To let a user move the approval cutoff and see the resulting approval rate, bad rate among approved applicants and expected cost change in real time.
@@ -90,7 +90,7 @@ The following are outside the present scope: using the tool for real lending dec
 
 ## 1.6 Importance of the Work
 
-The work is important on three counts. It tackles a problem that sits at the centre of consumer lending, namely turning an applicant's details into a decision that is both accurate and explainable, so the requirements were grounded in a real, well-studied dataset rather than an invented scenario. The project is also original and was built from the training data upward: the benchmarking, the tuning, the calibration and the explanation method were all carried out by the trainee rather than taken from an existing library untouched, giving the result genuine value as a teaching example of an explainable scoring system. It also provided practical exposure to the full life cycle of an applied machine learning product, covering feature engineering, model benchmarking and tuning, probability calibration, explanation, a dependency-free production API, a front end, testing and cloud deployment.
+The work addresses a problem at the centre of consumer lending, turning an applicant's details into a decision that is both accurate and explainable, grounded in a real, well-studied dataset rather than an invented scenario. The benchmarking, tuning, calibration and explanation method were all carried out by the trainee rather than taken untouched from an existing library, which makes the project useful as a teaching example of an explainable, cross-verified scoring system. It also gave practical exposure to the full life cycle of an applied machine learning product, from feature engineering and model benchmarking through calibration, explanation, a dependency-free production API, a front end and testing to cloud deployment.
 
-The project also demonstrates professional practices expected of a developer working on a credit model. The personal-status-and-sex attribute in the source data was excluded as a protected characteristic before any modelling began. The model's output was calibrated and evaluated honestly on out-of-fold predictions rather than on the data it was trained on. No applicant data is retained by the deployed API, which is stateless and keeps no secrets, and the report states plainly, in every place the tool is shown, that it is not meant for real lending decisions.
+The project also demonstrates professional practices expected of a developer working on a credit model: the personal-status-and-sex attribute was excluded as a protected characteristic before any modelling began, the model's output was calibrated and evaluated honestly on out-of-fold predictions, no applicant data is retained by the stateless, secret-free deployed API, and the report states plainly, wherever the tool is shown, that it is not meant for real lending decisions.
 

@@ -84,6 +84,24 @@ export interface PredictResponse {
   model_version: string;
 }
 
+export interface CompareModelResult {
+  probability_of_default: number;
+  risk_band: RiskBand;
+  score: number;
+  decision: Decision;
+  cutoff: number;
+  model_version: string;
+  contributions?: Contribution[];
+  base_rate?: number;
+}
+
+export interface CompareResponse {
+  gradient_boosting: CompareModelResult;
+  xgboost: CompareModelResult;
+  random_forest: CompareModelResult;
+  cutoff: number;
+}
+
 export interface ApiError {
   error: string;
   message: string;

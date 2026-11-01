@@ -22,14 +22,21 @@ from pathlib import Path
 from typing import Any
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "model" / "model.json"
-_MODEL_CACHE: dict[str, Any] | None = None
+_MODEL_CACHE: dict[str, dict[str, Any]] = {}
 
 
-def load_model() -> dict[str, Any]:
-    global _MODEL_CACHE
-    if _MODEL_CACHE is None:
-        _MODEL_CACHE = json.loads(MODEL_PATH.read_text())
-    return _MODEL_CACHE
+def load_model(path: Path = MODEL_PATH) -> dict[str, Any]:
+    """Loads a model artifact, cached by path.
+
+    Generalised (still path-keyed, defaulting to the Gradient Boosting
+    artifact) so a warm serverless instance that scores against more than
+    one model — see api/predict-compare.py — doesn't re-read disk on every
+    request for models it already loaded.
+    """
+    key = str(path)
+    if key not in _MODEL_CACHE:
+        _MODEL_CACHE[key] = json.loads(Path(path).read_text())
+    return _MODEL_CACHE[key]
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +133,23 @@ def score(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, 
     drop each tree's root value from every prediction's attribution, since
     that root value is folded into ``raw`` via the real leaf value but never
     assigned to a feature. Tested for exact additivity in notebook.ipynb.
+
+    The left/right split comparison is **not** the same convention for every
+    model type: sklearn (Gradient Boosting) routes a row left on
+    ``value <= threshold``, but XGBoost routes left only on a strict
+    ``value < threshold``. This is not a cosmetic difference — XGBoost's
+    histogram-based splitter frequently places a threshold exactly on a real
+    data value (rather than at a midpoint, the way sklearn's CART does), so
+    ties at the boundary are common, not rare. Measured directly against the
+    shipped model_xgboost.json over all 1,000 training rows, using ``<=``
+    instead of the training-time ``<`` flips the routing on every single row
+    at at least one of the 200 trees, with probability-of-default differing
+    by as much as 0.65 between the two conventions — nowhere close to
+    negligible. ``model["model_type"]`` (present in every exported artifact)
+    is what decides the operator here, so the one shared function still
+    handles every model type correctly without a per-caller special case.
     """
+    strict_less = model.get("model_type") == "xgboost"
     contributions: dict[int, float] = {}
     raw = model["base_value"]
 
@@ -136,7 +159,7 @@ def score(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, 
         while tree["left"][node] != -1:
             feature_idx = tree["feature"][node]
             threshold = tree["threshold"][node]
-            go_left = vector[feature_idx] <= threshold
+            go_left = vector[feature_idx] < threshold if strict_less else vector[feature_idx] <= threshold
             next_node = tree["left"][node] if go_left else tree["right"][node]
             next_value = tree["value"][next_node]
 
@@ -149,6 +172,33 @@ def score(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, 
         raw += attributed_value * model["learning_rate"]
 
     return raw, contributions
+
+
+def score_forest(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, float]]:
+    """Returns (mean_probability, {}) for a Random Forest artifact.
+
+    Random Forest combines trees by *averaging* predicted leaf
+    probabilities, not by additive boosting, so this walk is deliberately
+    simpler than score(): no learning rate, no accumulation across the
+    nodes on a path — only the leaf each tree lands on matters, and the
+    final value is the mean of those leaf values across all trees. The
+    empty dict keeps this function's return shape identical to score()'s
+    so callers don't need a special case beyond "which function to call."
+    Random Forest gets no driver breakdown in this phase, by design.
+    """
+    total = 0.0
+    trees = model["trees"]
+
+    for tree in trees:
+        node = 0
+        while tree["left"][node] != -1:
+            feature_idx = tree["feature"][node]
+            threshold = tree["threshold"][node]
+            go_left = vector[feature_idx] <= threshold
+            node = tree["left"][node] if go_left else tree["right"][node]
+        total += tree["value"][node]
+
+    return total / len(trees), {}
 
 
 def feature_index_map(model: dict[str, Any]) -> list[tuple[str, str | None]]:

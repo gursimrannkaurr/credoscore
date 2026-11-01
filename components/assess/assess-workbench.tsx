@@ -3,29 +3,32 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-import type { PredictResponse } from "@/lib/types";
+import type { CompareResponse, PredictResponse } from "@/lib/types";
 
 import { AssessForm } from "./assess-form";
 import { ContributionWaterfall } from "./contribution-waterfall";
 import { CutoffControl } from "./cutoff-control";
+import { ModelComparison } from "./model-comparison";
 import { EmptySlip, ResultSkeleton } from "./result-states";
 import { RiskVerdict } from "./risk-verdict";
 
 export function AssessWorkbench({ deployedCutoff }: { deployedCutoff: number }) {
-  const [result, setResult] = useState<PredictResponse | null>(null);
+  const [compare, setCompare] = useState<CompareResponse | null>(null);
   const [cutoff, setCutoff] = useState(deployedCutoff);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">("idle");
   const [run, setRun] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  function handleResult(res: PredictResponse) {
-    setResult(res);
-    setCutoff(res.cutoff);
+  function handleResult(res: CompareResponse) {
+    setCompare(res);
+    setCutoff(res.gradient_boosting.cutoff);
     setStatus("done");
     setRun((n) => n + 1);
     if (window.matchMedia("(max-width: 1023px)").matches) ref.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   }
+
+  const result = compare ? (compare.gradient_boosting as PredictResponse) : null;
 
   return (
     <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:py-14 lg:grid-cols-[minmax(0,27rem)_minmax(0,1fr)] lg:gap-12">
@@ -39,6 +42,7 @@ export function AssessWorkbench({ deployedCutoff }: { deployedCutoff: number }) 
               <RiskVerdict result={result} cutoff={cutoff} />
               <CutoffControl cutoff={cutoff} deployedCutoff={deployedCutoff} pd={result.probability_of_default} onChange={setCutoff} />
               <ContributionWaterfall contributions={result.contributions} pd={result.probability_of_default} />
+              {compare ? <ModelComparison compare={compare} /> : null}
             </motion.div>
           ) : (
             <EmptySlip key="empty" error={status === "error"} />

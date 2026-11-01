@@ -33,13 +33,9 @@ The following screens show the sample inputs given to the system, from the live,
 
 </div>
 
-<div class="annexure-shot">
-
-![Figure A-4 The what-if cutoff control moved to 40 percent](../assets/screens/a9-cutoff-whatif-40.png)
-
-</div>
-
 ## A-2 Sample Outputs
+
+A representative selection of six screens is given below, from the landing page through to the new three-model comparison panel; the full screen set was exercised during testing (Chapter 4, Table 4.4) even where not every screen is reproduced here.
 
 <div class="annexure-shot">
 
@@ -49,55 +45,31 @@ The following screens show the sample inputs given to the system, from the live,
 
 <div class="annexure-shot">
 
-![Figure A-6 A low-risk result slip](../assets/screens/a6-assess-low-risk.png)
+![Figure A-6 A high-risk result slip with the score-drivers waterfall](../assets/screens/a7-assess-high-risk.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-7 A high-risk result slip](../assets/screens/a7-assess-high-risk.png)
+![Figure A-7 The portfolio band split and cutoff explorer](../assets/screens/a10-portfolio-bands-cutoff.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-8 The score-drivers waterfall, close up](../assets/screens/a8-waterfall-closeup.png)
+![Figure A-8 The three-model comparison panel on the Assess page](../assets/screens/a18-model-comparison-panel.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-9 The portfolio band split and cutoff explorer](../assets/screens/a10-portfolio-bands-cutoff.png)
+![Figure A-9 The model benchmark on the methodology page](../assets/screens/a13-model-benchmark.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-10 The portfolio decile view](../assets/screens/a11-portfolio-deciles.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-11 The model benchmark on the methodology page](../assets/screens/a13-model-benchmark.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-12 The calibration curve on the methodology page](../assets/screens/a14-model-calibration.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-13 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-14 The landing page in dark mode](../assets/screens/a17-dark-landing-hero.png)
+![Figure A-10 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
 
 </div>
 
@@ -199,7 +171,7 @@ class handler(BaseHTTPRequestHandler):
         pass  # keep Vercel's function logs quiet for a request this small
 ```
 
-#### A-3.4 lib/decision.ts
+#### A-3.3 lib/decision.ts
 
 The band and decision rules on the client are kept deliberately simple so they can be read at a glance, and are commented as needing to stay in step with the equivalent Python logic on the server.
 
@@ -230,7 +202,7 @@ export const DECISION_TONE: Record<Decision, "low" | "medium" | "high"> = {
 };
 ```
 
-#### A-3.7 components/assess/contribution-waterfall.tsx (core)
+#### A-3.4 components/assess/contribution-waterfall.tsx (core)
 
 Each row's bar is drawn out from a centre line, growing right for a risk-raising factor and left for a risk-lowering one, with its width scaled against the single largest contribution in the list so the chart stays legible regardless of how big or small an individual applicant's drivers are.
 
@@ -257,4 +229,25 @@ Each row's bar is drawn out from a centre line, growing right for a risk-raising
           );
         })}
       </ol>
+```
+
+#### A-3.5 api/predict.py (score_forest)
+
+The Random Forest artifact is walked by a separate function from the two additive models, since it combines trees by averaging leaf probabilities rather than by boosting:
+
+```python
+def score_forest(vector: list[float], model: dict[str, Any]) -> tuple[float, dict[str, float]]:
+    total = 0.0
+    trees = model["trees"]
+
+    for tree in trees:
+        node = 0
+        while tree["left"][node] != -1:
+            feature_idx = tree["feature"][node]
+            threshold = tree["threshold"][node]
+            go_left = vector[feature_idx] <= threshold
+            node = tree["left"][node] if go_left else tree["right"][node]
+        total += tree["value"][node]
+
+    return total / len(trees), {}
 ```

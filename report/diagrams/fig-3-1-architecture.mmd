@@ -1,22 +1,22 @@
 flowchart TB
     subgraph T1["Browser"]
-        PAGES["Next.js pages"]
-        ISLANDS["React client islands<br/>(assess form, cutoff slider)"]
+        PAGES("Next.js pages")
+        ISLANDS("React client islands<br/>(assess form, cutoff slider)")
     end
 
     subgraph T2["Vercel"]
-        SSR["Next.js server rendering"]
-        PREDICT["Python function<br/>/api/predict"]
-        PORT["Python function<br/>/api/portfolio"]
+        SSR("Next.js server rendering")
+        PREDICT("Python function<br/>/api/predict")
+        PORT("Python function<br/>/api/portfolio")
     end
 
     subgraph T3["Artifacts"]
-        MODELJSON["model.json"]
-        PORTJSON["portfolio.json"]
+        MODELJSON("model.json")
+        PORTJSON("portfolio.json")
     end
 
     subgraph OFFLINE["Offline training (not deployed)"]
-        TRAIN["ml/train.py<br/>(pandas, scikit-learn)"]
+        TRAIN("ml/train.py<br/>(pandas, scikit-learn)")
     end
 
     PAGES --> SSR
@@ -26,3 +26,11 @@ flowchart TB
     PORT --> PORTJSON
     TRAIN -- writes --> MODELJSON
     TRAIN -- writes --> PORTJSON
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class PAGES,ISLANDS mid
+    class SSR,PREDICT,PORT,TRAIN root
+    class MODELJSON,PORTJSON leaf

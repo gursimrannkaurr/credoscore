@@ -75,7 +75,7 @@ The topic was chosen for the following reasons:
 ### Objectives
 
 1. To collect the twelve applicant, loan and credit-position fields needed to score a loan application, with client-side and server-side validation.
-2. To train and benchmark a gradient boosting model against logistic regression, random forest and XGBoost, and to calibrate its output into a genuine probability of default.
+2. To benchmark four candidate models, deploy three of them to production (gradient boosting, XGBoost and random forest), score them together on every request so an officer sees cross-verified agreement rather than one model's self-reported accuracy, and calibrate every deployed model's output into a genuine probability of default.
 3. To return, for every scored applicant, a probability of default, a risk band, a credit-style score and a lending recommendation.
 4. To explain every prediction with a factor-by-factor contribution that sums exactly to the predicted probability.
 5. To let a user move the approval cutoff and see the resulting approval rate, bad rate and expected cost change in real time.
@@ -99,9 +99,11 @@ The six categorical fields were one-hot encoded and the six numeric fields were 
 
 Four candidate models were benchmarked under the same five-fold cross-validation: logistic regression (ROC-AUC 0.7737), a random forest of 300 trees (ROC-AUC 0.7883), an untuned gradient boosting model (ROC-AUC 0.7859) and XGBoost (ROC-AUC 0.7893). Gradient boosting was selected for further tuning because it combined competitive ranking performance with an exact, additive per-prediction explanation. A randomized search over 40 parameter combinations, scored on ROC-AUC, selected 250 trees, a maximum depth of 3, a learning rate of 0.05, a subsample ratio of 0.8 and a minimum leaf size of 20, raising the cross-validated ROC-AUC to 0.7965. The tuned model's raw margins were then calibrated into true probabilities with Platt scaling fitted on out-of-fold predictions, so the number returned to a user can be read as an actual probability of default rather than only used to rank applicants.
 
+Rather than deploying only the winning model, XGBoost and random forest were refit on the full dataset and exported alongside gradient boosting, so that every scored applicant is checked against three independently trained models at once (`POST /api/predict-compare`). XGBoost reuses the same additive tree-walking function as gradient boosting, since both are log-odds boosting; the only real engineering wrinkle was that XGBoost's histogram splitter places thresholds exactly on real data values, so it needs a strict "less than" comparison where gradient boosting uses "less than or equal to", a genuine bug found and fixed during development. Random forest combines its 300 trees by averaging predicted leaf probabilities instead of additive boosting, so it runs its own scoring function, Platt-calibrated on the averaged probability rather than a margin. The deployed out-of-fold metrics are 0.7928 / 0.7869 / 0.7833 ROC-AUC for gradient boosting, XGBoost and random forest respectively, and all three models agreed on both the risk band and the lending decision for every sample applicant tested.
+
 ### 4. Testing
 
-The finished system was verified with 13 notebook tests covering the training pipeline and the calibration, 25 API tests covering request validation and scoring correctness, and 18 interface tests covering the web application, all of which passed. The notebook tests included a parity check between the hand-written scoring function and the original scikit-learn model (maximum difference 3.33 &times; 10&#8315;&sup1;&#8310;), an additivity check confirming that every prediction's factor contributions sum exactly to the predicted probability, and a quality gate requiring an out-of-fold ROC-AUC of at least 0.75 and a KS statistic of at least 0.35, both comfortably met.
+The finished system was verified with 13 notebook tests covering the training pipeline and the calibration, 4 further tests covering the XGBoost and random forest artifacts and the /api/predict-compare endpoint, 25 API tests covering request validation and scoring correctness, and 18 interface tests covering the web application, all of which passed (62 cases in total). The notebook tests included a parity check between the hand-written scoring function and the original scikit-learn model (maximum difference 3.33 &times; 10&#8315;&sup1;&#8310;), an additivity check confirming that every prediction's factor contributions sum exactly to the predicted probability, and a quality gate requiring an out-of-fold ROC-AUC of at least 0.75 and a KS statistic of at least 0.35, both comfortably met.
 
 ### f. Hardware and Software to be Used
 
@@ -174,80 +176,12 @@ Future scope for modification includes:
 
 <p class="code-caption">components/assess/assess-form.tsx &ndash; client-side field validation before a request is sent to the scoring API</p>
 
-```tsx
-function validate(form: FormState): Errors {
-  const errors: Errors = {};
-  for (const f of NUMERIC_FIELDS) {
-    const raw = form[f].trim();
-    const { min, max } = BOUNDS[f];
-    if (raw === "") errors[f] = "Required.";
-    else if (!Number.isFinite(Number(raw))) errors[f] = "Enter a number.";
-    else if (Number(raw) < min || Number(raw) > max) errors[f] = `Enter a value from ${min.toLocaleString("en-US")} to ${max.toLocaleString("en-US")}.`;
-  }
-  if (!errors.loan_amount && !errors.duration_months && !errors.monthly_income) {
-    const instalment = Number(form.loan_amount) / Number(form.duration_months);
-    if (instalment > 4 * Number(form.monthly_income)) {
-      errors.loan_amount = "The monthly instalment (amount ÷ months) can't be more than four times monthly income.";
-    }
-  }
-  return errors;
-}
-
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  const found = validate(form);
-  if (Object.keys(found).length) {
-    setErrors(found);
-    document.getElementById(Object.keys(found)[0])?.focus();
-    return;
-  }
-  setLoading(true);
-  onStart();
-  try {
-    onResult(await predict(toPayload(form)));
-  } catch (err) {
-    const message = err instanceof ApiRequestError ? err.message : "Something went wrong while scoring.";
-    const field = err instanceof ApiRequestError && err.field in form ? (err.field as keyof PredictRequest) : "form";
-    setErrors({ [field]: message });
-    if (field !== "form") document.getElementById(field)?.focus();
-    onError(message);
-  } finally {
-    setLoading(false);
-  }
-}
-```
+![Figure: client-side field validation](../assets/code/synopsis-frontend-validate.png)
 
 ## BACKEND CODE
 
 <p class="code-caption">api/predict.py &ndash; server-side validation of the twelve required fields before the model is scored</p>
 
-```python
-for field in model["numeric_features"]:
-    if field not in payload:
-        raise ValidationError(field, f"'{field}' is required.")
-    raw = payload[field]
-    if isinstance(raw, bool) or not isinstance(raw, (int, float)):
-        raise ValidationError(field, f"'{field}' must be a number.")
-    value = float(raw)
-    if math.isnan(value) or math.isinf(value):
-        raise ValidationError(field, f"'{field}' must be a finite number.")
-    lo, hi = NUMERIC_BOUNDS.get(field, (float("-inf"), float("inf")))
-    if value < lo or value > hi:
-        raise ValidationError(field, f"'{field}' must be between {lo} and {hi}.")
-    cleaned[field] = value
-
-for field in model["categorical_features"]:
-    if field not in payload:
-        raise ValidationError(field, f"'{field}' is required.")
-    raw = payload[field]
-    if not isinstance(raw, str):
-        raise ValidationError(field, f"'{field}' must be a string.")
-    allowed = model["categories"][field]
-    if raw not in allowed:
-        raise ValidationError(
-            field, f"'{field}' must be one of {allowed}, got '{raw}'."
-        )
-    cleaned[field] = raw
-```
+![Figure: server-side field validation](../assets/code/synopsis-backend-validate.png)
 
 </section>

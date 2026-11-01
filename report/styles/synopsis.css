@@ -27,3 +27,4 @@
 .synopsis-cover .cover-two-col .detail { font-size: 10pt; }
 
 .code-caption { font-weight: bold; font-size: 10.5pt; margin: 10pt 0 2pt; text-align: left; }
+.code-caption + p img { max-width: 100%; max-height: 260pt; border-radius: 4pt; break-inside: avoid; }

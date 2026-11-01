@@ -13,3 +13,12 @@ stateDiagram-v2
     ApproveConditions --> [*]
     ReferReview --> [*]
     Decline --> [*]
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class Approve leaf
+    class ApproveConditions mid
+    class ReferReview root
+    class Decline root

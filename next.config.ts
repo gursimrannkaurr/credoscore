@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/api/predict", destination: "http://127.0.0.1:8001/api/predict" },
       { source: "/api/portfolio", destination: "http://127.0.0.1:8002/api/portfolio" },
+      { source: "/api/predict-compare", destination: "http://127.0.0.1:8003/api/predict-compare" },
     ];
   },
 };

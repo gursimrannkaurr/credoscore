@@ -1,27 +1,35 @@
 flowchart TB
-    SYS["Loan Default Risk Predictor"]
+    SYS("Loan Default Risk Predictor")
 
-    SYS --> TRAIN["Training pipeline"]
-    TRAIN --> T1["Data preparation"]
-    TRAIN --> T2["Benchmarking"]
-    TRAIN --> T3["Tuning"]
-    TRAIN --> T4["Calibration"]
-    TRAIN --> T5["Export"]
+    SYS --> TRAIN("Training pipeline")
+    TRAIN --> T1("Data preparation")
+    TRAIN --> T2("Benchmarking")
+    TRAIN --> T3("Tuning")
+    TRAIN --> T4("Calibration")
+    TRAIN --> T5("Export")
 
-    SYS --> API["Scoring API"]
-    API --> A1["Validation"]
-    API --> A2["Tree walk"]
-    API --> A3["Platt scaling"]
-    API --> A4["Explanation"]
-    API --> A5["Decision"]
+    SYS --> API("Scoring API")
+    API --> A1("Validation")
+    API --> A2("Tree walk")
+    API --> A3("Platt scaling")
+    API --> A4("Explanation")
+    API --> A5("Decision")
 
-    SYS --> WEB["Web interface"]
-    WEB --> W1["Brief"]
-    WEB --> W2["Assess"]
-    WEB --> W3["The book"]
-    WEB --> W4["Methodology"]
+    SYS --> WEB("Web interface")
+    WEB --> W1("Brief")
+    WEB --> W2("Assess")
+    WEB --> W3("The book")
+    WEB --> W4("Methodology")
 
-    SYS --> TEST["Testing"]
-    TEST --> X1["Notebook tests"]
-    TEST --> X2["API tests"]
-    TEST --> X3["UI tests"]
+    SYS --> TEST("Testing")
+    TEST --> X1("Notebook tests")
+    TEST --> X2("API tests")
+    TEST --> X3("UI tests")
+
+    classDef root fill:#FDE9D9,stroke:#C55A11,stroke-width:1.5px;
+    classDef mid fill:#DCE6F1,stroke:#2F5597,stroke-width:1.5px;
+    classDef leaf fill:#E2EFDA,stroke:#548235,stroke-width:1.5px;
+
+    class SYS root
+    class TRAIN,API,WEB,TEST mid
+    class T1,T2,T3,T4,T5,A1,A2,A3,A4,A5,W1,W2,W3,W4,X1,X2,X3 leaf

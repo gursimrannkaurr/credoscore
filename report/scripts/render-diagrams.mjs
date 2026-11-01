@@ -42,12 +42,31 @@ async function run() {
       themeVariables: {
         fontFamily: "Times New Roman",
         fontSize: "16px",
-        primaryColor: "#ffffff",
-        primaryBorderColor: "#000000",
-        primaryTextColor: "#000000",
-        lineColor: "#000000",
-        secondaryColor: "#f2f2f2",
-        tertiaryColor: "#ffffff",
+        // Neutral defaults for anything NOT explicitly given a per-diagram
+        // classDef (e.g. decision diamonds, data-store cylinders, actor
+        // stadiums). Diagrams carry their own Office-pastel classDef/class
+        // assignments (root/mid/leaf), which always take precedence over
+        // these theme defaults.
+        primaryColor: "#F2F2F2",
+        primaryBorderColor: "#595959",
+        primaryTextColor: "#1F1F1F",
+        lineColor: "#595959",
+        secondaryColor: "#DCE6F1",
+        tertiaryColor: "#FDE9D9",
+        background: "#ffffff",
+        mainBkg: "#F2F2F2",
+        // Gantt-specific pastel section/task colours (fig-2-1-gantt.mmd has
+        // no per-task classDef support, so it relies on these directly).
+        sectionBkgColor: "#DCE6F1",
+        sectionBkgColor2: "#FDE9D9",
+        altSectionBkgColor: "#E2EFDA",
+        taskBkgColor: "#DCE6F1",
+        taskBorderColor: "#2F5597",
+        taskTextColor: "#1F1F1F",
+        activeTaskBkgColor: "#FDE9D9",
+        activeTaskBorderColor: "#C55A11",
+        gridColor: "#BFBFBF",
+        todayLineColor: "#C55A11",
       },
       flowchart: { htmlLabels: false, curve: "basis" },
     });

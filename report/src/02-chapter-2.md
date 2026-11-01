@@ -14,33 +14,33 @@
 
 ## 2.1 Feasibility Study
 
-Before development began, a feasibility study was carried out to check whether the proposed system could be built within the available time and skills, and whether it would be useful in practice.
+Before development began, a feasibility study checked whether the proposed system could be built within the available time and skills, and whether it would be useful in practice.
 
 #### Technical Feasibility
 
-All the technologies chosen are open source, well documented and widely used: Next.js and React for the front end, Python's standard library for the scoring function, and pandas, scikit-learn and XGBoost for training. The trainee had the required background in JavaScript, TypeScript and Python, and received guidance during the training for the modelling and calibration steps. The German Credit dataset is small enough to train on an ordinary laptop in under a minute, and Vercel offers a free tier that auto-detects Next.js and deploys Python functions alongside it. The project is therefore technically feasible.
+All the technologies chosen are open source, well documented and widely used: Next.js and React for the front end, Python's standard library for the scoring functions, and pandas, scikit-learn and XGBoost for training. The trainee had the required background in JavaScript, TypeScript and Python, and received guidance for the modelling and calibration steps. The German Credit dataset trains in under a minute on an ordinary laptop, and Vercel's free tier auto-detects Next.js and deploys Python functions alongside it. The project is therefore technically feasible.
 
 #### Economic Feasibility
 
-The cost of the system is effectively zero. The dataset is licensed CC BY 4.0 and carries no fee, every library used is open source, development was carried out on an ordinary laptop, and hosting on Vercel's free tier is sufficient for a project of this size. The benefit, in the form of a faster and more consistent credit decision, outweighs this negligible cost, so the project is economically feasible.
+The cost of the system is effectively zero: the dataset is CC BY 4.0, every library used is open source, development ran on an ordinary laptop, and Vercel's free tier is sufficient for a project of this size. The benefit, a faster and more consistent credit decision, outweighs this negligible cost.
 
 #### Operational Feasibility
 
-The interface follows the pattern of an ordinary web form: a set of labelled fields, a submit button and a results panel. A loan officer does not need training to fill in the twelve fields or to read a probability, a band and a recommendation. A risk analyst reads the portfolio pages the same way as any dashboard. The system therefore fits naturally into how its three user roles already work, so operational acceptance is expected to be high.
+The interface follows the pattern of an ordinary web form: labelled fields, a submit button, a results panel. A loan officer needs no training to fill in twelve fields or read a probability, a band and a recommendation, and a risk analyst reads the portfolio pages like any dashboard, so operational acceptance is expected to be high.
 
 #### Schedule Feasibility
 
-The training period was six weeks. The work was divided into six weekly iterations that could be developed and tested one after another, as shown in Figure 2.1. The schedule was realistic and the project was completed within the training period.
+The six-week training period was divided into six weekly iterations, developed and tested one after another, as shown in Figure 2.1. The schedule was realistic and the project was completed within it.
 
 ![Figure 2.1 Project schedule of the six-week training](../assets/figures/fig-2-1-gantt.png)
 
 #### Legal and Security Feasibility
 
-The dataset used, the UCI Statlog German Credit Data, is licensed under CC BY 4.0 and attributed to Professor Hans Hofmann of Universität Hamburg, so its use in this project is legally clear. The personal-status-and-sex attribute of the original dataset is excluded from the model as a protected characteristic, and the deployed application does not store any applicant data it is given; every request to the scoring API is stateless. The report and the application state throughout that the tool is a student project and is not meant for real lending decisions.
+The UCI Statlog German Credit Data is licensed CC BY 4.0 and attributed to Professor Hans Hofmann of Universität Hamburg, so its use here is legally clear. The personal-status-and-sex attribute is excluded as a protected characteristic, and the deployed application stores no applicant data; every request is stateless. The report and the application state throughout that the tool is a student project, not meant for real lending decisions.
 
 ## 2.2 Analysis Methodology
 
-An iterative, CRISP-DM-style approach was followed, in which data understanding, data preparation, modelling, evaluation and deployment were revisited in successive iterations rather than attempted once from end to end. Each iteration produced a working piece of the system, which was tested before the next iteration began, as summarised in Table 2.1.
+An iterative, CRISP-DM-style approach was followed, in which data understanding, preparation, modelling, evaluation and deployment were revisited in successive iterations rather than attempted once end to end. Each iteration produced a working piece of the system, tested before the next began, as summarised in Table 2.1.
 
 <p class="table-caption">Table 2.1 Iterations followed during development</p>
 
@@ -55,7 +55,7 @@ An iterative, CRISP-DM-style approach was followed, in which data understanding,
 
 ### 2.2.1 Requirement Gathering
 
-Requirements were gathered by studying how credit scorecards and bureau scores are used in practice, by working through the UCI German Credit dataset's own documentation to see what information is realistically available at the point of application, and by reviewing the requirement with the training mentor before design started. The outcome was the functional and non-functional requirements set out below.
+Requirements were gathered by studying how credit scorecards and bureau scores are used in practice, working through the UCI dataset's own documentation to see what information is realistically available at the point of application, and reviewing the requirement with the training mentor before design started.
 
 ### 2.2.2 Users of the System
 
@@ -75,7 +75,7 @@ The requirements gathered from the dataset, the training mentor and the trainee'
 
 <p class="table-caption">Table 2.3 Functional requirements</p>
 
-<table>
+<table class="dense">
 <colgroup><col style="width:9%"><col style="width:58%"><col style="width:33%"></colgroup>
 <thead>
 <tr><th>ID</th><th>Requirement</th><th>Actor</th></tr>
@@ -135,22 +135,26 @@ The software stack chosen for the training pipeline, the API and the web interfa
 
 <p class="table-caption">Table 2.5 Software used</p>
 
-| Component | Technology | Reason for choice |
-| --- | --- | --- |
-| Front-end framework | Next.js 16.3.5 (App Router, Turbopack) | Server-rendered React with file-based routing and a fast development server. |
-| UI library | React 19.2.8 | Component model shared by the application's client islands. |
-| Language | TypeScript 5 | Static typing catches shape errors in the scoring pipeline early. |
-| Styling | Tailwind CSS 4 | Utility classes keep the editorial theme consistent without a separate design-system package. |
-| UI primitives | Radix UI | Accessible, unstyled primitives for the form and overlay components. |
-| Charting | Recharts 3 | Declarative charts for the waterfall, band split and cutoff explorer. |
-| Motion | Framer Motion | Restrained reveal and staircase-bar animations. |
-| Icons | lucide-react | A consistent icon set for the navigation and the form. |
-| Scoring runtime | Python standard library (api/predict.py, api/portfolio.py) | A dependency-free handler keeps the deployed function small and avoids shipping scikit-learn. |
-| Data handling (training) | pandas 2.2.3, numpy 2.1.3 | Data loading, feature engineering and array computation during training. |
-| Modelling (training) | scikit-learn 1.9.1, xgboost 2.1.3 | The candidate models compared under cross-validation. |
-| Explanation cross-check | shap 0.46.0 | An independent check of the Saabas contributions used in production. |
-| Training reporting | matplotlib 3.9.2, jupyter | Notebook-based benchmarking, evaluation charts and test documentation. |
-| Hosting | Vercel | Auto-detects the Next.js application and deploys api/*.py as Python serverless functions. |
+<table class="dense">
+<colgroup><col style="width:22%"><col style="width:33%"><col style="width:45%"></colgroup>
+<thead><tr><th>Component</th><th>Technology</th><th>Reason for choice</th></tr></thead>
+<tbody>
+<tr><td>Front-end framework</td><td>Next.js 16.3.5 (App Router, Turbopack)</td><td>Server-rendered React, file-based routing, fast dev server.</td></tr>
+<tr><td>UI library</td><td>React 19.2.8</td><td>Component model shared by the client islands.</td></tr>
+<tr><td>Language</td><td>TypeScript 5</td><td>Static typing catches shape errors in the scoring pipeline early.</td></tr>
+<tr><td>Styling</td><td>Tailwind CSS 4</td><td>Utility classes keep the editorial theme consistent.</td></tr>
+<tr><td>UI primitives</td><td>Radix UI</td><td>Accessible, unstyled primitives for forms and overlays.</td></tr>
+<tr><td>Charting</td><td>Recharts 3</td><td>Declarative charts for the waterfall, band split and cutoff explorer.</td></tr>
+<tr><td>Motion</td><td>Framer Motion</td><td>Restrained reveal and staircase-bar animations.</td></tr>
+<tr><td>Icons</td><td>lucide-react</td><td>A consistent icon set for the navigation and form.</td></tr>
+<tr><td>Scoring runtime</td><td>Python standard library (api/*.py)</td><td>Dependency-free handlers avoid shipping scikit-learn.</td></tr>
+<tr><td>Data handling (training)</td><td>pandas 2.2.3, numpy 2.1.3</td><td>Data loading and array computation during training.</td></tr>
+<tr><td>Modelling (training)</td><td>scikit-learn 1.9.1, xgboost 2.1.3</td><td>Candidate models under cross-validation; three refit and deployed.</td></tr>
+<tr><td>Explanation cross-check</td><td>shap 0.46.0</td><td>Independent check of the Saabas contributions used in production.</td></tr>
+<tr><td>Training reporting</td><td>matplotlib 3.9.2, jupyter</td><td>Benchmarking, evaluation charts and test documentation.</td></tr>
+<tr><td>Hosting</td><td>Vercel</td><td>Auto-detects Next.js, deploys api/*.py as Python functions.</td></tr>
+</tbody>
+</table>
 
 ### 2.3.2 H/W used
 
@@ -158,16 +162,20 @@ The hardware used for development, and the minimum hardware expected at the clie
 
 <p class="table-caption">Table 2.6 Hardware used</p>
 
-| Component | Specification |
-| --- | --- |
-| Processor | Intel Core i5 or equivalent (or higher) |
-| RAM | 8 GB minimum, 16 GB recommended |
-| Storage | 256 GB SSD, at least 2 GB free |
-| Display | Standard laptop or desktop monitor (1366 x 768 or higher) |
-| Network | Broadband internet connection |
-| Client device (end user) | Any computer, tablet or smartphone with a modern web browser |
+<table class="dense">
+<colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+<thead><tr><th>Component</th><th>Specification</th></tr></thead>
+<tbody>
+<tr><td>Processor</td><td>Intel Core i5 or equivalent (or higher)</td></tr>
+<tr><td>RAM</td><td>8 GB minimum, 16 GB recommended</td></tr>
+<tr><td>Storage</td><td>256 GB SSD, at least 2 GB free</td></tr>
+<tr><td>Display</td><td>Standard laptop or desktop monitor (1366 x 768 or higher)</td></tr>
+<tr><td>Network</td><td>Broadband internet connection</td></tr>
+<tr><td>Client device (end user)</td><td>Any computer, tablet or smartphone with a modern web browser</td></tr>
+</tbody>
+</table>
 
 ### 2.3.3 Software Requirement Summary
 
-To run the project locally, Node.js, Python 3.12, npm and a code editor are needed, along with the training dependencies (pandas, numpy, scikit-learn, xgboost, shap, matplotlib, jupyter) if the model is to be retrained. The development setup runs two local servers, the Next.js application and the Python prediction and portfolio servers, with the Next.js configuration rewriting requests to them in development only. For the end user, only a browser and an internet connection are required.
+To run the project locally, Node.js, Python 3.12, npm and a code editor are needed, with the training dependencies (pandas, numpy, scikit-learn, xgboost, shap, matplotlib, jupyter) if the model is to be retrained. Development runs three local Python servers alongside the Next.js application, which rewrites requests to them in development only. For the end user, only a browser and an internet connection are required.
 

@@ -64,6 +64,16 @@ Mentor / Guide
 
 </div>
 
+<div class="signature">
+
+____________________
+
+Dr. Raj Kumar
+
+HOD (BCA)
+
+</div>
+
 <p class="date-place">Date: ____________ Place: ____________</p>
 
 </section>

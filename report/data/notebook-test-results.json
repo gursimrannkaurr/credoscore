@@ -1,6 +1,6 @@
 {
   "source": "notebook.ipynb re-executed via `py -3.12 -m jupyter nbconvert --to notebook --execute notebook.ipynb --output-dir report/data --output notebook-run.ipynb`; output saved as report/data/notebook-run.ipynb",
-  "summary": "13/13 tests passed.",
+  "summary": "17/17 tests passed.",
   "tests": [
     {
       "id": 1,
@@ -90,8 +90,38 @@
       "id": 13,
       "name": "Latency (1000 predictions)",
       "status": "PASS",
-      "detail": "mean=1.019ms, p95=2.805ms, max=17.836ms over 1000 calls",
-      "note": "Latency is machine- and run-dependent; these are the numbers from this re-execution, which differ from the figures previously recorded in the fact sheet (mean 0.729ms, p95 0.907ms, max 2.767ms). Use this run's numbers since they are the ones this execution actually produced."
+      "detail": "mean=0.171ms, p95=0.183ms, max=0.296ms over 1000 calls",
+      "note": "Latency is machine- and run-dependent; these are the numbers from this re-execution, which differ from figures recorded in earlier runs. Use this run's numbers since they are the ones this execution actually produced."
+    },
+    {
+      "id": 14,
+      "name": "Parity of the XGBoost artifact (score() vs. real XGBClassifier)",
+      "status": "PASS",
+      "detail": "routing mismatches vs. booster's own leaf index = 0/200000 (tree, row) pairs; base-value spread = 1.45e-06; max |score()_margin - xgboost_margin| = 1.79e-06 across 1000 rows (tolerance 1e-5, the same float32-precision bar ml/train.py's own export-time check uses)",
+      "note": "Resolves an open question from the deployment wave: ml/train.py's own export-time parity check (xgb_tree_sum) and api/predict.py's live score() both route XGBoost ties with a strict '<', confirmed here directly against the fitted booster's own leaf indices with zero mismatches. The real measured max margin difference on this run is 1.79e-06, not the 2.61e-07 figure previously written into the report (which predates this fresh, from-source measurement) -- the report has been corrected to match."
+    },
+    {
+      "id": 15,
+      "name": "Parity of the Random Forest artifact (score_forest() vs. real RandomForestClassifier.predict_proba)",
+      "status": "PASS",
+      "detail": "max |python_leaf_mean - sklearn_predict_proba| = 0.00e+00 across 1000 rows (tolerance 1e-9)"
+    },
+    {
+      "id": 16,
+      "name": "/api/predict-compare response shape (live endpoint, :8003)",
+      "status": "PASS",
+      "detail": "status=200, top-level keys=['cutoff', 'gradient_boosting', 'random_forest', 'xgboost'], gradient_boosting keys=['base_rate', 'contributions', 'cutoff', 'decision', 'model_version', 'probability_of_default', 'risk_band', 'score'], xgboost keys=['base_rate', 'contributions', 'cutoff', 'decision', 'model_version', 'probability_of_default', 'risk_band', 'score'], random_forest keys=['cutoff', 'decision', 'model_version', 'probability_of_default', 'risk_band', 'score'] (omits contributions: True), gradient_boosting PD=0.5718"
+    },
+    {
+      "id": 17,
+      "name": "Obvious-cases agreement across all three models",
+      "status": "PASS",
+      "detail": "3/3 preset applicants (typical, strong, stretched, from components/assess/presets.ts) have all three models in the same risk band and decision",
+      "per_preset": [
+        { "preset": "typical", "bands": { "gradient_boosting": "high", "xgboost": "high", "random_forest": "high" }, "decisions": { "gradient_boosting": "decline", "xgboost": "decline", "random_forest": "decline" }, "agree": true },
+        { "preset": "strong", "bands": { "gradient_boosting": "low", "xgboost": "low", "random_forest": "low" }, "decisions": { "gradient_boosting": "approve", "xgboost": "approve", "random_forest": "approve" }, "agree": true },
+        { "preset": "stretched", "bands": { "gradient_boosting": "high", "xgboost": "high", "random_forest": "high" }, "decisions": { "gradient_boosting": "decline", "xgboost": "decline", "random_forest": "decline" }, "agree": true }
+      ]
     }
   ]
 }

@@ -9,11 +9,20 @@ import { RocCurveChart } from "@/components/model/roc-curve-chart";
 import { Figure } from "@/components/editorial/figure";
 import { PageHeader } from "@/components/editorial/page-header";
 import { Stat } from "@/components/editorial/stat";
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatPercent } from "@/lib/format";
 import { modelMeta } from "@/lib/model-meta";
 import { calibrationGap, cheapestOutcome, cutoffOutcomes, decileLift, portfolio } from "@/lib/portfolio";
 import { cn } from "@/lib/utils";
+import xgboostRaw from "@/model/model_xgboost.json";
+import randomForestRaw from "@/model/model_random_forest.json";
+
+const THREE_MODEL_METRICS = [
+  { label: "Gradient Boosting", deployed: true, metrics: portfolio.metrics },
+  { label: "XGBoost", metrics: xgboostRaw.metrics as typeof portfolio.metrics },
+  { label: "Random Forest", metrics: randomForestRaw.metrics as typeof portfolio.metrics },
+];
 
 export const metadata = {
   title: "Methodology",
@@ -251,8 +260,71 @@ export default function ModelPage() {
             </p>
           </article>
 
-          <article id="limitations" className="scroll-mt-32 border-t border-hairline py-12">
+          <article id="three-models" className="scroll-mt-32 border-t border-hairline py-12">
             <p className="kicker">§ 08</p>
+            <h2 className="display-md mt-2">Three models, one decision</h2>
+            <p className="lede mt-4 max-w-2xl">
+              The live scoring API doesn&apos;t run Gradient Boosting alone. It also runs XGBoost and Random Forest on
+              every applicant, and shows all three results side by side on the Assess page.
+            </p>
+            <div className="prose-editorial mt-6 max-w-3xl space-y-4 text-sm">
+              <p>
+                The dataset behind this project is 1,000 rows. A single model&apos;s self-reported AUC on a book that
+                small can look reassuring and still be one unlucky fold away from a different number. Running three
+                models that were trained independently, on the same rows but with different mechanics, and checking
+                whether they land on the same verdict is a cheaper and more honest trust signal than squeezing out
+                another fraction of a point on any one model&apos;s own cross-validation.
+              </p>
+              <p>
+                Only Gradient Boosting&apos;s score comes with the factor-by-factor waterfall. XGBoost is scored the
+                same additive way under the hood, so its own contributions come along for free and are included in
+                the API response, but the interface treats both XGBoost and Random Forest as a corroborating
+                signal, not a second full explanation. Random Forest in particular combines its 300 trees by
+                averaging predicted probabilities rather than by summing log-odds, so a feature-by-feature breakdown
+                would mean something different and isn&apos;t exposed at all.
+              </p>
+            </div>
+            <div className="mt-8 overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Model</TableHead>
+                    <TableHead>ROC-AUC</TableHead>
+                    <TableHead>PR-AUC</TableHead>
+                    <TableHead>KS</TableHead>
+                    <TableHead>Brier</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {THREE_MODEL_METRICS.map((row) => (
+                    <TableRow key={row.label}>
+                      <TableCell>
+                        <span className="flex items-center gap-2">
+                          {row.label}
+                          {row.deployed ? <Badge variant="default">Deployed</Badge> : null}
+                        </span>
+                      </TableCell>
+                      <TableCell className="num">{row.metrics.roc_auc.toFixed(3)}</TableCell>
+                      <TableCell className="num">{row.metrics.pr_auc.toFixed(3)}</TableCell>
+                      <TableCell className="num">{row.metrics.ks_statistic.toFixed(3)}</TableCell>
+                      <TableCell className="num">{row.metrics.brier_score.toFixed(3)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <p className="mt-6 text-sm text-muted-foreground">
+              All three metrics come from each model&apos;s own out-of-fold predictions on the same five folds.
+            </p>
+            <p className="mt-6">
+              <Link href="/assess" className="link-underline text-sm">
+                See all three scored on one applicant →
+              </Link>
+            </p>
+          </article>
+
+          <article id="limitations" className="scroll-mt-32 border-t border-hairline py-12">
+            <p className="kicker">§ 09</p>
             <h2 className="display-md mt-2">Limitations</h2>
             <ol className="prose-editorial mt-6 max-w-2xl space-y-4 text-sm">
               <li className="flex gap-3">

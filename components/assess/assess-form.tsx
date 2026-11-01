@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ApiRequestError, predict } from "@/lib/api";
+import { ApiRequestError, predictCompare } from "@/lib/api";
 import {
   CHECKING_STATUS_LABEL, CREDIT_HISTORY_LABEL, HOUSING_LABEL, JOB_TYPE_LABEL, PURPOSE_LABEL, SAVINGS_STATUS_LABEL,
 } from "@/lib/format";
-import type { PredictRequest, PredictResponse } from "@/lib/types";
+import type { CompareResponse, PredictRequest } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 import { PRESETS } from "./presets";
@@ -73,7 +73,7 @@ function toPayload(form: FormState): PredictRequest {
 
 interface AssessFormProps {
   onStart: () => void;
-  onResult: (result: PredictResponse) => void;
+  onResult: (result: CompareResponse) => void;
   onError: (message: string) => void;
 }
 
@@ -108,7 +108,7 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
     setLoading(true);
     onStart();
     try {
-      onResult(await predict(toPayload(form)));
+      onResult(await predictCompare(toPayload(form)));
     } catch (err) {
       const message = err instanceof ApiRequestError ? err.message : "Something went wrong while scoring.";
       const field = err instanceof ApiRequestError && err.field in form ? (err.field as keyof PredictRequest) : "form";

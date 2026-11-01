@@ -1,4 +1,4 @@
-import type { ApiError, PredictRequest, PredictResponse } from "./types";
+import type { ApiError, CompareResponse, PredictRequest, PredictResponse } from "./types";
 
 export class ApiRequestError extends Error {
   field: string;
@@ -25,4 +25,23 @@ export async function predict(payload: PredictRequest): Promise<PredictResponse>
     throw new ApiRequestError({ error: "server", message: `The scoring service returned an error (HTTP ${res.status}).` });
   }
   return body as PredictResponse;
+}
+
+export async function predictCompare(payload: PredictRequest): Promise<CompareResponse> {
+  let res: Response;
+  try {
+    res = await fetch("/api/predict-compare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new ApiRequestError({ error: "network", message: "The scoring service can't be reached right now. Try again in a moment." });
+  }
+  const body: unknown = await res.json().catch(() => null);
+  if (!res.ok || body === null) {
+    if (body && typeof body === "object" && "message" in body) throw new ApiRequestError(body as ApiError);
+    throw new ApiRequestError({ error: "server", message: `The scoring service returned an error (HTTP ${res.status}).` });
+  }
+  return body as CompareResponse;
 }
