@@ -16,8 +16,8 @@ export function DecileTable({ deciles }: { deciles: DecileRow[] }) {
         <TableRow>
           <TableHead>Decile</TableHead>
           <TableHead>Applicants</TableHead>
-          <TableHead>Predicted</TableHead>
-          <TableHead>Observed</TableHead>
+          <TableHead>Mean predicted risk</TableHead>
+          <TableHead>Recorded default rate</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

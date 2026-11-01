@@ -10,8 +10,8 @@ export default function AssessPage() {
       <PageHeader
         kicker="Single applicant"
         title={<>Score one applicant. <span className="italic text-brand">See why.</span></>}
-        lede="Fill in the twelve fields a loan officer would have on file. You get a probability of default, a risk band, a recommendation, and an exact breakdown of what pushed the number up or down."
-        meta={[`Model v${modelMeta.version}`, `Trained cutoff ${Math.round(modelMeta.cutoff * 100)}%`, "Nothing you enter is stored"]}
+        lede="Enter twelve applicant details to compare default-risk estimates from three models. The main Gradient Boosting result shows a risk band, a suggested decision, and how each input contributed to the prediction. A probability estimates the chance of failing to repay; it does not determine the outcome of an individual loan."
+        meta={[`Model v${modelMeta.version}`, `Default cutoff ${Math.round(modelMeta.cutoff * 100)}%`, "Nothing you enter is stored"]}
       />
       <AssessWorkbench deployedCutoff={modelMeta.cutoff} />
     </>

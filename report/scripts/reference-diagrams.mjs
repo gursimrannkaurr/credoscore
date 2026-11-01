@@ -24,9 +24,9 @@ function drawing(w, h) {
     text(x,y+86,label,13);
   };
   const entity = (x,y,w,title,fields) => {
-    rect(x,y,w,27,'',C.grey);text(x+w/2,y+18,title,12,'middle',true);
+    rect(x,y,w,27,'',C.grey);text(x+w/2,y+18,title,13,'middle',true);
     rect(x,y+27,w,fields.length*18+12,'','#fafafa');
-    fields.forEach((f,i)=>text(x+9,y+47+i*18,f,11,'start'));
+    fields.forEach((f,i)=>text(x+9,y+47+i*18,f,13,'start'));
   };
   return {text,rect,oval,line,path,actor,entity,svg:()=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs><marker id="arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="none" stroke="#444"/></marker></defs><rect width="100%" height="100%" fill="white"/><g font-family="Arial, sans-serif" fill="#111" stroke-width="1.2">${parts.join('')}</g></svg>`};
 }
@@ -42,6 +42,20 @@ export function referenceDiagram(name) {
     d.rect(35,236,335,72,'DATA LAYER\nModel files and portfolio aggregates',C.yellow,14,5);
     d.rect(390,236,335,72,'OFFLINE TRAINING\nDataset, model fitting and evaluation',C.red,14,5);
     d.path('M555,308 V322 H210 V308',true);d.text(380,318,'Export files',10);
+  } else if(name === 'fig-synopsis-model-comparison') {
+    d=drawing(800,355);
+    d.rect(270,10,260,40,'Twelve applicant fields',C.blue,15);
+    d.line(400,50,400,75,true);
+    d.rect(245,75,310,42,'Validate and encode once',C.blue,15);
+    const models=[['Gradient Boosting','250 trees'],['XGBoost','200 trees'],['Random Forest','300 trees']];
+    models.forEach(([name,detail],i)=>{
+      const x=20+i*263;
+      d.path(`M400,117 V140 H${x+117} V164`,true);
+      d.rect(x,165,234,62,`${name}\n${detail}`,C.green,15);
+      d.path(`M${x+117},227 V252 H400 V275`,true);
+    });
+    d.rect(175,276,450,46,'Compare calibrated probabilities and decisions',C.yellow,14);
+    d.text(400,346,'Gradient Boosting also drives the visible waterfall and what-if cutoff.',13);
   } else if(name === 'fig-3-2-modules') {
     d=drawing(800,310);
     d.rect(253,15,294,38,'Loan Default Risk Predictor',C.grey,15);
@@ -65,7 +79,7 @@ export function referenceDiagram(name) {
     d.line(405,126,405,310,true);d.text(413,240,'1 : 1 includes',11,'start');
     d.path('M500,80 H553 V245 H600',true);d.text(545,172,'1 : many',10,'end');d.text(545,187,'receives',10,'end');
     d.line(698,126,698,205,true);d.text(706,177,'1 : many produces',10,'start');
-    d.line(698,298,698,355,true);d.text(706,337,'1 : many explains',10,'start');
+    d.line(698,298,698,355,true);d.text(706,337,'1 : 0..many explains',10,'start');
   } else if(name === 'fig-3-4-dfd0') {
     d=drawing(780,310);
     const rows=[['Loan officer','Applicant details','Score and decision'],['Risk analyst','Cutoff and filters','Portfolio analytics'],['Model maintainer','Updated model files','Model metrics']];
@@ -109,15 +123,70 @@ export function referenceDiagram(name) {
     [5,6].forEach(i=>d.line(106,357,240,76+i*48));
     [6,7].forEach(i=>d.line(669,332,540,76+i*48));
     uses.forEach((label,i)=>d.oval(390,76+i*48,150,18,label,'#fafafa',12));
+  } else if(name === 'fig-3-7-training-flow' || name === 'fig-3-8-predict-flow') {
+    d=drawing(400,570);
+    const training=name.includes('training');
+    const box=(y,label,fill=C.blue)=>d.rect(25,y,230,40,label,fill,14,4);
+    const down=(a,b)=>d.line(140,a,140,b,true);
+    const diamond=(y,label)=>{
+      d.path(`M140,${y-35} L220,${y} L140,${y+35} L60,${y} Z`);
+      d.text(140,y+4,label,14);
+    };
+    d.oval(140,22,42,17,'Start',C.green,14);down(39,60);
+    if(training){
+      box(60,'Load and prepare data');down(100,120);
+      box(120,'Compare four models');down(160,180);
+      box(180,'Tune model parameters');down(220,240);
+      box(240,'Calibrate and refit models');down(280,305);
+      diamond(340,'Export parity\ncheck passes?');
+      d.line(220,340,275,340,true);d.text(247,330,'No',12);
+      d.rect(276,315,112,50,'Investigate\nmismatch',C.red,13,4);
+      d.path('M332,315 V260 H255',true);
+      down(375,409);d.text(158,398,'Yes',12);
+      box(410,'Export models and\nportfolio file',C.green);down(450,533);
+    }else{
+      box(60,'Receive applicant details');down(100,125);
+      diamond(160,'All input\nchecks pass?');
+      d.line(220,160,275,160,true);d.text(247,150,'No',12);
+      d.rect(276,135,112,50,'Return\n400 error',C.red,13,4);
+      d.path('M332,185 V550 H182',true);
+      down(195,230);d.text(158,218,'Yes',12);
+      box(230,'Encode applicant features');down(270,290);
+      box(290,'Score trained models');down(330,350);
+      box(350,'Calibrate probability');down(390,410);
+      box(410,'Assign decision and\nexplain risk');down(450,470);
+      box(470,'Return assessment',C.green);down(510,533);
+    }
+    d.oval(140,550,42,17,'End',C.green,14);
   } else if(name === 'fig-3-9-decision-state') {
     d=drawing(800,270);
     d.oval(25,133,7,7,'','#111');d.line(32,133,82,133,true);
     d.oval(175,133,92,31,'Applicant scored',C.yellow,14);
-    const states=[['Approve',C.green,65,27,'p < 15%'],['Approve with\nconditions',C.green,65,82,'15% <= p < 25%'],['Refer for review',C.yellow,65,185,'25% <= p < 40%'],['Decline',C.red,65,240,'p >= 40%']];
+    const states=[['Approve',C.green,65,27,'p < 15%'],['Approve with\nconditions',C.green,65,82,'15% ≤ p < 25%'],['Refer for review',C.yellow,65,185,'25% ≤ p < 40%'],['Decline',C.red,65,240,'p ≥ 40%']];
     states.forEach(([label,color,rx,y,condition])=>{
-      d.path(`M267,133 L602,${y}`,true);d.text(440,(133+y)/2-12,condition,11);
+      d.path(`M267,133 H315 V${y} H602`,true);
+      d.text(458,y-9,condition,14);
       d.oval(692,y,90,25,label,color,13);
     });
+  } else if(name === 'fig-3-predict-sequence') {
+    d=drawing(820,440);
+    const lanes=[['User',85],['Web interface',300],['Scoring API',520],['Model files',735]];
+    lanes.forEach(([label,x])=>{
+      d.rect(x-78,10,156,42,label,'white',15);
+      d.line(x,52,x,420,false,true);
+    });
+    const message=(x1,x2,y,label,reply=false)=>{
+      d.line(x1,y,x2,y,true,reply);
+      d.text((x1+x2)/2,y-9,label,14);
+    };
+    message(85,300,90,'Enter applicant details');
+    message(300,520,135,'Submit request');
+    d.path('M520,176 H555 V197 H520',true);d.text(510,180,'Validate input',14,'end');
+    message(520,735,235,'Read trained models');
+    message(735,520,278,'Model data',true);
+    d.path('M520,315 H555 V336 H520',true);d.text(510,319,'Score, calibrate and explain',14,'end');
+    message(520,300,372,'Return risk results',true);
+    message(300,85,412,'Display assessment',true);
   } else if(name === 'fig-4-1-deployment') {
     d=drawing(820,225);
     const nodes=[['User\nbrowser','white'],['Next.js\nweb interface',C.blue],['Python\nscoring APIs',C.green],['Model and\nportfolio files',C.yellow]];

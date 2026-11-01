@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import MarkdownIt from "markdown-it";
 import puppeteer from "puppeteer-core";
+import { exportCertificates } from "./export-certificates.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REPO = join(ROOT, "..");
@@ -21,13 +22,24 @@ function render(pages) {
   const src = readdirSync(join(ROOT, "src")).filter((f) => f.endsWith(".md")).sort()
     .map((f) => readFileSync(join(ROOT, "src", f), "utf8")).join("\n\n");
   let html = md.render(src);
+  // The institute certificate and covers are separate one-page deliverables.
+  html = html.replace(/<section class="front-page cover">[\s\S]*?<\/section>/, '');
+  html = html.replace(/<section class="front-page">\s*<p class="front-title">INSTITUTE CERTIFICATE<\/p>[\s\S]*?<\/section>/,
+    certificate => {
+      writeFileSync(join(DIST, 'institute-certificate.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Institute Certificate</title><link rel="stylesheet" href="../styles/report.css"></head><body>${certificate}</body></html>`);
+      return '';
+    });
+  // Preserve learning objectives on the chapter's first content page.
+  html = html.replace(/<section class="chapter-opener">([\s\S]*?)<\/section>\s*(<h1>[\s\S]*?<\/h1>)/g,
+    (_, opener, heading) => `${heading}<div class="chapter-objectives"><p><strong>Learning Objectives</strong></p>${opener.match(/<ul>[\s\S]*?<\/ul>/)?.[0] ?? ''}</div>`);
   const targets = [];
 
   html = html.replace(/<p><img src="([^"]+)" alt="([^"]*)"\s*\/?><\/p>/g, (_, src, alt) => {
     const m = alt.match(/^Figure\s+([A-Z]?-?[\d.]+)/i);
     const id = m ? `fig-${slug(m[1])}` : `fig-${targets.length}`;
     targets.push({ id, kind: "figure", text: strip(alt) });
-    return `<figure id="${id}"><img src="${src}" alt="${alt}"><figcaption>${alt}</figcaption></figure>`;
+    const vector = src.includes('/assets/figures/') ? src.replace(/\.png$/, '.svg') : src;
+    return `<figure id="${id}"><img src="${vector}" alt="${alt}"><figcaption>${alt}</figcaption></figure>`;
   });
 
   html = html.replace(/<p class="table-caption">([\s\S]*?)<\/p>/g, (_, cap) => {
@@ -59,15 +71,18 @@ function render(pages) {
     .replace('<div class="lof"></div>', `<div class="lof">${lof}</div>`)
     .replace('<div class="lot"></div>', `<div class="lot">${lot}</div>`);
 
+  html = html.replace(/(<h4>Process Flowcharts<\/h4>)([\s\S]*?)(<figure id="fig-3-7">[\s\S]*?<\/figure>)\s*(<figure id="fig-3-8">[\s\S]*?<\/figure>)/,
+    '<section class="process-spread">$1$2<div class="flowchart-pair">$3$4</div></section>');
+
   const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Loan Default Risk Predictor: Summer Training Report</title><link rel="stylesheet" href="../styles/report.css"></head><body>${html}</body></html>`;
   writeFileSync(join(DIST, "report.html"), doc);
   writeFileSync(join(DIST, "targets.json"), JSON.stringify(ordered, null, 1));
 }
 
-async function print(out) {
+async function print(out, filename = "report.html") {
   const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ["--allow-file-access-from-files"] });
   const page = await browser.newPage();
-  await page.goto(pathToFileURL(join(DIST, "report.html")).href, { waitUntil: "networkidle0" });
+  await page.goto(pathToFileURL(join(DIST, filename)).href, { waitUntil: "networkidle0" });
   await page.evaluate(() => document.fonts.ready);
   await page.pdf({ path: out, preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, outline: true, tagged: true });
   await browser.close();
@@ -89,6 +104,7 @@ if (JSON.stringify(info2.pages) !== JSON.stringify(info.pages)) {
   py(join(ROOT, "scripts", "paginate.py"), join(DIST, "pass2.pdf"), join(DIST, "targets.json"), join(DIST, "pages2.json"));
 }
 py(join(ROOT, "scripts", "stamp.py"), join(DIST, "pass2.pdf"), join(DIST, "pages2.json"), FINAL);
-py(join(ROOT, "scripts", "merge-report-cover.py"));
+await exportCertificates();
+py(join(ROOT, "scripts", "export-covers.py"));
 if (existsSync(FINAL)) copyFileSync(FINAL, join(DIST, "report.pdf"));
 console.log("Wrote", FINAL);

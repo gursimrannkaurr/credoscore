@@ -77,7 +77,7 @@ export function CutoffExplorer({
             onValueChange={([value]) => setIndex(value)}
           />
           <div className="mt-4 flex flex-wrap gap-2">
-            {isDeployed ? <Badge>Trained cutoff</Badge> : null}
+            {isDeployed ? <Badge>Default app cutoff</Badge> : null}
             {isCheapest ? <Badge variant="low">Lowest cost on this grid</Badge> : null}
           </div>
         </div>
@@ -88,16 +88,16 @@ export function CutoffExplorer({
             note={`${formatPercent(selected.approval_rate, 1)} of ${n.toLocaleString("en-US")}`}
           />
           <Stat
-            label="Defaults let through"
+            label="Defaults among approvals"
             value={`${selected.badsApproved}`}
             tone="high"
             note={`${formatPercent(selected.approved_bad_rate, 1)} of approvals`}
           />
-          <Stat label="Good applicants declined" value={`${selected.goodsDeclined}`} tone="medium" />
+          <Stat label="Repaid applicants declined" value={`${selected.goodsDeclined}`} tone="medium" />
           <Stat
-            label="Cost per applicant"
+            label="Error cost per applicant"
             value={selected.costPerApplicant.toFixed(3)}
-            note="5 × defaults approved + 1 × good declines, ÷ 1,000"
+            note="(5 × approved defaults + repaid applicants declined) ÷ 1,000"
           />
         </dl>
       </div>
@@ -107,7 +107,7 @@ export function CutoffExplorer({
           items={[
             { label: "Approval rate", color: "var(--accent)", shape: "line" },
             { label: "Bad rate among approved", color: "var(--band-high)", shape: "line" },
-            { label: "Cost per applicant", color: "var(--band-medium)", shape: "line" },
+            { label: "Error cost per applicant", color: "var(--band-medium)", shape: "line" },
           ]}
         />
         <div className="mt-4 h-[220px]">
@@ -195,7 +195,7 @@ export function CutoffExplorer({
                   return (
                     <TooltipCard
                       title={pct(row.cutoff, 0)}
-                      rows={[{ label: "Cost per applicant", value: row.costPerApplicant.toFixed(3), color: "var(--band-medium)" }]}
+                      rows={[{ label: "Error cost per applicant", value: row.costPerApplicant.toFixed(3), color: "var(--band-medium)" }]}
                     />
                   );
                 }}

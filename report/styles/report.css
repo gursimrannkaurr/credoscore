@@ -1,7 +1,7 @@
 @page { size: A4; margin: 72pt; }
 
 html { font-family: "Times New Roman", Times, serif; font-size: 12pt; color: #000; }
-body { margin: 0; line-height: 20.7pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; line-height: 18pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 p { margin: 0 0 5pt; text-align: justify; hyphens: manual; orphans: 2; widows: 2; }
 a { color: inherit; text-decoration: none; }
 strong { font-weight: bold; }
@@ -31,7 +31,7 @@ td p, th p { margin: 0; text-align: left; }
 
 .table-caption { font-weight: bold; text-align: center; margin: 9pt 0 3pt; break-after: avoid; }
 figure { margin: 6pt 0 8pt; text-align: center; break-inside: avoid; }
-figure img { max-width: 100%; max-height: 230pt; }
+figure img { max-width: 100%; max-height: 210pt; }
 figure figcaption { font-weight: bold; text-align: center; margin-top: 6pt; }
 
 pre { background: #f2f2f2; margin: 4pt 0 9pt 10.5pt; padding: 0 1.5pt; font-family: "Courier New", Courier, monospace; font-size: 9.5pt; line-height: 11pt; white-space: pre-wrap; word-break: break-word; break-inside: auto; }
@@ -82,3 +82,30 @@ pre code { font-size: inherit; }
 
 /* Keep design diagrams legible at A4 print size. */
 figure img[src*="assets/figures/"] { max-height: 340pt; }
+
+/* Compact chapter openings retain the objectives without a separate title leaf. */
+.chapter-objectives { margin: 0 0 10pt; padding: 0; break-inside: avoid; }
+.chapter-objectives p { margin-bottom: 2pt; }
+.chapter-objectives ul { margin-bottom: 6pt; }
+.chapter-objectives li { margin-bottom: 0; line-height: 17pt; }
+.certificate-signatures { display: flex; justify-content: space-between; gap: 26pt; margin-top: 65pt; }
+.certificate-signature { width: 48%; font-size: 10pt; line-height: 15pt; }
+.certificate-signature p { text-align: left; margin: 0; }
+.certificate-signature .sign-rule { border-bottom: 0.6pt solid black; width: 90%; height: 16pt; margin-bottom: 5pt; }
+.process-spread { break-inside: avoid; }
+.flowchart-pair { display: flex; align-items: flex-start; gap: 14pt; }
+.flowchart-pair figure { width: calc(50% - 7pt); margin: 5pt 0; }
+.flowchart-pair figure img { width: 100%; height: auto; max-height: 330pt; }
+.flowchart-pair figcaption { font-size: 10.5pt; line-height: 14pt; }
+figure img[src*="fig-3-3-erd"] { width: 100%; max-height: 290pt; }
+/* Keep captions with the next table and reduce avoidable gaps between figures. */
+figure { margin: 5pt 0 6pt; }
+figure figcaption { margin-top: 4pt; line-height: 16pt; }
+
+/* Fresh browser captures are sized for legibility, never as tiny tall strips. */
+.annexure-shot figure img { width: 100%; max-width: 100%; max-height: none; height: auto; border: 0.5pt solid #c9c9c9; }
+.annexure-shot figure img[src*="11-mobile-applicant"] { width: 220pt; max-width: 100%; }
+.annexure-shot figcaption { font-size: 11pt; line-height: 14pt; margin-top: 5pt; }
+.annexure-shot figure { margin: 6pt 0 12pt; }
+
+.annexure-shot figure img[src*="01-applicant-input"] { width: auto; max-height: 290pt; }

@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 const ORDER: RiskBand[] = ["low", "medium", "high"];
 
 const BAND_META: Record<RiskBand, { label: string; tone: "low" | "medium" | "high"; bg: string; note: string }> = {
-  low: { label: "Low", tone: "low", bg: "bg-band-low", note: "PD below 15%" },
-  medium: { label: "Medium", tone: "medium", bg: "bg-band-medium", note: "PD 15% to 35%" },
-  high: { label: "High", tone: "high", bg: "bg-band-high", note: "PD 35% or more" },
+  low: { label: "Low", tone: "low", bg: "bg-band-low", note: "Predicted default risk below 15%" },
+  medium: { label: "Medium", tone: "medium", bg: "bg-band-medium", note: "Predicted risk 15% to below 35%" },
+  high: { label: "High", tone: "high", bg: "bg-band-high", note: "Predicted default risk 35% or above" },
 };
 
 export function BandSplit({
@@ -51,7 +51,7 @@ export function BandSplit({
             />
           );
         })}
-        <Stat label="Base default rate" value={formatPercent(baseDefaultRate, 1)} />
+        <Stat label="Recorded dataset default rate" value={formatPercent(baseDefaultRate, 1)} />
       </dl>
     </div>
   );

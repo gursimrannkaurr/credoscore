@@ -48,33 +48,28 @@
 
 <section class="front-page">
 
-<p class="front-title">CERTIFICATE</p>
+<p class="front-title">INSTITUTE CERTIFICATE</p>
 
 This is to certify that the Summer Training Report entitled "Loan Default Risk Predictor: An Explainable Machine Learning Web Application for Credit Risk Assessment" is a bonafide work carried out by GURSIMRAN KAUR, Enrolment No. 02490202024, a student of Bachelor of Computer Applications (BCA), Semester V, Section 5A, at Sri Guru Tegh Bahadur Institute of Management and Information Technology, in partial fulfilment of the requirements for the award of the degree of Bachelor of Computer Applications.
 
 The work was carried out under my guidance during the six-week summer training, and to the best of my knowledge it is original and has not been submitted elsewhere for any degree or diploma.
 
-<div class="signature">
-
-____________________
-
-Ms. Nisha Choudhary
-
-Mentor / Guide
-
+<div class="certificate-signatures">
+<div class="certificate-signature">
+<p class="sign-rule">&nbsp;</p>
+<p><strong>Signature of the Mentor / Guide</strong></p>
+<p><strong>Ms. Nisha Choudhary</strong></p>
+<p>Department of Computer Applications</p>
+<p>Date: ____________________</p>
 </div>
-
-<div class="signature">
-
-____________________
-
-Dr. Raj Kumar
-
-HOD (BCA)
-
+<div class="certificate-signature">
+<p class="sign-rule">&nbsp;</p>
+<p><strong>Signature of the Director / HOD</strong></p>
+<p>Sri Guru Tegh Bahadur Institute of</p>
+<p>Management and Information Technology</p>
+<p>Date: ____________________</p>
 </div>
-
-<p class="date-place">Date: ____________ Place: ____________</p>
+</div>
 
 </section>
 

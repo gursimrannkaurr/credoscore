@@ -13,61 +13,85 @@
 
 ## A-1 Sample Inputs
 
-The following screens show the sample inputs given to the system, from the live, deployed interface.
+The following screenshots were captured afresh from the live deployed application. Long screens are shown in separate, readable sections rather than reduced to a narrow full-page strip.
 
 <div class="annexure-shot">
 
-![Figure A-1 Blank applicant assessment form](../assets/screens/a3-assess-empty.png)
+![Figure A-1 Applicant details and sample-file controls before scoring](../assets/screens/fresh/01-applicant-input.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-2 A sample file loaded through a preset chip](../assets/screens/a4-assess-strong-form.png)
+![Figure A-2 Loan fields populated using the Strong file preset](../assets/screens/fresh/02-sample-loan.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-3 A field-level validation error on submit](../assets/screens/a5-assess-validation-error.png)
+![Figure A-3 Credit-position fields and scoring button for the Strong file preset](../assets/screens/fresh/02b-sample-credit.png)
+
+</div>
+
+<div class="annexure-shot">
+
+![Figure A-4 Inline validation when the required age field is cleared](../assets/screens/fresh/03-validation.png)
+
+</div>
+
+<div class="annexure-shot">
+
+![Figure A-5 Mobile assessment form: applicant fields and sample-file controls](../assets/screens/fresh/11-mobile-applicant.png)
 
 </div>
 
 ## A-2 Sample Outputs
 
-A representative selection of six screens is given below, from the landing page through to the new three-model comparison panel; the full screen set was exercised during testing (Chapter 4, Table 4.4) even where not every screen is reproduced here.
+These fresh captures show the live result, its complete factor breakdown, portfolio controls and model comparison. Desktop panels use the report text width; the mobile capture retains its original proportions.
 
 <div class="annexure-shot">
 
-![Figure A-5 The landing page](../assets/screens/a1-landing-hero.png)
+![Figure A-6 High-risk assessment returned for the Stretched file preset](../assets/screens/fresh/05-high-risk-verdict.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-6 A high-risk result slip with the score-drivers waterfall](../assets/screens/a7-assess-high-risk.png)
+![Figure A-7 Live comparison of gradient boosting, XGBoost and random forest](../assets/screens/fresh/10-model-comparison.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-7 The portfolio band split and cutoff explorer](../assets/screens/a10-portfolio-bands-cutoff.png)
+![Figure A-8 Landing page of the live application](../assets/screens/fresh/04-landing.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-8 The three-model comparison panel on the Assess page](../assets/screens/a18-model-comparison-panel.png)
+![Figure A-9 Score-driver explanation and the first six contributing factors](../assets/screens/fresh/06-drivers-upper.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-9 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
+![Figure A-10 Remaining score drivers and the largest risk contribution](../assets/screens/fresh/07-drivers-lower.png)
 
 </div>
 
-Selected source code of the model, the scoring API and the front end is given below.
+<div class="annexure-shot">
+
+![Figure A-11 Portfolio risk bands across all 1,000 applicants](../assets/screens/fresh/08-portfolio-bands.png)
+
+</div>
+
+<div class="annexure-shot">
+
+![Figure A-12 Portfolio cutoff control and outcomes at the trained 25 percent cutoff](../assets/screens/fresh/09-cutoff-outcomes.png)
+
+</div>
+
+Selected source code of the model, scoring API and front end follows.
 
 ## A-3 Coding
 

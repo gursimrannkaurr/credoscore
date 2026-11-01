@@ -12,10 +12,10 @@ export function CutoffTable({ outcomes }: { outcomes: CutoffOutcome[] }) {
           <tr className="border-b border-ink text-left font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
             <th className="py-3 pr-4">Cutoff</th>
             <th className="py-3 pr-4">Approved</th>
-            <th className="py-3 pr-4">Bad rate (approved)</th>
-            <th className="py-3 pr-4">Defaults let through</th>
-            <th className="py-3 pr-4">Good declined</th>
-            <th className="py-3">Cost / applicant</th>
+            <th className="py-3 pr-4">Default rate among approvals</th>
+            <th className="py-3 pr-4">Approved defaults</th>
+            <th className="py-3 pr-4">Repaid applicants declined</th>
+            <th className="py-3">Error cost / applicant</th>
           </tr>
         </thead>
         <tbody>

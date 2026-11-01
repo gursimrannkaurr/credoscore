@@ -1,5 +1,6 @@
 import json
 import sys
+import re
 
 import pymupdf
 
@@ -11,7 +12,9 @@ texts = [norm(p.get_text()) for p in doc]
 
 kinds, started = [], False
 for t in texts:
-    if t.startswith("chapter ") and "learning objectives" in t and len(t) < 1200:
+    if re.match(r"chapter \d+:", t):
+        kinds.append("body"); started = True
+    elif t.startswith("chapter ") and "learning objectives" in t and len(t) < 1200:
         kinds.append("opener"); started = True
     elif not started:
         kinds.append("front")

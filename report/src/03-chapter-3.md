@@ -70,7 +70,7 @@ The system has no transactional database. Its data design covers the training da
 
 ### 3.2.1 ERD
 
-An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction per deployed model; a prediction is explained by one or more per-factor contributions. The diagram shows conceptual relationships; field details appear in the tables below, and applicant records are not persisted. The relationships are drawn in Figure 3.3.
+An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction per deployed model; a boosting-model prediction is explained by per-factor contributions, while the Random Forest result has no contribution list. The diagram shows conceptual relationships; field details appear in the tables below, and applicant records are not persisted. The relationships are drawn in Figure 3.3.
 
 ![Figure 3.3 Entity Relationship Diagram of the Loan Default Risk Predictor](../assets/figures/fig-3-3-erd.png)
 

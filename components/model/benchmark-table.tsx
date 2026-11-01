@@ -41,9 +41,9 @@ export function BenchmarkTable({ benchmark }: { benchmark: Record<string, Benchm
           <tr className="border-b border-ink text-left font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
             <th className="py-3 pr-4">Model</th>
             <th className="py-3 pr-4">ROC-AUC (mean)</th>
-            <th className="py-3 pr-4">± std</th>
+            <th className="py-3 pr-4">Fold variation (± SD)</th>
             <th className="py-3 pr-4">PR-AUC</th>
-            <th className="py-3">Interval (0.74 to 0.82)</th>
+            <th className="py-3">Mean ± one standard deviation</th>
           </tr>
         </thead>
         <tbody>

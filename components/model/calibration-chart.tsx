@@ -25,7 +25,7 @@ export function CalibrationChart({ bins }: { bins: CalibrationBin[] }) {
             tick={AXIS_TICK}
             axisLine={AXIS_LINE}
             tickLine={false}
-            label={{ value: "Mean predicted PD", position: "insideBottom", offset: -4, fontSize: 11, fill: "var(--muted)" }}
+            label={{ value: "Mean predicted risk", position: "insideBottom", offset: -4, fontSize: 11, fill: "var(--muted)" }}
           />
           <YAxis
             dataKey="observed"
@@ -36,7 +36,7 @@ export function CalibrationChart({ bins }: { bins: CalibrationBin[] }) {
             axisLine={AXIS_LINE}
             tickLine={false}
             width={44}
-            label={{ value: "Observed default rate", angle: -90, position: "insideLeft", fontSize: 11, fill: "var(--muted)" }}
+            label={{ value: "Recorded default rate", angle: -90, position: "insideLeft", fontSize: 11, fill: "var(--muted)" }}
           />
           <ZAxis dataKey="count" range={[40, 400]} />
           <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="var(--hairline-strong)" strokeDasharray="4 4" />

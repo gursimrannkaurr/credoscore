@@ -1,0 +1,9 @@
+%% Fixed SVG layout lives in scripts/reference-diagrams.mjs.
+flowchart TB
+  INPUT[Twelve applicant fields] --> VALIDATE[Validate and encode once]
+  VALIDATE --> GB[Gradient Boosting]
+  VALIDATE --> XGB[XGBoost]
+  VALIDATE --> RF[Random Forest]
+  GB --> COMPARE[Compare calibrated probabilities and decisions]
+  XGB --> COMPARE
+  RF --> COMPARE

@@ -1,152 +1,85 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>CredoScore one-pager</title>
+<html lang="en"><head><meta charset="utf-8"><title>CredoScore - Viva survival guide</title>
 <style>
-  @page { size: A4; margin: 30pt 34pt; }
-  * { box-sizing: border-box; }
-  html { font-family: Calibri, "Segoe UI", Arial, sans-serif; color: #141414; font-size: 9.6pt; }
-  body { margin: 0; }
-  h1 { font-size: 19pt; margin: 0 0 1pt; color: #0f4761; }
-  .tagline { font-size: 10.5pt; color: #444; margin: 0 0 10pt; font-style: italic; }
-  h2 {
-    font-size: 11pt; margin: 0 0 5pt; padding-bottom: 2pt;
-    border-bottom: 1.3pt solid #0f4761; color: #0f4761; break-after: avoid;
-  }
-  section { margin-bottom: 9pt; }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20pt; }
-  .col3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 14pt; }
-  ul { margin: 0; padding-left: 13pt; }
-  li { margin-bottom: 2.4pt; line-height: 1.33; }
-  li::marker { color: #0f4761; }
-  p { margin: 0 0 4pt; line-height: 1.35; }
-  .qa dt { font-weight: bold; color: #0f4761; margin-top: 5pt; }
-  .qa dd { margin: 1pt 0 0; line-height: 1.33; }
-  .band {
-    background: #f3f6f8; border: 0.75pt solid #cfe0e8; border-radius: 4pt;
-    padding: 6pt 9pt; margin-bottom: 9pt; font-size: 9.3pt;
-  }
-  .pagebreak { break-before: page; }
-  .foot { margin-top: 10pt; font-size: 7.8pt; color: #777; text-align: center; }
-  .pill { display: inline-block; background: #0f4761; color: #fff; font-size: 7.6pt; font-weight: bold; padding: 1pt 5pt; border-radius: 8pt; margin-right: 4pt; }
-</style>
-</head>
-<body>
-
-<h1>CredoScore: Loan Default Risk Predictor</h1>
-<p class="tagline">A one-page plain-English brief: what it does, how it was built, what was tested, and the questions a professor is likely to ask.</p>
-
-<div class="band">
-<strong>In one line:</strong> it is a website where you enter a loan applicant's details (age, income, loan amount, credit history, etc.) and it tells you how likely that person is to default, in plain numbers, with the reasons behind the number.
-</div>
-
-<div class="cols">
-<section>
-<h2>What the project actually is</h2>
-<ul>
-<li>A web app called <strong>CredoScore</strong> (full name: <em>Loan Default Risk Predictor</em>).</li>
-<li>You fill in 12 simple details about a loan applicant (age, job, income, loan amount, how long the loan is for, credit history, etc.).</li>
-<li>It gives back three things: a <strong>percentage chance of default</strong>, a <strong>plain recommendation</strong> (approve / approve with conditions / review / decline), and a <strong>list of reasons</strong> for that number, ranked by how much each one mattered.</li>
-<li>There's also a "book" page that shows how the model performs across 1,000 past applicants, and a "methodology" page that explains how it was built and tested.</li>
-</ul>
-</section>
-
-<section>
-<h2>What data it learned from</h2>
-<ul>
-<li>A public dataset from a German bank, collected in 1994: <strong>1,000 real loan applications</strong>, 700 that were repaid and 300 that defaulted.</li>
-<li>It's a well-known, standard dataset used worldwide to teach and test credit-risk models. It is not made up, not scraped, and it comes with an open licence.</li>
-<li>Out of the 20 details recorded per applicant, we kept the 12 most useful ones and deliberately <strong>left out gender/marital status</strong> so the model can't lean on it.</li>
-</ul>
-</section>
-</div>
-
-<section>
-<h2>The 12 things it actually looks at</h2>
-<div class="col3">
-<ul>
-<li>Age</li>
-<li>How long they've had their current job</li>
-<li>Monthly income</li>
-<li>Loan amount requested</li>
-</ul>
-<ul>
-<li>How many months to repay it</li>
-<li>Number of other loans they already have</li>
-<li>Job type (skilled, unskilled, management, etc.)</li>
-<li>Housing (rent, own, or free housing)</li>
-</ul>
-<ul>
-<li>What the loan is for (car, education, business, etc.)</li>
-<li>Their past credit history (paid on time before? late before?)</li>
-<li>How much is in their checking account</li>
-<li>How much is in their savings account</li>
-</ul>
-</div>
-</section>
-
-<div class="cols">
-<section>
-<h2>Which "algorithm" we used, and why</h2>
-<ul>
-<li>We didn't just pick one method and hope. We actually <strong>tried four different prediction methods</strong> and compared them fairly on the same 1,000 applicants, split into 5 equal groups so every method was tested the same way.</li>
-<li>The four: a simple scoring formula (logistic regression), a "committee of trees" that votes (random forest), two versions of a method called <strong>gradient boosting</strong>, and a well-known industry method called XGBoost.</li>
-<li>Gradient boosting won: it builds a few hundred very small, very simple decision trees, one after another, where each new tree focuses on fixing the mistakes of the ones before it. Added together, they make one strong prediction.</li>
-<li>We then fine-tuned its settings automatically (tried 40 different combinations) before locking in the final version.</li>
-</ul>
-</section>
-
-<section>
-<h2>How we actually built and run it</h2>
-<ul>
-<li>The model was trained once, offline, using standard data-science tools (Python, pandas, scikit-learn).</li>
-<li>Instead of shipping that heavy software to the live website, we <strong>exported the finished model as a small text file</strong> (a list of simple yes/no questions, like a decision tree written out).</li>
-<li>The live website reads that file and answers each applicant with basic arithmetic, so no AI software needs to run live, which makes it fast, cheap to host, and simple to deploy.</li>
-<li>On top of the raw prediction, we added a calibration step so that when it says "30% chance of default," that number is trustworthy: roughly 30 out of 100 similar applicants really do default.</li>
-<li>It also breaks down <em>why</em> it gave that number, for example "loan amount pushed risk up 7 points, savings pushed it down 3 points", and those reasons always add up exactly to the final number, nothing is hidden or approximated.</li>
-</ul>
-</section>
-</div>
-
-<section>
-<h2>Testing: what we ran, what broke, and how it got fixed</h2>
-<ul>
-<li>We ran <strong>56 automated tests</strong> in total: 13 checking the model's maths is correct, 25 checking the website rejects bad or missing input properly, and 18 checking the actual screens work as expected. All 56 pass.</li>
-<li><strong>Something that broke and got fixed:</strong> early on, the "why did it decide this" breakdown didn't add up to the right total. The cause was a rounding mistake in how we calculated each factor's contribution. A dedicated test caught it, we traced it to the starting point of the calculation being wrong, and fixed it so the numbers now add up exactly, every time.</li>
-<li><strong>Another fix:</strong> the form let you pick "vacation" as a loan purpose, but the model was never trained on that category, so it would reject the request. We just removed that option from the form instead of guessing.</li>
-<li><strong>Another fix:</strong> if the scoring service went down, two of the pages used to just spin forever with no error message. We changed them to load their data up front instead of over the network, so they now work even if that service is off, and the one page that still needs it shows a clear error instead of hanging.</li>
-<li>We also deliberately tried to break it: missing fields, negative numbers, huge loan amounts, nonsense categories. It always responds with a clear error message and never crashes.</li>
-</ul>
-</section>
-
-<h2>Likely professor questions &amp; plain-English answers</h2>
-<dl class="qa">
-
-<dt>Q: Why gradient boosting and not a simpler method, or a fancier one like deep learning?</dt>
-<dd>A: We tested a simple method (logistic regression) and it was noticeably worse. Deep learning needs a lot more data than our 1,000 applicants to be worth it, and it would've made the "why did you decide this" explanations much harder to trust. Gradient boosting was the sweet spot: strong accuracy, and every decision can be explained exactly, factor by factor.</dd>
-
-<dt>Q: How good is the model, really?</dt>
-<dd>A: On applicants it never saw during training, it scores 0.79 out of 1 on telling risky and safe applicants apart (1.0 would be a perfect psychic, 0.5 would be a coin flip). Its probabilities are also well-calibrated: when it says "X% chance," reality matches within about 2 percentage points.</dd>
-
-<dt>Q: Is the dataset realistic for today?</dt>
-<dd>A: It's from Germany in 1994, so the exact numbers (in old German currency) are dated. We say that openly on the site and in the report. The point of the project isn't "this exact model is ready for a real bank," it's demonstrating the full correct process: clean data, fair testing, calibrated probabilities, honest explanations, and proper deployment, which is the same process a real bank would use on their own current data.</dd>
-
-<dt>Q: What happens if someone enters wrong or missing information?</dt>
-<dd>A: The form checks everything twice, once in the browser and once again on the server, so you can't send incomplete or nonsense data even by tampering with the page. Every rejection comes back with a specific, readable reason, not a crash or a blank error.</dd>
-
-<dt>Q: Is this fair to use, could it be biased?</dt>
-<dd>A: We deliberately removed gender and marital status from what the model is allowed to see, as a precaution. We're upfront that we have not run a full, formal fairness audit beyond that, that's listed as a known limitation and as future work, not hidden.</dd>
-
-<dt>Q: Where does it actually run, and what does it cost to host?</dt>
-<dd>A: It's deployed on Vercel. The website is built with Next.js/React; the scoring itself runs as a tiny, dependency-free Python function, since it only needs to read that exported model file and do arithmetic, not run a full AI library. That keeps it fast and cheap to run.</dd>
-
-<dt>Q: What would you improve if you kept going?</dt>
-<dd>A: A proper fairness audit, training on more recent data, letting someone score a whole spreadsheet of applicants at once instead of one at a time, and adding monitoring so we'd notice if the model's accuracy drifted over time.</dd>
-
-</dl>
-
-<p class="foot">CredoScore: Loan Default Risk Predictor. Prepared as a plain-English project brief, not a technical document.</p>
-
-</body>
-</html>
+@page{size:A4;margin:27pt 31pt}*{box-sizing:border-box}html{font-family:Arial,Helvetica,sans-serif;font-size:8.2pt;color:#152025}body{margin:0}h1{font-size:17pt;margin:0 0 3pt;color:#174b43}h2{font-size:9.5pt;line-height:1.14;margin:5pt 0 3pt;padding-bottom:2pt;border-bottom:1pt solid #719a90;color:#174b43;break-after:avoid}h3{font-size:9.3pt;margin:4pt 0 2pt;color:#174b43}p{margin:0 0 3pt;line-height:1.17}ul,ol{padding-left:12pt;margin:2pt 0 4pt}li{line-height:1.17;margin-bottom:2.5pt}strong{font-weight:700}.sub{font-size:9pt;color:#52605e;margin-bottom:6pt}.pitch{padding:6pt 8pt;background:#edf4f0;border-left:3pt solid #174b43;margin-bottom:5pt}.columns{display:grid;grid-template-columns:1fr 1fr;gap:14pt}.column{min-width:0}table{border-collapse:collapse;width:100%;font-size:8pt;line-height:1.2;margin:4pt 0}th,td{border:0.5pt solid #a5b2ae;padding:3pt;text-align:left;vertical-align:top}th{background:#edf4f0}code{font-family:Consolas,monospace;font-size:7.8pt;overflow-wrap:anywhere}.formula{background:#f3f5f4;padding:4pt 6pt;font-family:Consolas,monospace;font-size:8pt;line-height:1.25;margin:3pt 0 5pt}.sheet{break-after:page}.sheet:last-child{break-after:auto}.small{font-size:8.6pt}.q{font-weight:bold;color:#174b43}.foot{font-size:8pt;color:#64716c;margin-top:5pt;text-align:right}.half{font-size:9.1pt}.no-break{break-inside:avoid}
+</style></head><body>
+<section class="sheet" id="page-1">
+<h1>CredoScore | Explain it confidently</h1>
+<p class="sub">Beginner's viva guide - Gradient Boosting, XGBoost and Random Forest. Read page 1 for understanding, page 2 for implementation, and the final half-page for rapid answers.</p>
+<div class="pitch"><strong>Your 40-second introduction:</strong> "CredoScore is a learning project for loan-default risk. A user enters 12 applicant details. Three trained models - Gradient Boosting, XGBoost and Random Forest - each estimate default probability. The screen compares their recommendations; Gradient Boosting supplies the main risk slip, explanation and adjustable cutoff. I trained and evaluated the models offline, exported them as JSON, and built a Next.js interface with Python scoring APIs. It demonstrates the complete ML workflow; it is not ready for real bank lending."</div>
+<div class="columns"><div class="column">
+<h2>1 | The ML vocabulary you actually need</h2>
+<p><strong>Default</strong> means failing to repay as required. <strong>Classification</strong> predicts a class: here 0 = good credit and 1 = bad credit/default. <strong>Supervised learning</strong> learns from examples with known outcomes. A <strong>feature</strong> is an input; the <strong>target/label</strong> is the outcome. <strong>Training</strong> learns model rules; <strong>inference</strong> applies fixed learned rules to a new applicant.</p>
+<p>A <strong>decision tree</strong> asks learned questions such as "loan amount &lt; threshold?", follows branches, and ends at a <strong>leaf</strong> containing a number. These are statistical splits learned from data, not banking rules manually typed by us. An <strong>ensemble</strong> combines many trees. A <strong>parameter</strong> is learned; a <strong>hyperparameter</strong> is a setting chosen before training, such as tree depth or count.</p>
+<p><strong>Overfitting:</strong> remembering training patterns that fail on new data. <strong>Underfitting:</strong> a model too simple to capture useful patterns. Depth limits, smaller updates, sampling and validation control these risks; more trees alone do not guarantee better results.</p>
+<h2>2 | What the data contains</h2>
+<p><strong>UCI German Credit:</strong> 1,000 historical applicants, 700 good and 300 bad, with 20 original attributes. It is a small, dated German-credit dataset, using Deutsche Marks (DM). The project retains <strong>12 inputs</strong>:</p>
+<p><strong>Six numeric:</strong> age, years employed, monthly income, loan amount, repayment months, existing credits. <strong>Six categorical:</strong> job type, housing, loan purpose, credit history, checking-account status, savings status.</p>
+<p><strong>Preprocessing</strong> maps source codes into readable values. Employment buckets become representative years. Income is <strong>derived</strong> from loan amount, duration and the source instalment-rate bucket; it is not directly observed salary and inherits that bucket's uncertainty. Categories are <strong>one-hot encoded</strong>: separate 0/1 columns avoid pretending that housing types have a numeric order. Six numeric columns plus 31 indicators make the <strong>37-number feature vector</strong>. Trees do not require standardising feature scales.</p>
+<p>Personal-status/sex is excluded, but age and proxy variables remain: <strong>removing one attribute does not prove fairness.</strong> Missing or unknown user inputs are rejected, not silently guessed. No new applicant is stored or used to retrain the live model.</p>
+<h2>3 | Gradient Boosting: successive corrections</h2>
+<p><strong>Idea:</strong> a sequence of small trees improves one shared prediction. It starts with a constant raw score; each next tree learns a correction in the direction that reduces a <strong>loss</strong> (a numerical penalty for wrong predictions). For binary classification this follows the negative gradient of log-loss. "Fixing previous mistakes" is the intuition; it is not just subtracting 0/1 labels.</p>
+<p><strong>Training steps:</strong> initialise score; calculate each example's current error direction; fit a shallow tree to that direction; add a small fraction of its prediction; repeat. The <strong>learning rate</strong> controls each step's size. Smaller steps can generalise better but need more trees.</p>
+<div class="formula">raw score = starting score + sum of weighted tree outputs<br>probability = sigmoid(A x raw score + B)</div>
+<p><strong>Our implementation:</strong> scikit-learn <code>GradientBoostingClassifier</code>, <strong>250 trees, depth 3, learning rate 0.05, subsample 0.8, minimum leaf size 20</strong>. Randomised search tried 40 parameter combinations. The server walks the exported trees, adds their leaf values and calibrates the margin. It is the primary model because of its measured ranking performance and usable explanation, not because boosting is always best.</p>
+</div><div class="column">
+<h2>4 | XGBoost: a regularised boosting implementation</h2>
+<p><strong>Full name:</strong> Extreme Gradient Boosting. It is also a sequence of corrective trees, not an unrelated neural network. XGBoost uses first- and second-order loss information - the <strong>gradient</strong> gives the improvement direction and the <strong>Hessian</strong> describes curvature - to choose useful tree splits and leaf weights. <strong>Regularisation</strong> penalises unnecessary complexity; efficient split-finding makes training practical.</p>
+<p><strong>Training steps:</strong> calculate gradients/Hessians from current predictions; choose splits with sufficient improvement after penalties; estimate leaf corrections; shrink the update by the learning rate; repeat. It still needs validation and can overfit; the name "Extreme" does not mean automatically more accurate.</p>
+<p><strong>Our implementation:</strong> XGBoost classifier with <strong>200 trees, depth 3, learning rate 0.05</strong>. <code>scale_pos_weight = 700/300</code> gives the minority bad-credit class more training weight. Raw margins are Platt-calibrated. The export stores leaf corrections already multiplied by the learning rate, so its JSON runtime multiplier is <strong>1.0</strong>; applying 0.05 again would be wrong.</p>
+<p><strong>Important real bug:</strong> XGBoost routes a split left on <code>value &lt; threshold</code>; scikit-learn boosting uses <code>&lt;=</code>. Reusing the wrong comparison misrouted boundary values. The custom walker now branches on model type; export also respects XGBoost's float32 thresholds. Parity checks compare its output against the fitted library model.</p>
+<h2>5 | Random Forest: diverse trees working together</h2>
+<p>The correct name is <strong>Random Forest</strong>, not "random trees." <strong>Bagging</strong> builds many trees separately on bootstrap samples (sampling rows with replacement). A random subset of features is considered at splits. This makes trees less alike; combining them reduces variance. Unlike boosting, later trees do <strong>not</strong> correct earlier trees sequentially.</p>
+<p><strong>Training steps:</strong> draw a bootstrap sample; grow a tree using random feature subsets; repeat for many trees; combine predictions. For our probability output, each leaf contains a class-probability estimate and the forest <strong>averages tree probabilities</strong>. Majority voting is the class-label intuition, but not the arithmetic used here.</p>
+<p><strong>Our implementation:</strong> scikit-learn <code>RandomForestClassifier</code>, <strong>300 trees, maximum depth 6, balanced class weights</strong>. The exported scorer averages the leaf probabilities and applies a sigmoid calibrator fitted to that average. Its response includes probability, band, display score and recommendation, <strong>without a contribution list</strong>.</p>
+<h2>6 | Memorise the difference</h2>
+<table><tr><th>Question</th><th>GB / XGBoost</th><th>Random Forest</th></tr><tr><td>How trees learn</td><td>Sequential corrections</td><td>Separate bootstrap trees</td></tr><tr><td>How outputs combine</td><td>Add raw-score corrections</td><td>Average probabilities</td></tr><tr><td>Main benefit</td><td>Improve a weak prediction</td><td>Reduce unstable variation</td></tr><tr><td>In this project</td><td>250 / 200 trees</td><td>300 trees</td></tr></table>
+<p><strong>Why three?</strong> To compare different learned predictions and expose agreement/disagreement. The API does <strong>not</strong> average these three models into a fourth ensemble or take their majority vote. They use the same dataset/features, so agreement is not independent proof of correctness. Each model is already an ensemble internally.</p>
+<p><strong>Why not only logistic regression?</strong> It was the simpler baseline; trees capture nonlinear patterns and interactions. Four families were benchmarked: logistic regression, GB, XGBoost and RF. <strong>Why not deep learning?</strong> There is little data and a tabular problem; this project did not establish that a neural network would improve it.</p>
+</div></div><p class="foot">1 / 2½ - Understanding the models</p></section>
+<section class="sheet" id="page-2">
+<h1>From training to a live assessment</h1><p class="sub">Explain the pipeline in this order: data -> validation -> features -> three scorers -> calibrated results -> visible explanation.</p>
+<div class="columns"><div class="column">
+<h2>7 | Training, evaluation and calibration</h2>
+<p><strong>Stratified five-fold validation:</strong> divide the data into five groups, maintaining roughly the 70:30 label ratio. Train on four groups and predict the held-out group; rotate until every applicant has an <strong>out-of-fold (OOF)</strong> prediction. Candidate models use the same folds. The preprocessing pipeline is fitted within each training fold; it must not learn from the held-out group.</p>
+<p><strong>Calibration</strong> turns model scores into better probability estimates. <strong>Platt scaling</strong> fits a small logistic model: <code>p = 1/(1 + exp(-(A*s+B)))</code>. GB/XGBoost use raw margin <code>s</code> (an unbounded log-odds score); RF uses its average raw probability. <strong>Sigmoid</strong> maps any real number to 0-1. Calibration is not a promise that a particular borrower will default.</p>
+<p><strong>Important evaluation limit:</strong> the base scores are OOF, but tuning used these folds, and the global calibrator is fitted and assessed on the same OOF pairs. These are development estimates, <strong>not a fully untouched external test</strong>. Nested validation or a separate calibration/test split would give stronger evidence.</p>
+<p>After evaluation, each production model is refitted on <strong>all 1,000 rows</strong> and exported. The portfolio dashboard uses saved OOF results; it is not an independent live bank portfolio. Training is offline; clicking "Score" performs inference only.</p>
+<h2>8 | What "good performance" means</h2>
+<table><tr><th>Calibrated OOF metric</th><th>GB</th><th>XGB</th><th>RF</th></tr><tr><td>ROC-AUC (higher)</td><td>0.7928</td><td>0.7869</td><td>0.7833</td></tr><tr><td>PR-AUC (higher)</td><td>0.6344</td><td>0.6299</td><td>0.6329</td></tr><tr><td>Brier loss (lower)</td><td>0.1601</td><td>0.1619</td><td>0.1646</td></tr></table>
+<p><strong>ROC-AUC:</strong> how often a randomly selected bad-credit applicant ranks riskier than a good-credit applicant. About 0.79 means about 79% of such pairs, <strong>not 79% classification accuracy</strong>. 0.5 is random ranking; 1 is perfect ranking. <strong>PR-AUC</strong> summarises precision/recall across thresholds and is useful for the minority default class; random baseline here is about 0.30.</p>
+<p><strong>Brier:</strong> average squared probability error; smaller is better. Predicting 30% for everybody gives 0.21. <strong>KS:</strong> largest gap between the good/bad score distributions; GB is 0.4776. <strong>Accuracy</strong> can mislead: "always good" already gets 70%. <strong>Precision</strong> asks how many predicted defaults are real; <strong>recall</strong> asks how many actual defaults were detected. False negatives approve likely defaulters; false positives turn away good borrowers.</p>
+<h2>9 | Which code does what?</h2>
+<p><code>ml/train.py</code>: clean data, encode, benchmark, tune, calibrate, refit and export. <code>data/german_credit.csv</code>: cleaned data. <code>model/</code>: three model JSONs plus <code>portfolio.json</code>. JSON records categories, tree features/thresholds/children/leaves, calibration coefficients and metadata; it contains learned rules, not an AI chat prompt.</p>
+<p><code>api/predict.py</code>: shared validation, feature vector, tree walkers and primary-model endpoint. <code>api/predict-compare.py</code>: load all three artifacts, validate/encode once, score each, return separate results. <code>api/portfolio.py</code>: aggregate data. <code>components/assess/assess-form.tsx</code> validates the form; <code>lib/api.ts</code> sends the comparison request; the workbench renders the result. Next.js/React/TypeScript build the interface; Tailwind styles it. Vercel hosts the site and Python functions.</p>
+</div><div class="column">
+<h2>10 | Walk through one request</h2>
+<ol><li>The user selects a preset or enters 12 values. Browser validation checks numeric ranges and the instalment rule; invalid fields show a message.</li><li><code>POST /api/predict-compare</code> sends JSON. The server independently verifies required fields, finite numeric types, ranges and allowed categories. It checks <code>loan_amount / duration_months &lt;= 4 * monthly_income</code>. This is a coarse input sanity rule, not a real affordability assessment.</li><li>The server builds the same 37 features in the training order, walks the three tree ensembles and applies each model's calibration coefficients.</li><li>It returns probability, risk band, 300-850 display score and decision per model. GB/XGBoost also return contributions. HTTP 200 means success; invalid requests receive 400 with a field/message.</li><li>The interface shows the primary GB slip and drivers, plus all three model results. The individual cutoff slider changes the GB recommendation locally; it does not retrain models or alter the applicant's probability.</li></ol>
+<p><strong>Why no pandas/scikit-learn in production?</strong> They are used to train offline. Exported trees need only standard-library Python arithmetic at runtime. This makes the deployment lightweight, but model export must preserve library behaviour. Next.js still has frontend dependencies; "dependency-free" describes Python scoring, not the entire website.</p>
+<h2>11 | Probability, band, score and decision differ</h2>
+<p><strong>PD</strong> is estimated probability of default; 0.20 means 20%, not guaranteed default or repayment. <strong>Bands:</strong> low below 15%, medium 15% to below 35%, high at least 35%. <strong>Display score:</strong> <code>round(850 - 550*p)</code>; it is our custom inverted scale, <strong>not an official bureau/FICO score</strong>.</p>
+<p><strong>Decision with cutoff c:</strong> approve if <code>p &lt; 0.6c</code>; approve with conditions if <code>0.6c &lt;= p &lt; c</code>; review if <code>c &lt;= p &lt; 1.6c</code>; otherwise decline. At default <strong>c = 25%</strong>, boundaries are <strong>15%, 25%, 40%</strong>. These are project policy rules, not learned classes or bank policy. A 20% applicant is medium-band, score 740 and approved with conditions. Band boundaries stay fixed when c moves.</p>
+<p><strong>Cost explorer:</strong> approving a bad borrower costs 5 units; declining a good one costs 1. Expected sample cost per applicant is <code>(5*bad_approved + good_declined)/1000</code>. Higher cutoff usually approves more people and permits more defaults. Portfolio outcomes use precomputed cutoffs 5%-60% in 5-point steps; the individual slider uses 1-point steps.</p>
+<h2>12 | Explain the waterfall correctly</h2>
+<p>The displayed GB chart starts from a baseline prediction. Tree-path changes are assigned to the split features (a <strong>Saabas/path-decomposition</strong> explanation), grouped back from one-hot columns to original fields, and rescaled into probability-point changes. Baseline plus contributions reconstructs the prediction before output rounding. A +5 percentage-point bar means 30% becomes 35%, not a 5% relative increase.</p>
+<p>The API rounds displayed contributions, so tiny sum differences can remain. These are <strong>model explanations, not causal claims</strong>; they do not prove changing a person's income would cause that exact risk change. The live waterfall is not full SHAP. RF has no driver breakdown here; XGBoost contributes to the API response, but GB drives the visible waterfall and cutoff.</p>
+<h2>13 | Demo, tests and honest limits</h2>
+<p><strong>Demo order:</strong> open Assess -> Strong file -> Score -> explain PD/decision -> Stretched file -> compare three models -> show drivers -> move cutoff -> clear age to show validation -> open portfolio/methodology. Values depend on the exact preset; never invent a result if the demo fails.</p>
+<p><strong>Recorded tests:</strong> 62 report cases across maths, API, UI and integration, including export parity, additivity, malformed input and three-model agreement. A real fix was XGBoost's strict split comparison. Tests support correctness; they do not prove fairness, causality or future accuracy. Limits: small/old sample, derived income, selection bias from recorded lending outcomes, no formal fairness/drift audit and no guarantee on new populations.</p>
+</div></div><p class="foot">2 / 2½ - Implementation and the examiner's key distinctions</p></section>
+<section class="sheet half" id="page-3">
+<h1>Viva quick answers | Final half-page</h1>
+<div class="columns"><div class="column">
+<p><span class="q">What did you build, rather than just train?</span> "A complete path from historical data to three calibrated models, lightweight scoring APIs, validation, model comparison, explanations and a working interface." Open one source file and show its place in that path.</p>
+<p><span class="q">Why did you choose GB if XGBoost is famous?</span> "We compared models on the same folds. Our calibrated GB AUC is slightly higher, and its explanation fits the primary interface. The small gap does not prove GB is universally superior." Untuned benchmark, tuning-search score and final calibrated metrics are different stages; quote the table on page 2.</p>
+<p><span class="q">What if the models disagree?</span> "Display the disagreement; do not hide it or invent certainty. The current UI keeps GB as primary and shows the alternatives. Human review and further validation would be appropriate in a real deployment."</p>
+<p><span class="q">How do you avoid leakage?</span> "Fit preprocessing/model only on the training fold. An OOF base prediction comes from a model that excluded that row. Our tuning/calibration still reuse validation data, so I would add nested validation or an untouched test set before claiming unbiased performance."</p>
+<p><span class="q">Did you use AI?</span> "I used Claude Code/Codex to assist coding and debugging. Those are development tools, not the three prediction models. I can explain the pipeline, trace a request and demonstrate the recorded checks." Describe only work you actually did; do not claim you wrote every line unaided.</p>
+</div><div class="column">
+<p><span class="q">What happens when the API is unavailable?</span> The form should show a readable error and retain the inputs. A preset fills the form; it is not a cached/fake model result. Portfolio/methodology can read exported aggregates without retraining.</p>
+<p><span class="q">Could the model be wrong or biased?</span> Yes. Calibration concerns groups, not individual certainty. Shared-data agreement is not proof; excluding sex/marital status does not remove proxies. Use updated representative data, fairness checks, a separate test set and monitoring before considering real use.</p>
+<p><span class="q">What would you improve?</span> Newer, larger data; stronger external/nested evaluation; fairness and drift monitoring; calibrated uncertainty; clearer explanations; batch scoring. These are future improvements, not already-built features.</p>
+<p><span class="q">If asked something you do not know:</span> say "I have not implemented/measured that; I would check this function or run this test." Explain what you can verify instead of guessing numbers or calling every explanation SHAP.</p>
+<p><span class="q">One-minute revision:</span> 1,000 rows; 700/300 labels; 12 inputs -> 37 features; five folds; GB 250 / XGB 200 / RF 300 trees; primary AUC 0.7928; default cutoff 25%; bands 15/35; decisions 15/25/40; 62 recorded cases. <strong>Boosting = sequential correction. Forest = separate trees averaged. Calibration = probability mapping. Inference is not retraining.</strong></p>
+</div></div><p class="foot">Final half-page - practise aloud and demonstrate, rather than memorising unexplained terms.</p></section>
+</body></html>

@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const SECTIONS = [
-  { id: "scorecard", label: "Scorecard" },
+  { id: "scorecard", label: "Evaluation metrics" },
   { id: "benchmark", label: "Benchmark" },
   { id: "tuning", label: "Tuning" },
-  { id: "discrimination", label: "Discrimination" },
+  { id: "discrimination", label: "Risk ranking" },
   { id: "calibration", label: "Calibration" },
-  { id: "drivers", label: "Drivers" },
+  { id: "drivers", label: "Feature importance" },
   { id: "cutoff", label: "Cutoff" },
   { id: "three-models", label: "Three models" },
   { id: "limitations", label: "Limitations" },

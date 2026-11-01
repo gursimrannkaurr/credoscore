@@ -14,7 +14,10 @@ export function ContributionWaterfall({ contributions, pd }: { contributions: Co
         <p className="kicker">Fig. A · Score drivers</p>
         <h2 id="drivers-title" className="mt-1 font-serif text-xl">What moved this score</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          The model starts every applicant at <span className="num text-ink">{formatPercent(start, 1)}</span>, its average score. Each factor then pushes that number up or down. Here they add up to <span className="num text-ink">{formatPercent(pd, 1)}</span> exactly: this is the model&apos;s own decision path, not an estimate.
+          The calculation starts from a baseline of <span className="num text-ink">{formatPercent(start, 1)}</span>.
+          The bars show contributions along the Gradient Boosting tree paths: positive values raise the estimate and negative values lower it.
+          Together they reconstruct the displayed risk of <span className="num text-ink">{formatPercent(pd, 1)}</span>, subject to rounding.
+          Values are percentage-point changes, not proof that an input causes default.
         </p>
         <div className="mt-3"><Legend items={[{ label: "Raises risk", color: "var(--band-high)", shape: "bar" }, { label: "Lowers risk", color: "var(--band-low)", shape: "bar" }]} /></div>
       </header>

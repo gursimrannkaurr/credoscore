@@ -17,9 +17,24 @@ node_modules/
 .next/
 /out/
 
-# report build output (regenerable via `npm run build` inside report/; final
-# deliverable PDFs at the project root are committed, this scratch output is not)
+# Local academic documents, reference PDFs and voice notes. Keep on disk,
+# outside version control; application code and model artifacts remain tracked.
+*.[pP][dD][fF]
+*.ogg
+*.m4a
+*.mp3
+*.wav
+
+# Regenerable report outputs; editable Markdown, diagram definitions, styles,
+# scripts, brand source images and saved JSON test evidence remain tracked.
 report/dist/
+report/assets/screens/
+report/assets/figures/
+report/assets/charts/
+report/assets/code/
+report/reference/images/
+report/data/qa-screens/
+report/data/notebook-run.ipynb
 
 # production
 /build

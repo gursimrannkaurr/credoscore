@@ -28,3 +28,17 @@
 
 .code-caption { font-weight: bold; font-size: 10.5pt; margin: 10pt 0 2pt; text-align: left; }
 .code-caption + p img { max-width: 100%; max-height: 260pt; border-radius: 4pt; break-inside: avoid; }
+
+/* Match the report's vector diagram conventions and readable live captures. */
+.synopsis-body figure { break-inside: avoid; margin: 7pt 0 10pt; }
+.synopsis-body figure img { width: auto; max-width: 100%; height: auto; max-height: 270pt; }
+.synopsis-body figcaption { font-size: 10.5pt; line-height: 14pt; margin-top: 4pt; }
+.synopsis-body figure img[src*="fig-3-3-erd"] { width: 100%; max-height: 290pt; }
+.synopsis-process-pair { display: flex; gap: 14pt; break-inside: avoid; }
+.synopsis-process-pair figure { width: calc(50% - 7pt); }
+.synopsis-process-pair figure img { width: 100%; max-height: none; }
+.synopsis-screen { break-inside: avoid; }
+.synopsis-screen figure img { width: 100%; max-height: none; border: 0.5pt solid #ccc; }
+.synopsis-screen figure img[src*="01-applicant-input"] { width: auto; max-height: 290pt; }
+.synopsis-body .cert-figure img { max-height: 480pt; width: auto; }
+.synopsis-body pre { font-size: 9pt; line-height: 10.5pt; }

@@ -15,7 +15,7 @@ export function CostAsymmetry() {
           </div>
           <p className="num mt-3 text-sm text-muted-foreground">5 units</p>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-            Lend to someone who defaults: you lose principal and interest.
+            Approve an applicant whose recorded outcome is default. In this simulation, that error adds 5 cost units.
           </p>
         </div>
         <div className="bg-paper-raised p-6">
@@ -25,12 +25,12 @@ export function CostAsymmetry() {
           </div>
           <p className="num mt-3 text-sm text-muted-foreground">1 unit</p>
           <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-            Turn away someone who would have repaid: you lose the margin you would have earned.
+            Decline an applicant whose recorded outcome is repayment. In this simulation, that error adds 1 cost unit.
           </p>
         </div>
       </div>
       <p className="mt-4 text-sm text-muted-foreground">
-        That&rsquo;s why the model&rsquo;s cutoff sits at 25%, not 50%. A 50% cutoff treats both mistakes as equal.
+        These unequal error costs make the choice of cutoff important. The app starts at 25%, while the portfolio explorer shows how approval counts, recorded defaults and total error cost change at other thresholds.
       </p>
     </div>
   );

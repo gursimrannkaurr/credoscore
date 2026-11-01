@@ -19,8 +19,8 @@ export function SiteFooter() {
             Loan Default <span className="italic text-mint">Risk</span>
           </p>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/70">
-            A student project that scores loan applicants with a calibrated, explainable gradient boosting model.
-            It is not meant for real lending decisions.
+            A student project comparing Gradient Boosting, XGBoost and Random Forest estimates of loan-default risk.
+            The main explanation uses Gradient Boosting. It is not meant for real lending decisions.
           </p>
         </div>
         <div className="md:col-span-3">

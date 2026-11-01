@@ -28,7 +28,7 @@ export function CutoffControl({ cutoff, deployedCutoff, pd, onChange }: CutoffCo
       <p className="kicker">What-if</p>
       <p className="mt-1 font-serif text-xl">Move the approval cutoff</p>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        The trained cutoff is {deployedPct}%. It comes from the dataset&apos;s cost matrix: a bad approval costs five times a wrongful decline. Slide it to see how the recommendation for this applicant changes.
+        The app starts at a {deployedPct}% cutoff. Move it to change the Gradient Boosting recommendation while keeping this applicant&apos;s predicted probability unchanged. The dataset assigns different costs to approving a default and declining a repayment; the portfolio explorer compares those costs at different cutoffs.
       </p>
       <div className="mt-5">
         <Slider

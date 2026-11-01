@@ -52,6 +52,10 @@ function SegmentRowItem({ row, lookup, baseRate }: { row: SegmentRow; lookup: Re
 export function SegmentExplorer({ segments, baseRate }: { segments: PortfolioResponse["segments"]; baseRate: number }) {
   return (
     <Tabs defaultValue="purpose">
+      <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
+        Choose a grouping below. Bars show recorded default rates and dots show mean predicted risk on a 0–60% scale.
+        The dashed line marks the overall dataset rate. Each row also gives the recorded rate and the number of applicants (n).
+      </p>
       <TabsList>
         {TABS.map((t) => (
           <TabsTrigger key={t.key} value={t.key}>
