@@ -47,6 +47,10 @@ The project also gave the trainee practical experience a course alone would not.
 
 ## 5.5 References / Bibliography
 
+The sources drawn on through this report are grouped below by kind, so that the dataset, the papers behind each modelling and explanation technique, the one book, and the web documentation consulted while building the application can each be traced on their own.
+
+**Papers**
+
 1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data
 1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001.
 1. Platt, J. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. *Advances in Large Margin Classifiers*, MIT Press, 1999.
@@ -54,8 +58,14 @@ The project also gave the trainee practical experience a course alone would not.
 1. Saabas, A. Interpreting random forests. *treeinterpreter* blog post, 2014.
 1. Pedregosa, F. et al. Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2011.
 1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (KDD), 2016.
-1. Siddiqi, N. *Credit Risk Scorecards: Developing and Implementing Intelligent Credit Scoring*. Wiley, 2006.
 1. Niculescu-Mizil, A. and Caruana, R. Predicting good probabilities with supervised learning. *Proceedings of the 22nd International Conference on Machine Learning* (ICML), 2005.
+
+**Books**
+
+1. Siddiqi, N. *Credit Risk Scorecards: Developing and Implementing Intelligent Credit Scoring*. Wiley, 2006.
+
+**Web sources / documentation**
+
 1. Vercel Inc. Next.js Documentation. https://nextjs.org/docs
 1. Meta Platforms, Inc. React Documentation. https://react.dev
 1. Vercel Inc. Python Runtime Documentation. https://vercel.com/docs/functions/runtimes/python

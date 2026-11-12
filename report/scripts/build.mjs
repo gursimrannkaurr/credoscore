@@ -22,7 +22,9 @@ function render(pages) {
   const src = readdirSync(join(ROOT, "src")).filter((f) => f.endsWith(".md")).sort()
     .map((f) => readFileSync(join(ROOT, "src", f), "utf8")).join("\n\n");
   let html = md.render(src);
-  // The institute certificate and covers are separate one-page deliverables.
+  // The institute certificate and covers are separate one-page deliverables
+  // (see export-certificates.mjs / export-covers.py). The main report body
+  // deliberately starts at Company's Certificate.
   html = html.replace(/<section class="front-page cover">[\s\S]*?<\/section>/, '');
   html = html.replace(/<section class="front-page">\s*<p class="front-title">INSTITUTE CERTIFICATE<\/p>[\s\S]*?<\/section>/,
     certificate => {

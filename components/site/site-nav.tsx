@@ -13,8 +13,6 @@ import { ThemeToggle } from "./theme-toggle";
 const LINKS = [
   { href: "/", label: "Brief" },
   { href: "/assess", label: "Assess" },
-  { href: "/portfolio", label: "The book" },
-  { href: "/model", label: "Methodology" },
 ];
 
 export function SiteNav({ ticker }: { ticker: { label: string; value: string }[] }) {

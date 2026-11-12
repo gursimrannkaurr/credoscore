@@ -30,7 +30,7 @@
 
 <p class="r9">OF</p>
 
-<p class="r9">Ms. Nisha Choudhary</p>
+<p class="r9">Ms. Nisha Chaudhary</p>
 
 <p class="r9">(Assistant Professor)</p>
 
@@ -58,15 +58,15 @@ The work was carried out under my guidance during the six-week summer training, 
 <div class="certificate-signature">
 <p class="sign-rule">&nbsp;</p>
 <p><strong>Signature of the Mentor / Guide</strong></p>
-<p><strong>Ms. Nisha Choudhary</strong></p>
+<p><strong>Ms. Nisha Chaudhary</strong></p>
 <p>Department of Computer Applications</p>
 <p>Date: ____________________</p>
 </div>
 <div class="certificate-signature">
 <p class="sign-rule">&nbsp;</p>
-<p><strong>Signature of the Director / HOD</strong></p>
-<p>Sri Guru Tegh Bahadur Institute of</p>
-<p>Management and Information Technology</p>
+<p><strong>Signature of the HOD</strong></p>
+<p><strong>Dr. Raj Kumar</strong></p>
+<p>HOD (BCA)</p>
 <p>Date: ____________________</p>
 </div>
 </div>
@@ -111,7 +111,7 @@ I express my sincere gratitude to everyone who helped me in completing this Summ
 
 I am thankful to GRAStech and Mohammad Qayam Ali, Founder and Program Head, for providing the opportunity of a six-week online internship in Machine Learning Using Python, which gave me the practical exposure needed to build this project.
 
-I am grateful to my mentor, Ms. Nisha Choudhary, Assistant Professor, for guiding me, reviewing the report and the working project, and giving valuable suggestions at every stage.
+I am grateful to my mentor, Ms. Nisha Chaudhary, Assistant Professor, for guiding me, reviewing the report and the working project, and giving valuable suggestions at every stage.
 
 I thank the management and faculty of Sri Guru Tegh Bahadur Institute of Management and Information Technology for providing a good learning environment.
 

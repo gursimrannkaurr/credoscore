@@ -8,9 +8,11 @@ import type { CompareResponse, PredictResponse } from "@/lib/types";
 import { AssessForm } from "./assess-form";
 import { ContributionWaterfall } from "./contribution-waterfall";
 import { CutoffControl } from "./cutoff-control";
+import { FeatureExtraction } from "./feature-extraction";
 import { ModelComparison } from "./model-comparison";
 import { EmptySlip, ResultSkeleton } from "./result-states";
 import { RiskVerdict } from "./risk-verdict";
+import { VerdictBanner } from "./verdict-banner";
 
 export function AssessWorkbench({ deployedCutoff }: { deployedCutoff: number }) {
   const [compare, setCompare] = useState<CompareResponse | null>(null);
@@ -39,10 +41,12 @@ export function AssessWorkbench({ deployedCutoff }: { deployedCutoff: number }) 
             <ResultSkeleton key="skeleton" />
           ) : result ? (
             <motion.div key={run} className="space-y-6" initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+              <VerdictBanner result={result} />
               <RiskVerdict result={result} cutoff={cutoff} />
               <CutoffControl cutoff={cutoff} deployedCutoff={deployedCutoff} pd={result.probability_of_default} onChange={setCutoff} />
               <ContributionWaterfall contributions={result.contributions} pd={result.probability_of_default} />
               {compare ? <ModelComparison compare={compare} /> : null}
+              <FeatureExtraction contributions={result.contributions} />
             </motion.div>
           ) : (
             <EmptySlip key="empty" error={status === "error"} />

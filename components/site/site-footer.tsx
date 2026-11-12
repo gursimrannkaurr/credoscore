@@ -3,10 +3,8 @@ import Link from "next/link";
 import { modelMeta } from "@/lib/model-meta";
 
 const READ = [
+  { href: "/", label: "Brief" },
   { href: "/assess", label: "Assess an applicant" },
-  { href: "/portfolio", label: "The book" },
-  { href: "/model", label: "Methodology" },
-  { href: "/model#limitations", label: "Limitations" },
 ];
 
 export function SiteFooter() {
