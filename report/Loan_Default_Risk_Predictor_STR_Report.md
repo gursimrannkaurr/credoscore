@@ -4,6 +4,8 @@
 
 <p class="b11">ON</p>
 
+<p class="cover-brand">CREDOSCORE</p>
+
 <p class="b12">LOAN DEFAULT RISK PREDICTOR: AN EXPLAINABLE MACHINE<br>LEARNING WEB APPLICATION FOR CREDIT RISK ASSESSMENT</p>
 
 <p class="i10">Submitted in partial fulfilment of the requirements</p>
@@ -28,7 +30,7 @@
 
 <p class="r9">OF</p>
 
-<p class="r9">Ms. Nisha Choudhary</p>
+<p class="r9">Ms. Nisha Chaudhary</p>
 
 <p class="r9">(Assistant Professor)</p>
 
@@ -46,23 +48,28 @@
 
 <section class="front-page">
 
-<p class="front-title">CERTIFICATE</p>
+<p class="front-title">INSTITUTE CERTIFICATE</p>
 
 This is to certify that the Summer Training Report entitled "Loan Default Risk Predictor: An Explainable Machine Learning Web Application for Credit Risk Assessment" is a bonafide work carried out by GURSIMRAN KAUR, Enrolment No. 02490202024, a student of Bachelor of Computer Applications (BCA), Semester V, Section 5A, at Sri Guru Tegh Bahadur Institute of Management and Information Technology, in partial fulfilment of the requirements for the award of the degree of Bachelor of Computer Applications.
 
 The work was carried out under my guidance during the six-week summer training, and to the best of my knowledge it is original and has not been submitted elsewhere for any degree or diploma.
 
-<div class="signature">
-
-____________________
-
-Ms. Nisha Choudhary
-
-Mentor / Guide
-
+<div class="certificate-signatures">
+<div class="certificate-signature">
+<p class="sign-rule">&nbsp;</p>
+<p><strong>Signature of the Mentor / Guide</strong></p>
+<p><strong>Ms. Nisha Chaudhary</strong></p>
+<p>Department of Computer Applications</p>
+<p>Date: ____________________</p>
 </div>
-
-<p class="date-place">Date: ____________ Place: ____________</p>
+<div class="certificate-signature">
+<p class="sign-rule">&nbsp;</p>
+<p><strong>Signature of the HOD</strong></p>
+<p><strong>Dr. Raj Kumar</strong></p>
+<p>HOD (BCA)</p>
+<p>Date: ____________________</p>
+</div>
+</div>
 
 </section>
 
@@ -104,7 +111,7 @@ I express my sincere gratitude to everyone who helped me in completing this Summ
 
 I am thankful to GRAStech and Mohammad Qayam Ali, Founder and Program Head, for providing the opportunity of a six-week online internship in Machine Learning Using Python, which gave me the practical exposure needed to build this project.
 
-I am grateful to my mentor, Ms. Nisha Choudhary, Assistant Professor, for guiding me, reviewing the report and the working project, and giving valuable suggestions at every stage.
+I am grateful to my mentor, Ms. Nisha Chaudhary, Assistant Professor, for guiding me, reviewing the report and the working project, and giving valuable suggestions at every stage.
 
 I thank the management and faculty of Sri Guru Tegh Bahadur Institute of Management and Information Technology for providing a good learning environment.
 
@@ -126,7 +133,7 @@ Loan Default Risk Predictor is a web application, developed during the six-week 
 
 The model is a gradient boosting ensemble of 250 trees, trained on the UCI German Credit dataset of 1,000 applicants, benchmarked against logistic regression, random forest and XGBoost under five-fold cross-validation, tuned by randomized search and Platt-calibrated so its output reads as a true probability. Contributions are computed with a Saabas tree-path decomposition, rescaled to sum exactly to the predicted probability. The application runs Next.js and React on the front end and a dependency-free Python scoring function on the back end, deployed as a Vercel serverless function, and was verified with 13 notebook tests, 25 API tests and 18 interface tests, all passing.
 
-The report covers the problem formulation, system analysis, system design including the ERD, DFD and use case diagrams, the model's evaluation, testing, implementation, limitations, future scope, and annexures of screen snapshots and source code. The live application is available at [LIVE URL].
+The report covers the problem formulation, system analysis, system design including the ERD, DFD and use case diagrams, the model's evaluation, testing, implementation, limitations, future scope, and annexures of screen snapshots and source code. The live application is available at https://credoscore-gk.vercel.app.
 
 Keywords: Credit Risk, Probability of Default, Gradient Boosting, Platt Scaling, Explainable AI, Next.js, Python, Vercel.
 
@@ -190,6 +197,7 @@ Keywords: Credit Risk, Probability of Default, Gradient Boosting, Platt Scaling,
 </section>
 
 
+
 <section class="chapter-opener">
 <p class="op-num">CHAPTER 1</p>
 <p class="op-title">PROBLEM FORMULATION</p>
@@ -208,7 +216,7 @@ Keywords: Credit Risk, Probability of Default, Gradient Boosting, Platt Scaling,
 
 GRAStech is an organisation that runs online internship programs in technology fields. The program undertaken by the trainee was the six-week online internship program in Machine Learning Using Python. The program is headed by Mohammad Qayam Ali, Founder and Program Head.
 
-The compulsory six-week summer training was completed as an online internship in Machine Learning Using Python at GRAStech, and the company issued a Certificate of Completion dated 31 July 2026, signed by Mohammad Qayam Ali. A copy of this certificate is placed after the Institute's Certificate at the beginning of this report. The training was carried out under the guidance of the college mentor, Ms. Nisha Choudhary, Assistant Professor. During the internship the trainee learned the complete life cycle of a machine learning application: data understanding, data preparation, modelling, evaluation and deployment, along with the testing that every stage requires. The project titled Loan Default Risk Predictor was designed and developed individually by the trainee as the training project.
+The compulsory six-week summer training was completed as an online internship in Machine Learning Using Python at GRAStech, and the company issued a Certificate of Completion dated 31 July 2026, signed by Mohammad Qayam Ali. A copy of this certificate is placed after the Institute's Certificate at the beginning of this report. The training was carried out under the guidance of the college mentor, Ms. Nisha Chaudhary, Assistant Professor. During the internship the trainee learned the complete life cycle of a machine learning application: data understanding, data preparation, modelling, evaluation and deployment, along with the testing that every stage requires. The project titled Loan Default Risk Predictor was designed and developed individually by the trainee as the training project.
 
 ## 1.2 Introduction about the Problem
 
@@ -243,22 +251,22 @@ The table shows that no single existing approach combines a calibrated probabili
 A computerised, explainable system is needed because the present mix of manual and black-box approaches suffers from the following drawbacks:
 
 - Manual decisions are inconsistent, since two officers can read the same application differently.
-- A plain score, whether from a scorecard or a black-box model, gives no reason the applicant or the officer can inspect.
-- Black-box models are rarely checked for calibration, so a quoted probability of default may not match the true default rate at that score.
-- The cost of a missed default and the cost of a wrongly declined applicant are different, and few manual or black-box processes make that trade-off explicit or adjustable.
-- There is no easy way for an officer to ask "what would change if the cutoff moved", since re-running a scorecard or a black-box model by hand for every cutoff is impractical.
-- Portfolio-level questions, such as how the bad rate is split across risk bands or whether the model ranks applicants well, are difficult to answer without a system that logs and aggregates every scored application.
+- A plain score, from a scorecard or a black-box model, gives no reason the applicant or officer can inspect.
+- Black-box models are rarely checked for calibration, so a quoted probability may not match the true default rate.
+- A missed default and a wrongly declined applicant cost differently, and few processes make that trade-off explicit or adjustable.
+- There is no easy way to ask "what would change if the cutoff moved", since re-running a model by hand for every cutoff is impractical.
+- Portfolio-level questions, such as how the bad rate splits across bands, are hard to answer without a system that aggregates every scored application.
 
-A computerised and explainable system removes these drawbacks. It applies the same calibrated model to every applicant, produces a probability and a factor-by-factor reason for it in a fraction of a second, lets the cutoff be moved and its consequences inspected instantly, and aggregates every historical prediction into the portfolio-level view a risk analyst needs.
+A computerised and explainable system removes these drawbacks: it applies the same calibrated model to every applicant, produces a probability and a factor-by-factor reason in a fraction of a second, lets the cutoff be moved and inspected instantly, and aggregates every prediction into the portfolio view a risk analyst needs.
 
 ## 1.5 Proposed Software / Project
 
-The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, a dependency-free Python scoring function deployed as a Vercel serverless function, and two JSON artifacts produced by an offline training pipeline. The live application is available at [LIVE URL].
+The Loan Default Risk Predictor is a web application that scores a loan applicant's probability of default with a calibrated gradient boosting model and explains the score factor by factor. It is a three-tier application consisting of a Next.js and React front end, dependency-free Python scoring functions deployed as Vercel serverless functions (three models scored on request), and the JSON artifacts produced by an offline training pipeline. The live application is available at https://credoscore-gk.vercel.app.
 
 ### 1.5.1 Objectives of the Project
 
 1. To collect the twelve applicant, loan and credit-position fields needed to score a loan application, with client-side and server-side validation.
-2. To train and benchmark a gradient boosting model against logistic regression, random forest and XGBoost, and to calibrate its output into a genuine probability of default.
+2. To benchmark four candidate models, deploy three of them to production (gradient boosting, XGBoost and random forest), and score them together on every request for cross-verified agreement rather than one model's self-reported accuracy.
 3. To return, for every scored applicant, a probability of default, a risk band, a credit-style score and a lending recommendation.
 4. To explain every prediction with a factor-by-factor contribution that sums exactly to the predicted probability.
 5. To let a user move the approval cutoff and see the resulting approval rate, bad rate among approved applicants and expected cost change in real time.
@@ -282,9 +290,10 @@ The following are outside the present scope: using the tool for real lending dec
 
 ## 1.6 Importance of the Work
 
-The work is important on three counts. It tackles a problem that sits at the centre of consumer lending, namely turning an applicant's details into a decision that is both accurate and explainable, so the requirements were grounded in a real, well-studied dataset rather than an invented scenario. The project is also original and was built from the training data upward: the benchmarking, the tuning, the calibration and the explanation method were all carried out by the trainee rather than taken from an existing library untouched, giving the result genuine value as a teaching example of an explainable scoring system. It also provided practical exposure to the full life cycle of an applied machine learning product, covering feature engineering, model benchmarking and tuning, probability calibration, explanation, a dependency-free production API, a front end, testing and cloud deployment.
+The work addresses a problem at the centre of consumer lending, turning an applicant's details into a decision that is both accurate and explainable, grounded in a real, well-studied dataset rather than an invented scenario. The benchmarking, tuning, calibration and explanation method were all carried out by the trainee rather than taken untouched from an existing library, which makes the project useful as a teaching example of an explainable, cross-verified scoring system. It also gave practical exposure to the full life cycle of an applied machine learning product, from feature engineering and model benchmarking through calibration, explanation, a dependency-free production API, a front end and testing to cloud deployment.
 
-The project also demonstrates professional practices expected of a developer working on a credit model. The personal-status-and-sex attribute in the source data was excluded as a protected characteristic before any modelling began. The model's output was calibrated and evaluated honestly on out-of-fold predictions rather than on the data it was trained on. No applicant data is retained by the deployed API, which is stateless and keeps no secrets, and the report states plainly, in every place the tool is shown, that it is not meant for real lending decisions.
+The project also demonstrates professional practices expected of a developer working on a credit model: the personal-status-and-sex attribute was excluded as a protected characteristic before any modelling began, the model's output was calibrated and evaluated honestly on out-of-fold predictions, no applicant data is retained by the stateless, secret-free deployed API, and the report states plainly, wherever the tool is shown, that it is not meant for real lending decisions.
+
 
 
 
@@ -304,33 +313,33 @@ The project also demonstrates professional practices expected of a developer wor
 
 ## 2.1 Feasibility Study
 
-Before development began, a feasibility study was carried out to check whether the proposed system could be built within the available time and skills, and whether it would be useful in practice.
+Before development began, a feasibility study checked whether the proposed system could be built within the available time and skills, and whether it would be useful in practice.
 
 #### Technical Feasibility
 
-All the technologies chosen are open source, well documented and widely used: Next.js and React for the front end, Python's standard library for the scoring function, and pandas, scikit-learn and XGBoost for training. The trainee had the required background in JavaScript, TypeScript and Python, and received guidance during the training for the modelling and calibration steps. The German Credit dataset is small enough to train on an ordinary laptop in under a minute, and Vercel offers a free tier that auto-detects Next.js and deploys Python functions alongside it. The project is therefore technically feasible.
+All the technologies chosen are open source, well documented and widely used: Next.js and React for the front end, Python's standard library for the scoring functions, and pandas, scikit-learn and XGBoost for training. The trainee had the required background in JavaScript, TypeScript and Python, and received guidance for the modelling and calibration steps. The German Credit dataset trains in under a minute on an ordinary laptop, and Vercel's free tier auto-detects Next.js and deploys Python functions alongside it. The project is therefore technically feasible.
 
 #### Economic Feasibility
 
-The cost of the system is effectively zero. The dataset is licensed CC BY 4.0 and carries no fee, every library used is open source, development was carried out on an ordinary laptop, and hosting on Vercel's free tier is sufficient for a project of this size. The benefit, in the form of a faster and more consistent credit decision, outweighs this negligible cost, so the project is economically feasible.
+The cost of the system is effectively zero: the dataset is CC BY 4.0, every library used is open source, development ran on an ordinary laptop, and Vercel's free tier is sufficient for a project of this size. The benefit, a faster and more consistent credit decision, outweighs this negligible cost.
 
 #### Operational Feasibility
 
-The interface follows the pattern of an ordinary web form: a set of labelled fields, a submit button and a results panel. A loan officer does not need training to fill in the twelve fields or to read a probability, a band and a recommendation. A risk analyst reads the portfolio pages the same way as any dashboard. The system therefore fits naturally into how its three user roles already work, so operational acceptance is expected to be high.
+The interface follows the pattern of an ordinary web form: labelled fields, a submit button, a results panel. A loan officer needs no training to fill in twelve fields or read a probability, a band and a recommendation, and a risk analyst reads the portfolio pages like any dashboard, so operational acceptance is expected to be high.
 
 #### Schedule Feasibility
 
-The training period was six weeks. The work was divided into six weekly iterations that could be developed and tested one after another, as shown in Figure 2.1. The schedule was realistic and the project was completed within the training period.
+The six-week training period was divided into six weekly iterations, developed and tested one after another, as shown in Figure 2.1. The schedule was realistic and the project was completed within it.
 
 ![Figure 2.1 Project schedule of the six-week training](../assets/figures/fig-2-1-gantt.png)
 
 #### Legal and Security Feasibility
 
-The dataset used, the UCI Statlog German Credit Data, is licensed under CC BY 4.0 and attributed to Professor Hans Hofmann of Universität Hamburg, so its use in this project is legally clear. The personal-status-and-sex attribute of the original dataset is excluded from the model as a protected characteristic, and the deployed application does not store any applicant data it is given; every request to the scoring API is stateless. The report and the application state throughout that the tool is a student project and is not meant for real lending decisions.
+The UCI Statlog German Credit Data is licensed CC BY 4.0 and attributed to Professor Hans Hofmann of Universität Hamburg, so its use here is legally clear. The personal-status-and-sex attribute is excluded as a protected characteristic, and the deployed application stores no applicant data; every request is stateless. The report and the application state throughout that the tool is a student project, not meant for real lending decisions.
 
 ## 2.2 Analysis Methodology
 
-An iterative, CRISP-DM-style approach was followed, in which data understanding, data preparation, modelling, evaluation and deployment were revisited in successive iterations rather than attempted once from end to end. Each iteration produced a working piece of the system, which was tested before the next iteration began, as summarised in Table 2.1.
+An iterative, CRISP-DM-style approach was followed, in which data understanding, preparation, modelling, evaluation and deployment were revisited in successive iterations rather than attempted once end to end. Each iteration produced a working piece of the system, tested before the next began, as summarised in Table 2.1.
 
 <p class="table-caption">Table 2.1 Iterations followed during development</p>
 
@@ -345,7 +354,7 @@ An iterative, CRISP-DM-style approach was followed, in which data understanding,
 
 ### 2.2.1 Requirement Gathering
 
-Requirements were gathered by studying how credit scorecards and bureau scores are used in practice, by working through the UCI German Credit dataset's own documentation to see what information is realistically available at the point of application, and by reviewing the requirement with the training mentor before design started. The outcome was the functional and non-functional requirements set out below.
+Requirements were gathered by studying how credit scorecards and bureau scores are used in practice, working through the UCI dataset's own documentation to see what information is realistically available at the point of application, and reviewing the requirement with the training mentor before design started.
 
 ### 2.2.2 Users of the System
 
@@ -365,7 +374,7 @@ The requirements gathered from the dataset, the training mentor and the trainee'
 
 <p class="table-caption">Table 2.3 Functional requirements</p>
 
-<table>
+<table class="dense">
 <colgroup><col style="width:9%"><col style="width:58%"><col style="width:33%"></colgroup>
 <thead>
 <tr><th>ID</th><th>Requirement</th><th>Actor</th></tr>
@@ -425,22 +434,26 @@ The software stack chosen for the training pipeline, the API and the web interfa
 
 <p class="table-caption">Table 2.5 Software used</p>
 
-| Component | Technology | Reason for choice |
-| --- | --- | --- |
-| Front-end framework | Next.js 16.3.5 (App Router, Turbopack) | Server-rendered React with file-based routing and a fast development server. |
-| UI library | React 19.2.8 | Component model shared by the application's client islands. |
-| Language | TypeScript 5 | Static typing catches shape errors in the scoring pipeline early. |
-| Styling | Tailwind CSS 4 | Utility classes keep the editorial theme consistent without a separate design-system package. |
-| UI primitives | Radix UI | Accessible, unstyled primitives for the form and overlay components. |
-| Charting | Recharts 3 | Declarative charts for the waterfall, band split and cutoff explorer. |
-| Motion | Framer Motion | Restrained reveal and staircase-bar animations. |
-| Icons | lucide-react | A consistent icon set for the navigation and the form. |
-| Scoring runtime | Python standard library (api/predict.py, api/portfolio.py) | A dependency-free handler keeps the deployed function small and avoids shipping scikit-learn. |
-| Data handling (training) | pandas 2.2.3, numpy 2.1.3 | Data loading, feature engineering and array computation during training. |
-| Modelling (training) | scikit-learn 1.9.1, xgboost 2.1.3 | The candidate models compared under cross-validation. |
-| Explanation cross-check | shap 0.46.0 | An independent check of the Saabas contributions used in production. |
-| Training reporting | matplotlib 3.9.2, jupyter | Notebook-based benchmarking, evaluation charts and test documentation. |
-| Hosting | Vercel | Auto-detects the Next.js application and deploys api/*.py as Python serverless functions. |
+<table class="dense">
+<colgroup><col style="width:22%"><col style="width:33%"><col style="width:45%"></colgroup>
+<thead><tr><th>Component</th><th>Technology</th><th>Reason for choice</th></tr></thead>
+<tbody>
+<tr><td>Front-end framework</td><td>Next.js 16.3.5 (App Router, Turbopack)</td><td>Server-rendered React, file-based routing, fast dev server.</td></tr>
+<tr><td>UI library</td><td>React 19.2.8</td><td>Component model shared by the client islands.</td></tr>
+<tr><td>Language</td><td>TypeScript 5</td><td>Static typing catches shape errors in the scoring pipeline early.</td></tr>
+<tr><td>Styling</td><td>Tailwind CSS 4</td><td>Utility classes keep the editorial theme consistent.</td></tr>
+<tr><td>UI primitives</td><td>Radix UI</td><td>Accessible, unstyled primitives for forms and overlays.</td></tr>
+<tr><td>Charting</td><td>Recharts 3</td><td>Declarative charts for the waterfall, band split and cutoff explorer.</td></tr>
+<tr><td>Motion</td><td>Framer Motion</td><td>Restrained reveal and staircase-bar animations.</td></tr>
+<tr><td>Icons</td><td>lucide-react</td><td>A consistent icon set for the navigation and form.</td></tr>
+<tr><td>Scoring runtime</td><td>Python standard library (api/*.py)</td><td>Dependency-free handlers avoid shipping scikit-learn.</td></tr>
+<tr><td>Data handling (training)</td><td>pandas 2.2.3, numpy 2.1.3</td><td>Data loading and array computation during training.</td></tr>
+<tr><td>Modelling (training)</td><td>scikit-learn 1.9.1, xgboost 2.1.3</td><td>Candidate models under cross-validation; three refit and deployed.</td></tr>
+<tr><td>Explanation cross-check</td><td>shap 0.46.0</td><td>Independent check of the Saabas contributions used in production.</td></tr>
+<tr><td>Training reporting</td><td>matplotlib 3.9.2, jupyter</td><td>Benchmarking, evaluation charts and test documentation.</td></tr>
+<tr><td>Hosting</td><td>Vercel</td><td>Auto-detects Next.js, deploys api/*.py as Python functions.</td></tr>
+</tbody>
+</table>
 
 ### 2.3.2 H/W used
 
@@ -448,18 +461,23 @@ The hardware used for development, and the minimum hardware expected at the clie
 
 <p class="table-caption">Table 2.6 Hardware used</p>
 
-| Component | Specification |
-| --- | --- |
-| Processor | Intel Core i5 or equivalent (or higher) |
-| RAM | 8 GB minimum, 16 GB recommended |
-| Storage | 256 GB SSD, at least 2 GB free |
-| Display | Standard laptop or desktop monitor (1366 x 768 or higher) |
-| Network | Broadband internet connection |
-| Client device (end user) | Any computer, tablet or smartphone with a modern web browser |
+<table class="dense">
+<colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+<thead><tr><th>Component</th><th>Specification</th></tr></thead>
+<tbody>
+<tr><td>Processor</td><td>Intel Core i5 or equivalent (or higher)</td></tr>
+<tr><td>RAM</td><td>8 GB minimum, 16 GB recommended</td></tr>
+<tr><td>Storage</td><td>256 GB SSD, at least 2 GB free</td></tr>
+<tr><td>Display</td><td>Standard laptop or desktop monitor (1366 x 768 or higher)</td></tr>
+<tr><td>Network</td><td>Broadband internet connection</td></tr>
+<tr><td>Client device (end user)</td><td>Any computer, tablet or smartphone with a modern web browser</td></tr>
+</tbody>
+</table>
 
 ### 2.3.3 Software Requirement Summary
 
-To run the project locally, Node.js, Python 3.12, npm and a code editor are needed, along with the training dependencies (pandas, numpy, scikit-learn, xgboost, shap, matplotlib, jupyter) if the model is to be retrained. The development setup runs two local servers, the Next.js application and the Python prediction and portfolio servers, with the Next.js configuration rewriting requests to them in development only. For the end user, only a browser and an internet connection are required.
+To run the project locally, Node.js, Python 3.12, npm and a code editor are needed, with the training dependencies (pandas, numpy, scikit-learn, xgboost, shap, matplotlib, jupyter) if the model is to be retrained. Development runs three local Python servers alongside the Next.js application, which rewrites requests to them in development only. For the end user, only a browser and an internet connection are required.
+
 
 
 
@@ -479,21 +497,21 @@ To run the project locally, Node.js, Python 3.12, npm and a code editor are need
 
 ## 3.1 Design Methodology
 
-The system was designed top-down: architecture first, then module boundaries, then folder structure, then data design, then screens. Structured design tools were used throughout: an ERD for the data the system reads and writes, DFDs for the movement of a request through the scoring pipeline, a use case diagram for actor-system interaction, and flowcharts and a state diagram for training and scoring.
+The system was designed top-down: architecture, module boundaries, folder structure, data design, then screens. Structured design tools were used throughout: an ERD for the data the system reads and writes, DFDs for the movement of a request through the scoring pipeline, a use case diagram for actor-system interaction, and flowcharts and a state diagram for training and scoring.
 
 ### 3.1.1 System Architecture
 
-The Loan Default Risk Predictor follows a three-tier architecture, shown in Figure 3.1. The browser never evaluates the model itself; every scoring request is sent to a server-side function, and every reusable number used to build a page is read from a JSON artifact at build time.
+The Loan Default Risk Predictor follows a three-tier architecture, shown in Figure 3.1. The browser never evaluates a model itself; every scoring request goes to a server-side function, and every reusable number used to build a page is read from a JSON artifact at build time.
 
 ![Figure 3.1 Three-tier architecture of the Loan Default Risk Predictor](../assets/figures/fig-3-1-architecture.png)
 
 - **Presentation layer.** Next.js 16 App Router pages (Brief, Assess, The book, Methodology) rendered on the server and hydrated as React 19 client islands only where interaction is required, for example the applicant form and the cutoff slider.
-- **Application layer.** Vercel hosts both the Next.js server, which renders pages and serves static assets, and two standard-library Python functions, `api/predict.py` and `api/portfolio.py`, which are the only parts of the system the browser calls over the network at runtime.
-- **Data layer.** Two JSON artifacts, `model/model.json` and `model/portfolio.json`, hold the fitted ensemble and the precomputed portfolio aggregates respectively. A separate offline path, `ml/train.py`, reads the raw dataset with pandas and scikit-learn and writes both artifacts; it never runs in production.
+- **Application layer.** Vercel hosts the Next.js server and three standard-library Python functions, `api/predict.py`, `api/predict-compare.py` and `api/portfolio.py`, the only parts of the system the browser calls over the network at runtime.
+- **Data layer.** Three JSON artifacts, `model/model.json`, `model/model_xgboost.json`, `model/model_random_forest.json`, plus `model/portfolio.json`, hold the three fitted ensembles and the precomputed portfolio aggregates. A separate offline path, `ml/train.py`, reads the raw dataset with pandas and scikit-learn and writes all four; it never runs in production.
 
 ### 3.1.2 Module Hierarchy
 
-The system divides into four modules, shown in Figure 3.2: the training pipeline, the scoring API, the web interface and the test suite. The training pipeline prepares data, benchmarks candidate models, tunes and calibrates the winner and exports the two artifacts. The scoring API validates a request, walks the tree ensemble, calibrates and bands the result, explains it and serves the portfolio analytics. The web interface covers the four pages reachable from the navigation bar. The test suite is the notebook's model tests together with the API and UI test scripts described in Chapter 4.
+The system divides into four modules, shown in Figure 3.2: the training pipeline, the scoring API, the web interface and the test suite. The training pipeline prepares data, benchmarks candidate models, tunes and calibrates gradient boosting, exports all three deployed artifacts. The scoring API validates a request, walks the relevant ensemble(s), calibrates and bands the result, explains it where applicable and serves the portfolio analytics. The web interface covers the four pages reachable from the navigation bar. The test suite is the notebook's model tests together with the API and UI test scripts described in Chapter 4.
 
 ![Figure 3.2 Module hierarchy of the Loan Default Risk Predictor](../assets/figures/fig-3-2-modules.png)
 
@@ -503,35 +521,39 @@ The repository's folder and file structure is summarised in Table 3.1, verified 
 
 <p class="table-caption">Table 3.1 Folder and file structure</p>
 
-| File / Folder | Purpose |
-| --- | --- |
-| `app/layout.tsx`, `app/page.tsx`, `app/globals.css` | Root layout, Brief landing page, global stylesheet. |
-| `app/assess/`, `app/portfolio/`, `app/model/` | The Assess, The book and Methodology pages. |
-| `app/error.tsx`, `app/not-found.tsx` | Route-level error and 404 screens. |
-| `components/assess/` | Applicant form, workbench, contribution waterfall, cutoff control, PD meter, verdict stamp, sample-file presets. |
-| `components/portfolio/` | Risk-band split, cutoff explorer, decile chart/table, segment explorer. |
-| `components/model/` | Benchmark table, calibration chart, cutoff table, importance bars, ROC chart. |
-| `components/landing/` | Calibration miniature, cost-asymmetry panel, decile staircase, decision pipeline diagram. |
-| `components/site/`, `components/editorial/` | Nav, footer, theme toggle; and shared layout primitives (section, stat, figure, reveal). |
-| `components/ui/`, `components/charts/chart-kit.tsx` | Radix-based primitives and the shared Recharts configuration. |
-| `lib/types.ts`, `lib/format.ts`, `lib/utils.ts` | Shared types, label/number formatters, the `cn()` helper. |
-| `lib/decision.ts`, `lib/portfolio.ts`, `lib/model-meta.ts` | Client decision mirror, portfolio reader, server-only model metadata reader. |
-| `lib/api.ts` | The typed `predict()` client for `/api/predict`. |
-| `api/predict.py`, `api/portfolio.py` | The two Python functions deployed as Vercel serverless functions. |
-| `ml/train.py`, `ml/dev_server.py` | Offline training pipeline; local dev server mirroring the two functions on ports 8001/8002. |
-| `model/model.json`, `model/portfolio.json` | Exported ensemble and precomputed portfolio aggregates. |
-| `data/german_credit.csv` | The cleaned, re-labelled training dataset. |
-| `notebook.ipynb` | Reproducibility and quality-gate tests (Chapter 4). |
-| `docs/` | Internal engineering notes (architecture, data, model, testing, deployment, limitations). |
-| `vercel.json`, `next.config.ts` | Function bundling config and the local rewrite to the two Python servers. |
+<table class="dense">
+<colgroup><col style="width:34%"><col style="width:66%"></colgroup>
+<thead><tr><th>File / Folder</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>app/layout.tsx</code>, <code>app/page.tsx</code>, <code>app/globals.css</code></td><td>Root layout, Brief landing page, global stylesheet.</td></tr>
+<tr><td><code>app/assess/</code>, <code>app/portfolio/</code>, <code>app/model/</code></td><td>The Assess, The book and Methodology pages.</td></tr>
+<tr><td><code>app/error.tsx</code>, <code>app/not-found.tsx</code></td><td>Route-level error and 404 screens.</td></tr>
+<tr><td><code>components/assess/</code></td><td>Applicant form, workbench, waterfall, cutoff control, PD meter, verdict stamp, model comparison, presets.</td></tr>
+<tr><td><code>components/portfolio/</code></td><td>Risk-band split, cutoff explorer, decile chart/table, segment explorer.</td></tr>
+<tr><td><code>components/model/</code></td><td>Benchmark table, calibration chart, cutoff table, importance bars, ROC chart.</td></tr>
+<tr><td><code>components/landing/</code></td><td>Calibration miniature, cost-asymmetry panel, decile staircase, decision pipeline diagram.</td></tr>
+<tr><td><code>components/site/</code>, <code>components/editorial/</code></td><td>Nav, footer, theme toggle; shared layout primitives (section, stat, figure, reveal).</td></tr>
+<tr><td><code>components/ui/</code>, <code>components/charts/chart-kit.tsx</code></td><td>Radix-based primitives and the shared Recharts configuration.</td></tr>
+<tr><td><code>lib/types.ts</code>, <code>lib/format.ts</code>, <code>lib/utils.ts</code></td><td>Shared types, label/number formatters, the <code>cn()</code> helper.</td></tr>
+<tr><td><code>lib/decision.ts</code>, <code>lib/portfolio.ts</code>, <code>lib/model-meta.ts</code></td><td>Client decision mirror, portfolio reader, server-only model metadata reader.</td></tr>
+<tr><td><code>lib/api.ts</code></td><td>The typed <code>predict()</code>/<code>predictCompare()</code> clients for the scoring endpoints.</td></tr>
+<tr><td><code>api/predict.py</code>, <code>api/predict-compare.py</code>, <code>api/portfolio.py</code></td><td>The three Python functions deployed as Vercel serverless functions.</td></tr>
+<tr><td><code>ml/train.py</code>, <code>ml/dev_server.py</code></td><td>Offline training pipeline; local dev server mirroring the three functions on ports 8001/8002/8003.</td></tr>
+<tr><td><code>model/model.json</code>, <code>model/model_xgboost.json</code>, <code>model/model_random_forest.json</code>, <code>model/portfolio.json</code></td><td>Exported ensembles (gradient boosting, XGBoost, random forest) and precomputed portfolio aggregates.</td></tr>
+<tr><td><code>data/german_credit.csv</code></td><td>The cleaned, re-labelled training dataset.</td></tr>
+<tr><td><code>notebook.ipynb</code></td><td>Reproducibility and quality-gate tests (Chapter 4).</td></tr>
+<tr><td><code>docs/</code></td><td>Internal engineering notes (architecture, data, model, testing, deployment, limitations).</td></tr>
+<tr><td><code>vercel.json</code>, <code>next.config.ts</code></td><td>Function bundling config and the local rewrite to the three Python servers.</td></tr>
+</tbody>
+</table>
 
 ## 3.2 Database Design
 
-The system has no transactional database. Its data design covers the training dataset and the two JSON artifacts the API reads.
+The system has no transactional database. Its data design covers the training dataset and the JSON artifacts the API reads.
 
 ### 3.2.1 ERD
 
-An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction from the deployed model artifact; a prediction is explained by one or more per-factor contributions. The relationships are drawn in Figure 3.3.
+An applicant submits one loan application, which carries exactly one credit position and receives exactly one prediction per deployed model; a boosting-model prediction is explained by per-factor contributions, while the Random Forest result has no contribution list. The diagram shows conceptual relationships; field details appear in the tables below, and applicant records are not persisted. The relationships are drawn in Figure 3.3.
 
 ![Figure 3.3 Entity Relationship Diagram of the Loan Default Risk Predictor](../assets/figures/fig-3-3-erd.png)
 
@@ -556,7 +578,7 @@ The training dataset's twelve retained fields are structured as shown in Table 3
 | checking_status | Categorical | 0_to_200, 200_or_more, less_than_0, none | Attribute 1 |
 | savings_status | Categorical | 100_to_500, 500_to_1000, none, over_1000, under_100 | Attribute 6 |
 
-monthly_income does not exist as a UCI attribute. It is engineered at load time as `(loan_amount / duration_months) / (installment_rate / 100)`, so that a 1,169 DM loan over 6 months at an installment rate of 4% implies a monthly income of 4,870.83 DM. Attribute 9 (personal status and sex) is excluded as a protected attribute, and Attributes 10, 11, 12, 14, 18, 19 and 20 are excluded to keep the applicant form short.
+monthly_income does not exist as a UCI attribute; it is engineered at load time as `(loan_amount / duration_months) / (installment_rate / 100)`, so a 1,169 DM loan over 6 months at an installment rate of 4% implies a monthly income of 4,870.83 DM. Attribute 9 (personal status and sex) is excluded as a protected attribute; Attributes 10, 11, 12, 14, 18, 19 and 20 are excluded to keep the applicant form short.
 
 Each of the six categorical fields is one-hot encoded; Table 3.3 gives the resulting column counts.
 
@@ -604,7 +626,7 @@ The six numeric fields pass through unscaled, so the full feature vector that th
 
 ### 3.2.2 DFD
 
-Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1.
+Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. The model-file connections supply the encoding settings, fitted trees and calibration parameters.
 
 ![Figure 3.4 Context Level DFD (Level 0)](../assets/figures/fig-3-4-dfd0.png)
 
@@ -621,7 +643,7 @@ Figure 3.4 is the context-level diagram (Level 0), which treats scoring and anal
 | 5.0 | Explain | Groups the per-feature contributions by source field and rescales them so they sum exactly to the probability minus the base rate. |
 | 6.0 | Serve portfolio analytics | Reads D2 and returns the precomputed cutoff curve, deciles, calibration bins, feature importance and segments without any further computation. |
 
-Data stores: D1 model.json (the fitted ensemble and its metadata), D2 portfolio.json (the precomputed, out-of-fold portfolio aggregates), and D3 german_credit.csv (the training dataset, read only by the offline training pipeline).
+Data stores: D1 contains the exported model files and their encoding and calibration metadata; D2 is portfolio.json, containing the precomputed, out-of-fold portfolio aggregates. The training dataset is read only by the separate offline pipeline and is outside this runtime DFD.
 
 #### Use Case Diagram
 
@@ -646,6 +668,8 @@ Figure 3.7 is the flowchart of the offline training pipeline. Figure 3.8 is the 
 ![Figure 3.7 Flowchart of the training process](../assets/figures/fig-3-7-training-flow.png)
 
 ![Figure 3.8 Flowchart of the scoring process](../assets/figures/fig-3-8-predict-flow.png)
+
+The decision-state diagram uses the default cutoff of 25%; its boundaries change when the cutoff is adjusted.
 
 ![Figure 3.9 State diagram of an applicant's decision](../assets/figures/fig-3-9-decision-state.png)
 
@@ -696,14 +720,16 @@ Output is presented as a risk slip and a set of linked charts rather than a sing
 
 ### 3.5.1 REST API Design
 
-The system exposes two read endpoints, each implemented as a standard-library Python function, listed in Table 3.9.
+The system exposes three read endpoints, each implemented as a standard-library Python function, listed in Table 3.9.
 
 <p class="table-caption">Table 3.9 REST API endpoints</p>
 
 | Verb | Endpoint | Access | Purpose |
 | --- | --- | --- | --- |
-| POST | /api/predict | Public | Score one applicant and return the probability, band, score, decision and contributions |
+| POST | /api/predict | Public | Score one applicant against the deployed gradient boosting model and return the probability, band, score, decision and contributions |
 | OPTIONS | /api/predict | Public | CORS preflight; returns 204 |
+| POST | /api/predict-compare | Public | Score one applicant against all three deployed models (gradient boosting, XGBoost, random forest) and return all three results in one response, so the interface can show whether they agree |
+| OPTIONS | /api/predict-compare | Public | CORS preflight; returns 204 |
 | GET | /api/portfolio | Public | Return the precomputed portfolio aggregates, cached for one hour |
 | OPTIONS | /api/portfolio | Public | CORS preflight; returns 204 |
 
@@ -727,59 +753,23 @@ The prediction response's fields are listed in Table 3.10.
 Security was treated as a design requirement from the start, even though the system holds no user accounts and no personal data:
 
 - Strict input validation: every field is checked for presence, type and range before anything else runs, and an unseen category is rejected rather than coerced.
-- A single error shape: every rejected request returns HTTP 400 with `{error, message}` and no stack trace; there are no 500 responses for bad input, since the handler guards the whole request body in a try/except.
-- Statelessness: nothing an applicant submits is written anywhere; each request is scored and forgotten, which removes an entire class of data-breach risk.
-- No secrets: the deployed functions need no API key, database password or signing secret, so there is nothing to leak.
-- Open CORS by design: `Access-Control-Allow-Origin: *` is set on both endpoints. This is acceptable only because both endpoints are read-only, stateless and free of personal data; a mutating or authenticated endpoint would need a narrower origin policy.
-- The protected attribute (personal status and sex) is excluded from the model, so it cannot leak into a decision even indirectly through the API's output.
-- Deployment hygiene: `vercel.json`'s `excludeFiles` keeps the training dataset, the notebook and the documentation out of the deployed function bundle, so the raw data never reaches the public internet through the API's code.
-- Validation is mirrored, not shared: the same twelve bounds and the same instalment rule are enforced independently in `assess-form.tsx` and in `api/predict.py`, so a request can never bypass the rule by skipping the browser.
+- A single error shape: every rejected request returns HTTP 400 with `{error, message}` and no stack trace; the handler guards the whole body in a try/except, so there are no 500s for bad input.
+- Statelessness: nothing an applicant submits is written anywhere; each request is scored and forgotten.
+- No secrets: the deployed functions need no API key, database password or signing secret.
+- Open CORS by design: `Access-Control-Allow-Origin: *` is set on every endpoint, acceptable because every endpoint is read-only, stateless and free of personal data.
+- The protected attribute (personal status and sex) is excluded from the model, so it cannot leak into a decision even indirectly.
+- Deployment hygiene: `vercel.json`'s `excludeFiles` keeps the dataset, the notebook and the documentation out of the deployed function bundle.
+- Validation is mirrored, not shared: the same bounds and instalment rule are enforced independently in `assess-form.tsx` and `api/predict.py`, so a request can never bypass the rule by skipping the browser.
 
 ### 3.5.3 Important Code Segments
 
-Scoring loop (api/predict.py). Each tree's path contribution is attributed from a virtual root value of 0, not the tree's real root value, which is what makes the contributions exactly additive across the whole ensemble:
+Scoring loop (`api/predict.py`). Each tree's path contribution is attributed from a virtual root value of 0, not the tree's real root value, which is what makes the contributions exactly additive across the whole ensemble. The same function now also decides the split direction per model type, since gradient boosting and XGBoost do not agree on how a tie at the threshold is routed (§3.6.8 explains why).
 
-```python
-contributions: dict[int, float] = {}
-raw = model["base_value"]
+![Figure 3.16 score(): walking the tree ensemble to accumulate the raw margin and its factor contributions](../assets/code/score-tree-walk.png)
 
-for tree in model["trees"]:
-    node = 0
-    attributed_value = 0.0
-    while tree["left"][node] != -1:
-        feature_idx = tree["feature"][node]
-        threshold = tree["threshold"][node]
-        go_left = vector[feature_idx] <= threshold
-        next_node = tree["left"][node] if go_left else tree["right"][node]
-        next_value = tree["value"][next_node]
+Platt calibration and the decision rule (`api/predict.py`). The raw margin is passed through a logistic sigmoid with the fitted A and B coefficients, and the calibrated probability is compared against the cutoff at three multipliers to choose a decision:
 
-        delta = (next_value - attributed_value) * model["learning_rate"]
-        contributions[feature_idx] = contributions.get(feature_idx, 0.0) + delta
-
-        node = next_node
-        attributed_value = next_value
-
-    raw += attributed_value * model["learning_rate"]
-
-return raw, contributions
-```
-
-Platt calibration and the decision rule (api/predict.py). The raw margin is passed through a logistic sigmoid with the fitted A and B coefficients, and the calibrated probability is compared against the cutoff at three multipliers to choose a decision:
-
-```python
-def decision_for(probability: float, cutoff: float) -> str:
-    if probability < cutoff * 0.6:
-        return "approve"
-    if probability < cutoff:
-        return "approve_with_conditions"
-    if probability < cutoff * 1.6:
-        return "refer_for_review"
-    return "decline"
-
-
-def score_to_display(probability: float) -> int:
-    return round(850 - probability * (850 - 300))
-```
+![Figure 3.17 decision_for() and score_to_display(): the cutoff rule and the 300-850 score mapping](../assets/code/decision-rule.png)
 
 The raw, log-odds-space contributions are rescaled afterwards into probability space so they sum exactly to the probability minus the base-rate probability, and the same bounds and instalment rule are checked a second time in the browser, in `components/assess/assess-form.tsx`, so the officer sees an inline error instead of waiting on a round trip. Both excerpts, along with the training pipeline's tree export and the Platt fit, are given in Annexure A-3.
 
@@ -806,6 +796,17 @@ Four candidate models were benchmarked with five-fold stratified cross-validatio
 ![Figure 3.10 Cross-validated ROC-AUC of the candidate models](../assets/charts/fig-3-15-benchmark.png)
 
 Gradient boosting was chosen over the marginally stronger untuned XGBoost and random forest results because, once tuned, it outperformed every other candidate, it needs no third-party package at inference time (the exported trees are walked by hand in pure Python), and that absence of a runtime dependency is what lets the scoring function deploy on Vercel without scikit-learn's roughly 100 MB footprint.
+
+Table 3.11 compares the four candidates on numbers alone. The reasoning behind each candidate's place in that comparison, and the quality that ultimately separated the winner from the rest, is set out qualitatively in Table 3.11.1.
+
+<p class="table-caption">Table 3.11.1 Qualitative rationale for the model benchmark</p>
+
+| Model | Why it was implemented | Why it was chosen as a candidate | What distinguishing quality led to the final choice |
+| --- | --- | --- | --- |
+| Logistic regression | Fitted with `class_weight="balanced"` as the baseline entry in the four-model benchmark, so the project had an honest linear reference point before judging any ensemble against it. | A linear model is the simplest classifier that could plausibly separate good and bad accounts, and if it were not beaten by more complex candidates, the added complexity of an ensemble would not have been justified. | It returned the lowest ROC-AUC (0.7737) and PR-AUC (0.5757) of the four, which indicated that the boundary between a good and a bad account in this dataset is not a straight line, and settled the case for a tree-based model instead. |
+| Random forest | Benchmarked at 300 trees and a maximum depth of 6, also class-weighted, as the first tree ensemble in the comparison. | Averaging many decorrelated trees handles a mixed numeric and categorical feature set without any manual interaction terms, and bagging keeps individual trees from overfitting the training folds. | Its untuned ROC-AUC (0.7883) and PR-AUC (0.6329) were the strongest of the three ensembles before tuning, but gradient boosting was the family actually carried forward into the hyperparameter search, and once tuned it overtook random forest's untuned figure. |
+| Gradient boosting (tuned, deployed) | Benchmarked at 150 trees, depth 3 and a learning rate of 0.05, then carried into the hyperparameter search described in §3.6.3 once selected. | Additive boosting corrects the errors of earlier trees rather than simply averaging independent ones, which gave it more headroom to improve under tuning than a model that was already averaging its component trees. | Once tuned it reached a ROC-AUC of 0.7965, ahead of every other candidate at any stage, and its trees export as a flat JSON structure that `score()` walks by hand, so the deployed function needs neither scikit-learn nor xgboost at inference, the dependency-free deployment this report returns to throughout §3.6. |
+| XGBoost | Benchmarked at 200 trees, depth 3 and a learning rate of 0.05, with `scale_pos_weight` set to the dataset's 700:300 class ratio. | A histogram-based, regularised implementation of the same boosting idea, included to check whether a more heavily engineered boosting library would out-benchmark scikit-learn's own gradient boosting. | It posted the single highest untuned ROC-AUC (0.7893) of the four, but gradient boosting was the family taken forward for tuning, and once tuned it moved ahead; keeping XGBoost as the primary, explained model would also have tied inference to the separate `xgboost` package rather than the dependency-free export gradient boosting allowed. |
 
 ### 3.6.3 Hyperparameter Tuning
 
@@ -900,7 +901,32 @@ The grid's cost minimum is at a cutoff of 0.15, not 0.25. The 0.25 cutoff was ke
 
 Every prediction carries its own explanation rather than relying on a separate, dataset-wide importance ranking. The method is a Saabas decomposition of the boosted ensemble: for each tree, the path an applicant's vector takes from the root to its leaf is walked, and the change in the tree's output at every split along that path is attributed to the feature that split tested, starting from a virtual value of 0 rather than the tree's actual root value. Summed across all 250 trees and scaled by the learning rate, these per-tree, per-feature deltas add up to exactly `raw_margin - base_value` in log-odds space. They are then rescaled into probability space so that they sum to `probability - base_probability`, which the notebook's additivity test confirms to within 5.77e-15.
 
-A worked example from the documentation illustrates the method. An applicant aged 35, employed 4 years, in a skilled job, owning their home, with a monthly income of 2,500 DM, asking for a 5,000 DM loan over 24 months for a new car, with a record of paying debts duly, a checking balance of 0–200 DM and under 100 DM in savings, and one existing credit line, scores a probability of default of 0.5718: a high-risk band, a score of 536, and a decline at the 0.25 cutoff. The largest single driver of this score is the loan amount, contributing +0.0746 to the probability, followed by the applicant's low savings balance and modest income; the contributions across all twelve fields sum to exactly the 0.2591-point difference between this probability and the model's own baseline (0.5718 − 0.3126), so the officer sees the whole explanation accounted for, not an approximation of it.
+A worked example from the documentation illustrates the method: an applicant aged 35, employed 4 years, skilled, owning their home, 2,500 DM monthly income, asking for a 5,000 DM loan over 24 months for a new car, paying debts duly, 0–200 DM checking and under 100 DM savings, one existing credit line, scores a probability of default of 0.5718 (high band, score 536, decline at the 0.25 cutoff). The largest driver is the loan amount, +0.0746, followed by the low savings balance and modest income; all twelve contributions sum to exactly the 0.2591-point gap between this probability and the model's own baseline (0.5718 − 0.3126), so the officer sees the whole explanation accounted for, not an approximation of it.
+
+### 3.6.8 Deploying Three Models for Cross-Verification
+
+Gradient boosting stays the explained, primary model, but it is no longer the only one scored in production. `POST /api/predict-compare` (Table 3.9) runs the same applicant through `model/model_xgboost.json` and `model/model_random_forest.json` as well, and returns all three results together, so an officer sees whether three independently trained models actually agree rather than one model's self-reported accuracy. The sequence is shown in Figure 3.18.
+
+![Figure 3.18 Sequence diagram of a /api/predict-compare request](../assets/figures/fig-3-predict-sequence.png)
+
+**XGBoost** is additive log-odds boosting, so it is scored by the same `score()` function (Figure 3.16), not a new one. Only its export differs: XGBoost bakes its learning rate into each leaf already, so the artifact sets `learning_rate` to 1.0, and `base_value` is recovered empirically, the same way as gradient boosting's (spread 1.45 × 10⁻⁶, against a 1 × 10⁻⁵ tolerance loosened from gradient boosting's 1 × 10⁻⁶ bar, since XGBoost's booster runs in float32 rather than sklearn's float64). A genuine bug surfaced here: XGBoost's histogram splitter frequently places a threshold exactly on a real data value, so a tie at the boundary is common, and XGBoost routes a tie left only on a strict `<`, never sklearn's `<=`. Reusing sklearn's convention unchanged silently flipped routing on nearly every training row at some tree, moving some probabilities by as much as 0.65. `score()` now checks `model["model_type"]` and switches operator accordingly, confirmed by the parity check below.
+
+**Random Forest** averages predicted probabilities across its 300 trees rather than boosting additively, so it needed a genuinely different runtime function, `score_forest()` (Figure 3.19). Each leaf stores `P(class = 1)` directly; at request time each tree is walked to its leaf as before, but the result is the mean of all 300 leaf probabilities, with no learning rate and no base value. That mean is still Platt-calibrated the same way, `probability = σ(A · raw + B)`, with `raw` now the averaged probability rather than a margin; Platt scaling only needs its input monotonically related to the true outcome, not to be a margin specifically.
+
+![Figure 3.19 score_forest(): averaging leaf probabilities across 300 trees instead of additive boosting](../assets/code/score-forest.png)
+
+Both new artifacts were parity-checked against the fitted pipelines across the full dataset before deployment, the same discipline used for gradient boosting in §3.2.1. Table 3.16 gives the real out-of-fold metrics for all three deployed models.
+
+<p class="table-caption">Table 3.16 Out-of-fold metrics of the three deployed models</p>
+
+| Model | ROC-AUC | PR-AUC | KS | Brier | Parity (pure-Python vs. fitted model, full dataset) |
+| --- | --- | --- | --- | --- | --- |
+| Gradient boosting (250 trees) | 0.7928 | 0.6344 | 0.4776 | 0.1601 | 5.55 × 10⁻¹⁶ |
+| XGBoost (200 trees) | 0.7869 | 0.6299 | 0.4852 | 0.1619 | 1.79 × 10⁻⁶ |
+| Random forest (300 trees) | 0.7833 | 0.6329 | 0.4371 | 0.1646 | 0.00 (exact) |
+
+All three models rank applicants comparably, within a few points of ROC-AUC and KS of one another: models that broadly agree this way are a stronger trust signal than any one model's own reported accuracy. On the typical, strong and stretched sample files, all three land in the same risk band and decision every time (T62, Chapter 4); the deployed cutoff slider stays gradient-boosting-only, since that is the model whose explanation drives the waterfall.
+
 
 
 <section class="chapter-opener">
@@ -919,15 +945,15 @@ A worked example from the documentation illustrates the method. An applicant age
 
 ## 4.1 Testing Methodology
 
-Testing of the Loan Default Risk Predictor was carried out at two levels: the machine learning pipeline that produces `model.json` and `portfolio.json`, and the Next.js and Python application that serves them. Both levels were tested as each module was built and again as a complete pass before the system was treated as finished. The following levels and techniques were used.
+Testing was carried out at two levels: the machine learning pipeline that produces the model artifacts and `portfolio.json`, and the Next.js and Python application that serves them. Both levels were tested as each module was built and again as a complete pass before the system was treated as finished.
 
-- Unit testing: individual functions were tested in isolation, for example `validate_and_extract()`, `score()` and `decision_for()` in `api/predict.py`, and `bandFor()` and `decisionAt()` in `lib/decision.ts`.
-- Integration testing: the flow from the assessment form to `/api/predict` and back to the risk slip and the score-drivers waterfall was tested end to end, as was the flow from the portfolio and methodology pages to the build-time `portfolio.json` read.
-- Black-box (functional) testing: test cases were written from the requirements, without reference to the implementation; a payload or an action was supplied and the observed result was compared with the expected one.
-- White-box (structural) testing: the branches of `validate_and_extract()` and `score()` were exercised directly, so that every bound, every unknown category and the instalment cross-rule were each covered by at least one case.
-- Model validation testing: the exported JSON artifact was checked against the fitted scikit-learn pipeline it was flattened from, for parity of the probability it returns, for additivity of its path contributions, and for agreement with an independent, offline TreeSHAP explanation.
-- Regression testing: once a defect was fixed, the case that caught it was kept in the suite so a later change could not silently reintroduce it. Defect 1 in Table 4.7, in which path contributions were found not to sum to the model's output, is the clearest example: the additivity test (Table 4.1, T6) now runs on every notebook execution and would fail immediately if the virtual-zero convention in `score()` were ever reverted.
-- Performance testing: 1,000 repeated calls to the scoring function were timed to confirm the model stays well inside interactive latency on the Vercel Python runtime.
+- Unit testing: individual functions tested in isolation, for example `validate_and_extract()`, `score()` and `decision_for()` in `api/predict.py`, and `bandFor()`/`decisionAt()` in `lib/decision.ts`.
+- Integration testing: the flow from the assessment form to `/api/predict`(-compare) and back to the risk slip, waterfall and comparison panel, end to end.
+- Black-box testing: cases written from the requirements, without reference to the implementation.
+- White-box testing: the branches of `validate_and_extract()` and `score()` exercised directly, so every bound, unknown category and the instalment rule is covered.
+- Model validation testing: each exported artifact checked against the fitted pipeline it was flattened from, for parity and (for the additive models) additivity, and against an independent TreeSHAP explanation.
+- Regression testing: once a defect was fixed, the case that caught it stayed in the suite. Defect 1 (Table 4.7) is the clearest example: the additivity test (T6) now runs on every notebook execution and would fail immediately if the virtual-zero convention in `score()` were reverted.
+- Performance testing: 1,000 repeated calls to the scoring function, timed to confirm the model stays well inside interactive latency.
 
 #### Test Environment
 
@@ -942,7 +968,7 @@ Testing of the Loan Default Risk Predictor was carried out at two levels: the ma
 
 ## 4.2 Test Data & Test Cases
 
-Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.5. Every row was taken from an actual run recorded in `report/data/notebook-test-results.json`, `report/data/api-test-results.json` or `report/data/ui-test-results.json`; none of the data or outcomes below was typed from memory. IDs run T1 to T58 continuously across the five tables, as in the sample report.
+Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.5. Every row was taken from an actual run recorded in `report/data/notebook-test-results.json`, `report/data/api-test-results.json` or `report/data/ui-test-results.json`, or from a fresh verification run of `ml/train.py` and `/api/predict-compare` carried out for this chapter; none of the data or outcomes below was typed from memory. IDs run T1 to T62 continuously across the tables, as in the sample report. Tables 4.2 and 4.4 group closely related individual cases into one row each, stating the real pass count per group, so that the full rigour of the suite is documented without a row per case.
 
 <p class="table-caption">Table 4.1 Model fidelity and correctness tests</p>
 
@@ -960,37 +986,33 @@ Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.
 </tbody>
 </table>
 
+<p class="table-caption">Table 4.1A Multi-model deployment tests (added for the three-model rollout)</p>
+
+<table class="dense">
+<colgroup><col style="width:6%"><col style="width:20%"><col style="width:27%"><col style="width:33%"><col style="width:9%"></colgroup>
+<thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>T59</td><td>Parity of the XGBoost artifact</td><td>All 1,000 training rows, hand-rolled <code>score()</code> vs. the real booster's margin output</td><td>Max |probability difference| within a tolerance that reflects XGBoost's float32 booster (&lt; 1e-5)</td><td>Pass (max diff 1.79e-06; base-value spread 1.45e-06)</td></tr>
+<tr><td>T60</td><td>Parity of the Random Forest artifact</td><td>All 1,000 training rows, hand-rolled <code>score_forest()</code> vs. <code>RandomForestClassifier.predict_proba</code></td><td>Max |probability difference| &lt; 1e-9</td><td>Pass (max diff 0.00, exact)</td></tr>
+<tr><td>T61</td><td>/api/predict-compare response shape and error handling</td><td>One valid POST; a missing-field POST; a malformed-JSON POST; an OPTIONS preflight</td><td>Valid POST returns all three model keys plus cutoff; invalid POST returns 400 with a field and message; OPTIONS returns 204</td><td>Pass (gradient_boosting PD 0.5718, matching the documented example exactly)</td></tr>
+<tr><td>T62</td><td>Obvious-cases agreement across all three models</td><td>Typical, strong and stretched sample files, each sent to /api/predict-compare</td><td>All three models land in the same risk band and reach the same decision for a given applicant</td><td>Pass (3/3 applicants: all agree)</td></tr>
+</tbody>
+</table>
+
 <p class="table-caption">Table 4.2 API validation and robustness tests</p>
 
 <table class="dense">
 <colgroup><col style="width:6%"><col style="width:20%"><col style="width:27%"><col style="width:33%"><col style="width:9%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T8</td><td>Valid typical applicant</td><td>12-field typical payload</td><td>200, full result shape</td><td>Pass</td></tr>
-<tr><td>T9</td><td>Valid strong-file applicant</td><td>Strong-file payload</td><td>200, low PD, low band</td><td>Pass (PD 0.0325, approve)</td></tr>
-<tr><td>T10</td><td>Valid stretched-file applicant</td><td>Stretched-file payload</td><td>200, high PD, decline likely</td><td>Pass (PD 0.9589, decline)</td></tr>
-<tr><td>T11</td><td>Missing required field: age</td><td>Payload without <code>age</code></td><td>400, error field age</td><td>Pass</td></tr>
-<tr><td>T12</td><td>Missing required field: checking_status</td><td>Payload without <code>checking_status</code></td><td>400, error field checking_status</td><td>Pass</td></tr>
-<tr><td>T13</td><td>Missing required field: loan_amount</td><td>Payload without <code>loan_amount</code></td><td>400, error field loan_amount</td><td>Pass</td></tr>
-<tr><td>T14</td><td>Wrong type: age as a string</td><td><code>age: "35"</code></td><td>400, 'age' must be a number</td><td>Pass</td></tr>
-<tr><td>T15</td><td>Boolean passed as a number</td><td><code>existing_credits: true</code></td><td>400, boolean rejected as a number</td><td>Pass</td></tr>
-<tr><td>T16</td><td>NaN string for a numeric field</td><td><code>monthly_income: "NaN"</code></td><td>400, must be a number</td><td>Pass</td></tr>
-<tr><td>T17</td><td>Unknown category: housing</td><td><code>housing: "mansion"</code></td><td>400, unknown category</td><td>Pass</td></tr>
-<tr><td>T18</td><td>Unknown category: purpose (A47 vacation)</td><td><code>purpose: "vacation"</code></td><td>400, unknown category</td><td>Pass</td></tr>
-<tr><td>T19</td><td>Age boundary: 17</td><td><code>age: 17</code></td><td>400, out of bounds</td><td>Pass</td></tr>
-<tr><td>T20</td><td>Age boundary: 18</td><td><code>age: 18</code></td><td>200, accepted</td><td>Pass</td></tr>
-<tr><td>T21</td><td>Age boundary: 100</td><td><code>age: 100</code></td><td>200, accepted</td><td>Pass</td></tr>
-<tr><td>T22</td><td>Age boundary: 101</td><td><code>age: 101</code></td><td>400, out of bounds</td><td>Pass</td></tr>
-<tr><td>T23</td><td>Duration boundary: 0</td><td><code>duration_months: 0</code></td><td>400, out of bounds</td><td>Pass</td></tr>
-<tr><td>T24</td><td>Duration boundary: 121</td><td><code>duration_months: 121</code></td><td>400, out of bounds</td><td>Pass</td></tr>
-<tr><td>T25</td><td>Instalment rule exactly at the boundary</td><td>Implied instalment = 4 &times; income</td><td>200, accepted (the rule rejects only when strictly greater)</td><td>Pass</td></tr>
-<tr><td>T26</td><td>Instalment rule just past the boundary</td><td>Implied instalment &gt; 4 &times; income</td><td>400, error field loan_amount</td><td>Pass</td></tr>
-<tr><td>T27</td><td>Invalid JSON body</td><td>Malformed request body</td><td>400, body must be valid JSON</td><td>Pass</td></tr>
-<tr><td>T28</td><td>OPTIONS preflight</td><td>OPTIONS /api/predict</td><td>204, with CORS headers</td><td>Pass</td></tr>
-<tr><td>T29</td><td>CORS header on a POST response</td><td>Any valid POST</td><td>Access-Control-Allow-Origin: *</td><td>Pass</td></tr>
-<tr><td>T30</td><td>Response has every expected key</td><td>Any valid POST</td><td>probability_of_default, risk_band, score, decision, cutoff, contributions, base_rate, model_version all present</td><td>Pass</td></tr>
-<tr><td>T31</td><td>PD range and score formula</td><td>Any valid POST</td><td>PD in [0, 1]; score = round(850 &#8722; 550 &times; PD)</td><td>Pass</td></tr>
-<tr><td>T32</td><td>Contributions sum to PD &#8722; base PD</td><td>Any valid POST</td><td>&Sigma;contributions = probability &#8722; base probability, within 1e-3</td><td>Pass</td></tr>
+<tr><td>T8&ndash;T10</td><td>Valid applicant payload accepted (3 cases: typical, strong, stretched)</td><td>Full 12-field payloads for the three sample files</td><td>200, full result shape; PD and band consistent with the applicant's strength</td><td>Pass (3/3; typical full shape, strong PD 0.0325 approve, stretched PD 0.9589 decline)</td></tr>
+<tr><td>T11&ndash;T13</td><td>Missing required field (3 fields tested: age, checking_status, loan_amount)</td><td>Payload with one of the three fields removed, one case each</td><td>400, with the missing field named in the error</td><td>Pass (3/3)</td></tr>
+<tr><td>T14&ndash;T16</td><td>Wrong type or malformed numeric value (3 cases: string age, boolean existing_credits, NaN income)</td><td><code>age: "35"</code>; <code>existing_credits: true</code>; <code>monthly_income: "NaN"</code></td><td>400, field rejected as not a valid number</td><td>Pass (3/3)</td></tr>
+<tr><td>T17&ndash;T18</td><td>Unknown category value (2 cases: housing, purpose)</td><td><code>housing: "mansion"</code>; <code>purpose: "vacation"</code> (the A47 code absent from training)</td><td>400, unknown category</td><td>Pass (2/2)</td></tr>
+<tr><td>T19&ndash;T24</td><td>Numeric boundary value (6 cases: age 17/18/100/101, duration 0/121)</td><td>Age and duration set one step inside and outside each documented bound</td><td>200 inside the bound, 400 outside it</td><td>Pass (6/6)</td></tr>
+<tr><td>T25&ndash;T26</td><td>Cross-field instalment rule (2 boundary cases)</td><td>Implied instalment exactly at, then just past, 4 &times; income</td><td>200 at the boundary (rejected only when strictly greater), 400 past it</td><td>Pass (2/2)</td></tr>
+<tr><td>T27&ndash;T29</td><td>Malformed JSON / OPTIONS preflight / CORS header (3 cases)</td><td>Malformed body; OPTIONS /api/predict; a valid POST's response headers</td><td>400 body must be valid JSON; 204 with CORS headers; Access-Control-Allow-Origin: * present</td><td>Pass (3/3)</td></tr>
+<tr><td>T30&ndash;T32</td><td>Response shape and correctness (3 cases)</td><td>Any valid POST</td><td>All eight response keys present; PD in [0, 1] and score = round(850 &#8722; 550 &times; PD); &Sigma;contributions = probability &#8722; base probability within 1e-3</td><td>Pass (3/3)</td></tr>
 </tbody>
 </table>
 
@@ -1014,24 +1036,13 @@ The latency figures in T35 were taken from re-executing the notebook while the d
 <colgroup><col style="width:6%"><col style="width:18%"><col style="width:29%"><col style="width:30%"><col style="width:11%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T36</td><td>Load the assess page</td><td>Fresh load of <code>/assess</code></td><td>Typical preset pre-filled, empty risk slip shown</td><td>Pass</td></tr>
-<tr><td>T37</td><td>Select the Strong file preset</td><td>Click the Strong file chip</td><td>All 12 fields repopulate, chip shows pressed</td><td>Pass</td></tr>
-<tr><td>T38</td><td>Submit the strong applicant</td><td>Strong-file preset, submitted</td><td>Low band, Approve, waterfall sorted by magnitude</td><td>Pass (PD 3.3%, score 832/850)</td></tr>
-<tr><td>T39</td><td>Submit the stretched applicant</td><td>Stretched-file preset, submitted</td><td>High band, Decline</td><td>Pass (PD 95.9%, score 323/850)</td></tr>
-<tr><td>T40</td><td>Clear a required field and submit</td><td>Age field emptied</td><td>Inline required message, field focused, no request sent</td><td>Pass</td></tr>
-<tr><td>T41</td><td>Out-of-range age</td><td>Age set to 15</td><td>Range message shown, no request sent</td><td>Pass</td></tr>
-<tr><td>T42</td><td>Instalment rule triggered from the form</td><td>Income 500, loan 100,000, duration 6 months</td><td>Instalment-rule message on the amount field</td><td>Pass</td></tr>
-<tr><td>T43</td><td>Scoring service unreachable</td><td>Python server stopped, then a submit</td><td>Friendly inline error, no crash</td><td>Pass</td></tr>
-<tr><td>T44</td><td>Move the what-if cutoff slider</td><td>Slider dragged from 25% to 49%</td><td>Decision stamp updates live, Back to 25% link appears</td><td>Pass</td></tr>
-<tr><td>T45</td><td>Score-drivers waterfall</td><td>Typical result, cross-checked against the docs example</td><td>Rows sorted by size, contributions sum to PD</td><td>Pass</td></tr>
-<tr><td>T46</td><td>Theme toggle persistence</td><td>Toggle to light, reload</td><td>Theme persists, no flash of the wrong theme</td><td>Pass</td></tr>
-<tr><td>T47</td><td>Mobile result scroll behaviour</td><td>Code review of the submit handler in assess-workbench.tsx</td><td>Result panel scrolls into view only below the lg breakpoint</td><td>Pass (verified by code review; see note below)</td></tr>
-<tr><td>T48</td><td>Portfolio cutoff explorer</td><td>Default 25% cutoff, then dragged to 40%</td><td>Four readouts update correctly</td><td>Pass (517/67/250/0.585 at 25%; 712/125/113/0.738 at 40%)</td></tr>
-<tr><td>T49</td><td>Portfolio segment tabs</td><td>Purpose tab, then Housing tab</td><td>Small-sample tag shown only for n &lt; 25</td><td>Pass</td></tr>
-<tr><td>T50</td><td>Methodology page table of contents</td><td>Scroll past sections; click a TOC link</td><td>Scroll-spy highlight moves; anchor link jumps to the section</td><td>Pass</td></tr>
-<tr><td>T51</td><td>Custom 404 page</td><td>Navigate to an unknown route</td><td>Custom not-found page renders, no console errors</td><td>Pass</td></tr>
-<tr><td>T52</td><td>Keyboard-only assessment</td><td>Tab and Enter only, through the whole form</td><td>Visible focus throughout, form submits and scores correctly</td><td>Pass</td></tr>
-<tr><td>T53</td><td>Purpose dropdown has no Vacation option</td><td>Open the purpose select on /assess</td><td>Vacation absent from the options</td><td>Pass</td></tr>
+<tr><td>T36&ndash;T37</td><td>Page load and sample-file presets (2 cases)</td><td>Fresh load of /assess; click the Strong file chip</td><td>Typical preset pre-filled on load; all 12 fields repopulate and the chip shows pressed on selection</td><td>Pass (2/2)</td></tr>
+<tr><td>T38&ndash;T39</td><td>Submit and read a result (2 cases: strong, stretched)</td><td>Strong-file and stretched-file presets, each submitted</td><td>Low band / Approve for the strong file, high band / Decline for the stretched file, waterfall sorted by magnitude</td><td>Pass (strong PD 3.3%, score 832/850; stretched PD 95.9%, score 323/850)</td></tr>
+<tr><td>T40&ndash;T43</td><td>Form validation and error handling (4 cases)</td><td>Age cleared; age set to 15; income 500 / loan 100,000 / duration 6; Python server stopped then submit</td><td>Inline required/range/instalment message on the right field, focus moved, no request sent where applicable; a stopped server shows a friendly inline error, not a crash</td><td>Pass (4/4)</td></tr>
+<tr><td>T44&ndash;T45</td><td>Decision controls (2 cases: what-if cutoff, score-drivers waterfall)</td><td>Cutoff slider dragged 25% &rarr; 49%; typical result cross-checked against the docs example</td><td>Decision stamp updates live with a Back-to-25% link; waterfall rows sorted by size, contributions sum to PD</td><td>Pass (2/2)</td></tr>
+<tr><td>T46&ndash;T47</td><td>Theme and responsive behaviour (2 cases)</td><td>Toggle to light then reload; code review of the submit handler in assess-workbench.tsx</td><td>Theme persists with no flash; result panel scrolls into view only below the lg breakpoint</td><td>Pass (2/2; T47 verified by code review only, see note below)</td></tr>
+<tr><td>T48&ndash;T49</td><td>Portfolio page interactions (2 cases)</td><td>Cutoff explorer dragged 25% &rarr; 40%; Purpose tab then Housing tab on the segment explorer</td><td>Four cutoff readouts update correctly; small-sample tag shown only for n &lt; 25</td><td>Pass (517/67/250/0.585 at 25%, 712/125/113/0.738 at 40%)</td></tr>
+<tr><td>T50&ndash;T53</td><td>Navigation, accessibility and content checks (4 cases)</td><td>Methodology TOC scroll-spy and anchor click; an unknown route; tab-and-Enter-only through the whole form; the purpose dropdown's options</td><td>TOC highlight and jump work; custom 404 with no console errors; visible focus throughout with a correct score at the end; Vacation absent from the purpose options</td><td>Pass (4/4)</td></tr>
 </tbody>
 </table>
 
@@ -1055,18 +1066,19 @@ T47 could not be re-verified at a true 375px browser viewport, because the brows
 
 ### 4.3.1 Test Report
 
-A total of 58 test cases were prepared and executed across the model, the API and the interface. The summary is given in Table 4.6. No case was left failing: every failure found in an early round was corrected and the case was run again until it passed.
+A total of 62 test cases were prepared and executed across the model, the API and the interface, including the four added for the three-model deployment. The summary is given in Table 4.6. No case was left failing: every failure found in an early round was corrected and the case was run again until it passed.
 
 <p class="table-caption">Table 4.6 Test summary</p>
 
 | Module | Test cases | Passed | Failed after correction |
 | --- | --- | --- | --- |
 | Model fidelity and correctness | 7 | 7 | 0 |
+| Multi-model deployment (parity, shape, agreement) | 4 | 4 | 0 |
 | API validation and robustness | 25 | 25 | 0 |
 | Model quality and performance | 3 | 3 | 0 |
 | User interface | 18 | 18 | 0 |
 | Endpoint and integration | 5 | 5 | 0 |
-| Total | 58 | 58 | 0 |
+| Total | 62 | 62 | 0 |
 
 ### 4.3.2 Defects Found and Debugging
 
@@ -1086,18 +1098,19 @@ Debugging proceeded from the failing test case: the notebook output, the browser
 | 8 | In dark mode, the brand green and the "low risk" colour were visually identical | Both used the same hex value | Risk bands were given their own hues (petrol blue, ochre, brick), deliberately outside the brand green |
 | 9 | Clearing a number field silently became 0 | Number inputs were bound directly to numeric state | Fields now keep string state while being edited and are only validated and converted on submit |
 | 10 | The cutoff shown in the UI stayed at 25% even if the model's cutoff changed | The 25% figure was hard-coded in the interface text | The UI now reads `model.cutoff` directly from the exported artifact |
+| 11 | The XGBoost artifact's probabilities differed from the real booster by as much as 0.65 on some rows | `score()` reused sklearn's `<=` split-routing convention for XGBoost, but XGBoost's histogram splitter places thresholds exactly on real data values, so ties at the boundary are common, and XGBoost itself routes a tie left only on a strict `<` | `score()` now checks `model["model_type"]` and switches to a strict `<` comparison for XGBoost, confirmed by the parity test (T59) |
 
-No additional defects were found during the user-interface QA pass beyond the ten above; that pass is recorded in full in `report/data/ui-test-results.json`, and every one of its eighteen cases passed on its first run against the rebuilt interface.
+No additional defects were found during the user-interface QA pass beyond those above; that pass is recorded in full in `report/data/ui-test-results.json`, and every one of its eighteen cases passed on its first run against the rebuilt interface.
 
 ## 4.4 Implementation
 
 ### 4.4.1 Local Setup Steps
 
 1. Install Python 3.12 and Node.js 24, and clone the repository.
-1. Run `py -3.12 ml/train.py` once to produce `model/model.json` and `model/portfolio.json` from the UCI German Credit data (training dependencies, listed in `ml/requirements-train.txt`, are never read by the deployed API).
+1. Run `py -3.12 ml/train.py` once to produce the three model artifacts and `model/portfolio.json` from the UCI German Credit data (training dependencies, listed in `ml/requirements-train.txt`, are never read by the deployed API).
 1. Run `npm install` in the project root.
-1. Start the Python scorer and portfolio server with `py -3.12 ml/dev_server.py` (predict on `:8001`, portfolio on `:8002`).
-1. In a second terminal, start the web application with `npm run dev`, which serves `:3000` and, in development only, rewrites API calls to the two Python ports via `next.config.ts`.
+1. Start the three local Python servers with `py -3.12 ml/dev_server.py` (predict on `:8001`, portfolio on `:8002`, predict-compare on `:8003`).
+1. In a second terminal, start the web application with `npm run dev`, which serves `:3000` and, in development only, rewrites API calls to the three Python ports via `next.config.ts`.
 1. Open `http://localhost:3000` in a browser.
 
 ### 4.4.2 Deployment
@@ -1107,7 +1120,7 @@ The system is deployed on Vercel, whose build is shown in Figure 4.1.
 ![Figure 4.1 Deployment of the Loan Default Risk Predictor](../assets/figures/fig-4-1-deployment.png)
 
 - The source code is pushed to a GitHub repository, and Vercel auto-detects the Next.js application.
-- `api/predict.py` and `api/portfolio.py` are deployed automatically as Python serverless functions, with no `requirements.txt`, because both files depend on nothing beyond the Python standard library.
+- `api/predict.py`, `api/predict-compare.py` and `api/portfolio.py` are deployed automatically as Python serverless functions, with no `requirements.txt`, because none depend on anything beyond the Python standard library.
 - `vercel.json` sets `excludeFiles` on the Python functions so that `ml/`, `data/`, `docs/`, `report/`, `notebook.ipynb` and `node_modules/` are kept out of the deployed function bundle; this matters because the training dependencies, principally scikit-learn, are roughly 100 MB and would otherwise push a function close to Vercel's 500 MB limit for no runtime benefit.
 - The portfolio and methodology pages read `model/portfolio.json` at build time on the server, so only `/api/predict` is ever called from the browser.
 - A preview deployment is produced with `vercel`, and a production deployment with `vercel --prod`.
@@ -1120,11 +1133,12 @@ The system is deployed on Vercel, whose build is shown in Figure 4.1.
 | --- | --- |
 | Loan officer | Open Assess, pick a sample file or fill in the 12-field form, press Score this applicant, read the risk band, decision and score, and open the score-drivers panel to see which factors pushed the result up or down. |
 | Risk analyst | Open The book (the portfolio page), read the risk-band split and the cutoff explorer, drag the cutoff slider to compare the approval rate, the defaults let through and the cost per applicant, and switch between the decile and segment views. |
-| Model maintainer | Open Methodology to review the benchmark, the calibration curve and the stated limitations; to retrain, run `ml/train.py` against updated data and redeploy the two regenerated JSON artifacts. |
+| Model maintainer | Open Methodology to review the three-model benchmark, the calibration curve and the stated limitations; to retrain, run `ml/train.py` against updated data and redeploy the four regenerated JSON artifacts. |
 
 ### 4.4.4 Maintenance
 
-The model can be retrained at any time by running `ml/train.py` against an updated dataset; the script regenerates `model/model.json` and `model/portfolio.json` from scratch and re-runs its own parity and additivity checks before writing them. Every retrain should bump `model_version` so that a deployed artifact can always be identified from the API response. Because the decision thresholds in `lib/decision.ts` on the client mirror `decision_for()` in `api/predict.py` on the server, any change to the multipliers that define approve, approve-with-conditions, refer-for-review and decline must be made in both places at once. Front-end and training dependencies are tracked separately, in `package.json` and `ml/requirements-train.txt` respectively, and should be reviewed for updates on a regular cycle since the deployed function itself has no runtime dependencies to patch.
+Retraining runs `ml/train.py` against an updated dataset; the script regenerates all three model artifacts and `portfolio.json` from scratch, re-running its own parity checks before writing them, and every retrain should bump `model_version`. Because `lib/decision.ts` on the client mirrors `decision_for()` in `api/predict.py` on the server, any change to the approve/conditions/refer/decline multipliers must be made in both places at once. Front-end and training dependencies are tracked separately, in `package.json` and `ml/requirements-train.txt`, and reviewed on a regular cycle since the deployed functions themselves have no runtime dependencies to patch.
+
 
 
 <section class="chapter-opener">
@@ -1143,39 +1157,42 @@ The model can be retrained at any time by running `ml/train.py` against an updat
 
 ## 5.1 Summary of the Work Done
 
-During the six-week summer training the trainee studied the problem of estimating a loan applicant's probability of default, prepared a requirement document, and built the Loan Default Risk Predictor on the UCI Statlog German Credit dataset. The work covered the full life cycle of a small machine learning application: cleaning and feature-engineering the 1,000-row dataset into twelve usable fields, benchmarking four candidate models under identical five-fold cross-validation, tuning a gradient boosting model with a randomized search over 40 parameter combinations, calibrating its output with Platt scaling fitted on out-of-fold margins, and exporting the fitted ensemble as a dependency-free JSON artifact that a stand-alone Python function could score without scikit-learn. On top of that artifact the trainee built a dependency-free scoring API with full input validation, a client explanation mechanism based on per-tree path contributions, and a Next.js front end covering an assessment workbench, a portfolio analytics page and a methodology page, styled as an editorial fintech site in the project's green. The work closed with 58 test cases across the model, the API and the interface, correction of the ten defects described in Table 4.7, and deployment of the application to Vercel.
+During the six-week summer training the trainee studied the problem of estimating a loan applicant's probability of default and built the Loan Default Risk Predictor on the UCI Statlog German Credit dataset, covering the full life cycle of a small machine learning application: feature-engineering the 1,000-row dataset into twelve usable fields, benchmarking four candidate models under identical five-fold cross-validation, tuning a gradient boosting model by randomized search, calibrating its output with Platt scaling fitted on out-of-fold margins, and exporting the fitted ensemble as a dependency-free JSON artifact a stand-alone Python function could score without scikit-learn. Two further models, XGBoost and random forest, were later refit and deployed alongside it, so every applicant is checked against three independently trained models at once. On top of these artifacts the trainee built a dependency-free scoring API with full input validation, a per-tree explanation mechanism, and a Next.js front end covering an assessment workbench, a portfolio analytics page and a methodology page, styled as an editorial fintech site in the project's green. The work closed with 62 test cases across the model, the API and the interface, correction of the eleven defects in Table 4.7, and deployment to Vercel.
 
 ## 5.2 Conclusion
 
-The Loan Default Risk Predictor meets the objectives set out in Chapter 1. It takes the twelve fields a lender would reasonably be able to ask an applicant for and returns a calibrated probability of default, a risk band, a 300-to-850 score and a cutoff-based recommendation, each one accompanied by a per-factor explanation that sums exactly to the predicted probability rather than only approximating it. The tuned gradient boosting model reached an out-of-fold ROC-AUC of 0.7928 and a KS statistic of 0.4776, ahead of the plain logistic-regression baseline at 0.7737 and in line with the untuned random forest and XGBoost candidates evaluated under the same folds. Its Brier score of 0.1601, against a flat-guess baseline of 0.2100, and a weighted calibration gap of 0.0195 across ten probability bins, both say the same thing in different ways: the number the model returns can be read as an actual probability, not merely used to rank applicants. The top-decile applicants defaulted 10.9 times more often than the bottom-decile applicants, which is the separation a lender would need before a cutoff is worth setting at all. None of this came at the cost of transparency: every prediction's path contributions are exactly additive by construction, and they agreed with an independent, offline TreeSHAP ranking on at least three of five top factors for 93 of 100 sampled applicants.
+The Loan Default Risk Predictor meets the objectives set out in Chapter 1. It takes twelve fields a lender could reasonably ask an applicant for and returns a calibrated probability of default, a risk band, a 300-to-850 score and a cutoff-based recommendation, each accompanied by a per-factor explanation that sums exactly to the predicted probability rather than approximating it. The deployed gradient boosting model reached an out-of-fold ROC-AUC of 0.7928 and a KS statistic of 0.4776, ahead of the logistic-regression baseline at 0.7737 and corroborated by the two further models now cross-checking it in production (XGBoost 0.7869, random forest 0.7833 ROC-AUC). Its Brier score of 0.1601, against a flat-guess baseline of 0.2100, and a weighted calibration gap of 0.0195 both support the same reading: the number returned can be treated as an actual probability, not merely used to rank applicants. Top-decile applicants defaulted 10.9 times more often than bottom-decile applicants, and every prediction's path contributions are exactly additive by construction, agreeing with an independent TreeSHAP ranking on at least three of five top factors for 93 of 100 sampled applicants.
 
-The project also gave the trainee practical experience that a course alone would not. Training a model honestly, with a manual per-fold cross-validation loop written because a library scorer could not be trusted across every candidate, is a different exercise from reporting a single train-test split. Exporting that model into a hand-written tree walk that reproduces scikit-learn's output to within 3.33 &times; 10&#8315;&sup1;&#8310; taught more about how a gradient boosting ensemble actually scores a row than fitting the model once and calling `.predict()` ever would. Writing an API with no third-party dependencies at all, so that it could run inside Vercel's 500 MB Python function limit without the roughly 100 MB that scikit-learn alone would add, forced a close reading of exactly what the trained model needs at inference time and what it does not. Building the explanation panel on an exact decomposition, rather than an approximate one, meant the trainee had to prove the additivity property in the notebook before trusting it in the interface. Throughout, excluding the protected personal-status-and-sex attribute, keeping the API stateless, and evaluating only on out-of-fold predictions were treated as non-negotiable rather than as afterthoughts.
+The project also gave the trainee practical experience a course alone would not. Training honestly, with a manual per-fold cross-validation loop written because a library scorer could not be trusted across every candidate, differs from reporting a single train-test split. Exporting the models into hand-written tree walks that reproduce the fitted pipelines' output to within 1e-9 or better, and discovering and fixing XGBoost's strict-inequality routing bug along the way, taught more about how these ensembles actually score a row than calling `.predict()` ever would. Writing an API with no third-party dependencies, so it runs inside Vercel's 500 MB limit without scikit-learn's roughly 100 MB, forced a close reading of exactly what a trained model needs at inference time. Throughout, excluding the protected personal-status-and-sex attribute, keeping the API stateless, and evaluating only on out-of-fold predictions were treated as non-negotiable.
 
 ## 5.3 Limitations of the System
 
-- The dataset is the UCI Statlog German Credit data: 1,000 applicants from a single German bank in 1994. It is well suited to demonstrating a full modelling pipeline, but it is old and small, and the model's behaviour should not be assumed to generalise to current lending conditions or to a different population of borrowers.
-- The personal-status-and-sex attribute was excluded as a protected attribute, and several other original attributes were dropped to keep the input form short. This keeps the model from using sex directly, but no formal fairness audit or proxy-discrimination analysis was carried out on the fields that remain.
-- The deployed function has no scikit-learn, or any other heavy machine learning runtime, bundled into it. That keeps the Vercel function small, but it also means the model cannot be retrained, or its predictions monitored for drift, from the production environment itself; both require the separate, offline training pipeline.
-- Evaluation is five-fold cross-validation on one static dataset split. The out-of-fold metrics in Chapter 3 are honest in the sense that no row was ever scored by a model that had seen it during training, but there is no independent, more recent holdout set, and no live monitoring of how the model's predictions compare with actual outcomes after deployment.
-- The path-contribution explanation is exact for what it decomposes, the model's own raw margin, but it is still only an approximation of the separate TreeSHAP method against which it was checked; the two agreed on most but not all of their top factors (93 of 100 sampled applicants).
-- Loan and income amounts are stated in Deutsche Mark, the currency used in the original 1994 dataset, and are not converted to a current currency.
-- There are no officer accounts, no login and no audit trail; any visitor to the site can run any assessment, and no record is kept of who ran what.
-- Monthly income is a derived feature, computed from the loan amount, the duration and the instalment rate rather than measured directly from the applicant, so it carries whatever approximation error that derivation introduces.
-- The cutoff explorer on the portfolio page only has data for the twelve cutoff values actually computed during training (0.05 to 0.60 in steps of 0.05); it cannot be queried at an arbitrary cutoff.
+- The dataset is 1,000 applicants from a single German bank in 1994: well suited to a full modelling pipeline, but old and small, and results should not be assumed to generalise to current lending conditions.
+- The personal-status-and-sex attribute was excluded, but no formal fairness audit or proxy-discrimination analysis was carried out on the fields that remain.
+- The deployed functions carry no machine learning runtime, so retraining and drift monitoring both require the separate, offline training pipeline.
+- Evaluation is five-fold cross-validation on one static dataset split; there is no independent holdout set or live monitoring against actual outcomes after deployment.
+- The path-contribution explanation is exact for the raw margin, but only an approximation of the TreeSHAP method it was checked against (93 of 100 applicants agreed); random forest gets no driver breakdown at all.
+- Loan and income amounts are in Deutsche Mark, the original dataset's currency, not converted to a current one.
+- There are no officer accounts, login or audit trail; any visitor can run any assessment.
+- Monthly income is a derived, not directly measured, feature, carrying whatever approximation error that derivation introduces.
+- The cutoff explorer only has data for the twelve values computed during training (0.05 to 0.60 in steps of 0.05).
 
 ## 5.4 Future Scope for Modification
 
-- A formal fairness audit, including a proxy-discrimination analysis of fields such as housing and employment history that could correlate with protected characteristics even though no protected attribute is used directly.
-- Retraining on more recent lending data, together with reject inference to correct for the fact that a historical dataset only records outcomes for applicants who were actually approved.
-- Richer explanations using full SHAP interaction values, rather than single-feature path contributions, to surface how pairs of factors jointly move a score.
-- Monotonic constraints on the gradient boosting trees, so that, for example, increasing income can never be allowed to raise the predicted probability of default.
-- Model monitoring in production, with drift detection on the incoming feature distributions and on the gap between predicted and observed default rates over time.
-- Batch scoring through a CSV upload, so a lender could score a whole book of applicants in one pass instead of one at a time through the form.
-- Officer accounts with role-based access and an audit log of every assessment run, addressing the lack of accountability noted in the limitations above.
-- PDF export of an individual risk slip, so a result could be saved or attached to a file outside the application.
-- Support for comparing two or more cutoffs side by side (an A/B view), rather than moving a single slider between them one at a time.
+- A formal fairness audit, including proxy-discrimination analysis of fields such as housing and employment history.
+- Retraining on more recent data, with reject inference for the fact that a historical dataset only records approved outcomes.
+- Richer explanations using full SHAP interaction values, and a driver breakdown for random forest as well.
+- Monotonic constraints on the boosted trees, so increasing income can never raise the predicted default probability.
+- Model monitoring in production, with drift detection across all three deployed models.
+- Batch scoring through a CSV upload, so a lender could score a whole book of applicants in one pass.
+- Officer accounts with role-based access and an audit log of every assessment run.
+- PDF export of a risk slip, and comparing two or more cutoffs side by side.
 
 ## 5.5 References / Bibliography
+
+The sources drawn on through this report are grouped below by kind, so that the dataset, the papers behind each modelling and explanation technique, the one book, and the web documentation consulted while building the application can each be traced on their own.
+
+**Papers**
 
 1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data
 1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001.
@@ -1184,14 +1201,21 @@ The project also gave the trainee practical experience that a course alone would
 1. Saabas, A. Interpreting random forests. *treeinterpreter* blog post, 2014.
 1. Pedregosa, F. et al. Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2011.
 1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (KDD), 2016.
-1. Siddiqi, N. *Credit Risk Scorecards: Developing and Implementing Intelligent Credit Scoring*. Wiley, 2006.
 1. Niculescu-Mizil, A. and Caruana, R. Predicting good probabilities with supervised learning. *Proceedings of the 22nd International Conference on Machine Learning* (ICML), 2005.
+
+**Books**
+
+1. Siddiqi, N. *Credit Risk Scorecards: Developing and Implementing Intelligent Credit Scoring*. Wiley, 2006.
+
+**Web sources / documentation**
+
 1. Vercel Inc. Next.js Documentation. https://nextjs.org/docs
 1. Meta Platforms, Inc. React Documentation. https://react.dev
 1. Vercel Inc. Python Runtime Documentation. https://vercel.com/docs/functions/runtimes/python
 1. Tailwind Labs Inc. Tailwind CSS Documentation. https://tailwindcss.com/docs
 1. Recharts. Recharts Documentation. https://recharts.org
 1. Mozilla Foundation. MDN Web Docs. https://developer.mozilla.org
+
 
 
 <section class="chapter-opener">
@@ -1209,95 +1233,85 @@ The project also gave the trainee practical experience that a course alone would
 
 ## A-1 Sample Inputs
 
-The following screens show the sample inputs given to the system, from the live, deployed interface.
+The following screenshots were captured afresh from the live deployed application. Long screens are shown in separate, readable sections rather than reduced to a narrow full-page strip.
 
 <div class="annexure-shot">
 
-![Figure A-1 Blank applicant assessment form](../assets/screens/a3-assess-empty.png)
+![Figure A-1 Applicant details and sample-file controls before scoring](../assets/screens/fresh/01-applicant-input.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-2 A sample file loaded through a preset chip](../assets/screens/a4-assess-strong-form.png)
+![Figure A-2 Loan fields populated using the Strong file preset](../assets/screens/fresh/02-sample-loan.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-3 A field-level validation error on submit](../assets/screens/a5-assess-validation-error.png)
+![Figure A-3 Credit-position fields and scoring button for the Strong file preset](../assets/screens/fresh/02b-sample-credit.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-4 The what-if cutoff control moved to 40 percent](../assets/screens/a9-cutoff-whatif-40.png)
+![Figure A-4 Inline validation when the required age field is cleared](../assets/screens/fresh/03-validation.png)
+
+</div>
+
+<div class="annexure-shot">
+
+![Figure A-5 Mobile assessment form: applicant fields and sample-file controls](../assets/screens/fresh/11-mobile-applicant.png)
 
 </div>
 
 ## A-2 Sample Outputs
 
+These fresh captures show the live result, its complete factor breakdown, portfolio controls and model comparison. Desktop panels use the report text width; the mobile capture retains its original proportions.
+
 <div class="annexure-shot">
 
-![Figure A-5 The landing page](../assets/screens/a1-landing-hero.png)
+![Figure A-6 High-risk assessment returned for the Stretched file preset](../assets/screens/fresh/05-high-risk-verdict.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-6 A low-risk result slip](../assets/screens/a6-assess-low-risk.png)
+![Figure A-7 Live comparison of gradient boosting, XGBoost and random forest](../assets/screens/fresh/10-model-comparison.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-7 A high-risk result slip](../assets/screens/a7-assess-high-risk.png)
+![Figure A-8 Landing page of the live application](../assets/screens/fresh/04-landing.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-8 The score-drivers waterfall, close up](../assets/screens/a8-waterfall-closeup.png)
+![Figure A-9 Score-driver explanation and the first six contributing factors](../assets/screens/fresh/06-drivers-upper.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-9 The portfolio band split and cutoff explorer](../assets/screens/a10-portfolio-bands-cutoff.png)
+![Figure A-10 Remaining score drivers and the largest risk contribution](../assets/screens/fresh/07-drivers-lower.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-10 The portfolio decile view](../assets/screens/a11-portfolio-deciles.png)
+![Figure A-11 Portfolio risk bands across all 1,000 applicants](../assets/screens/fresh/08-portfolio-bands.png)
 
 </div>
 
 <div class="annexure-shot">
 
-![Figure A-11 The model benchmark on the methodology page](../assets/screens/a13-model-benchmark.png)
+![Figure A-12 Portfolio cutoff control and outcomes at the trained 25 percent cutoff](../assets/screens/fresh/09-cutoff-outcomes.png)
 
 </div>
 
-<div class="annexure-shot">
-
-![Figure A-12 The calibration curve on the methodology page](../assets/screens/a14-model-calibration.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-13 The assessment workbench on a mobile screen](../assets/screens/a16-mobile-assess.png)
-
-</div>
-
-<div class="annexure-shot">
-
-![Figure A-14 The landing page in dark mode](../assets/screens/a17-dark-landing-hero.png)
-
-</div>
-
-Selected source code of the model, the scoring API and the front end is given below.
+Selected source code of the model, scoring API and front end follows.
 
 ## A-3 Coding
 
@@ -1395,7 +1409,7 @@ class handler(BaseHTTPRequestHandler):
         pass  # keep Vercel's function logs quiet for a request this small
 ```
 
-#### A-3.4 lib/decision.ts
+#### A-3.3 lib/decision.ts
 
 The band and decision rules on the client are kept deliberately simple so they can be read at a glance, and are commented as needing to stay in step with the equivalent Python logic on the server.
 
@@ -1426,7 +1440,7 @@ export const DECISION_TONE: Record<Decision, "low" | "medium" | "high"> = {
 };
 ```
 
-#### A-3.7 components/assess/contribution-waterfall.tsx (core)
+#### A-3.4 components/assess/contribution-waterfall.tsx (core)
 
 Each row's bar is drawn out from a centre line, growing right for a risk-raising factor and left for a risk-lowering one, with its width scaled against the single largest contribution in the list so the chart stays legible regardless of how big or small an individual applicant's drivers are.
 
@@ -1454,5 +1468,7 @@ Each row's bar is drawn out from a centre line, growing right for a risk-raising
         })}
       </ol>
 ```
+
+
 
 
