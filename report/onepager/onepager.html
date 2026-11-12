@@ -81,5 +81,15 @@
 <p><span class="q">What would you improve?</span> Newer, larger data; stronger external/nested evaluation; fairness and drift monitoring; calibrated uncertainty; clearer explanations; batch scoring. These are future improvements, not already-built features.</p>
 <p><span class="q">If asked something you do not know:</span> say "I have not implemented/measured that; I would check this function or run this test." Explain what you can verify instead of guessing numbers or calling every explanation SHAP.</p>
 <p><span class="q">One-minute revision:</span> 1,000 rows; 700/300 labels; 12 inputs -> 37 features; five folds; GB 250 / XGB 200 / RF 300 trees; primary AUC 0.7928; default cutoff 25%; bands 15/35; decisions 15/25/40; 62 recorded cases. <strong>Boosting = sequential correction. Forest = separate trees averaged. Calibration = probability mapping. Inference is not retraining.</strong></p>
-</div></div><p class="foot">Final half-page - practise aloud and demonstrate, rather than memorising unexplained terms.</p></section>
+</div></div>
+<h2>14 | Why each cited source is in the report</h2>
+<table><tr><th>Source</th><th>What it actually says</th><th>Why we cite it here</th></tr>
+<tr><td>Hofmann 1994 (UCI dataset)</td><td>A description of 1,000 German loan applicants, 20 attributes, labelled good or bad credit.</td><td>It is the data every model in this project was trained and tested on.</td></tr>
+<tr><td>Friedman 2001 (Gradient Boosting paper)</td><td>Proposes fitting a new small tree to the current errors' gradient one at a time, each one correcting the last.</td><td>This is the exact algorithm behind the Gradient Boosting model we deployed.</td></tr>
+<tr><td>Breiman 2001 (Random Forest paper)</td><td>Proposes training many trees on random bootstrap samples with random feature subsets, then averaging them.</td><td>This is the exact algorithm behind the Random Forest model we deployed.</td></tr>
+<tr><td>Chen &amp; Guestrin 2016 (XGBoost paper)</td><td>Describes a faster, regularised, engineering-focused version of gradient boosting built for large datasets.</td><td>This is the exact algorithm behind the XGBoost model we deployed.</td></tr>
+<tr><td>Siddiqi 2006 (Credit Risk Scorecards)</td><td>A practitioner's book on how banks build and use credit-scoring models in practice: bands, cutoffs, cost tradeoffs.</td><td>Where this project's approve/decline cutoff and cost-of-a-bad-approval idea comes from.</td></tr>
+<tr><td>Scikit-learn / XGBoost / SHAP documentation</td><td>Official usage guides for the three libraries, not research findings.</td><td>The actual tools used to write <code>ml/train.py</code> and build the explanations.</td></tr>
+</table>
+<p class="foot">Final page - practise aloud and demonstrate, rather than memorising unexplained terms.</p></section>
 </body></html>
