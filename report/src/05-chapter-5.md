@@ -47,18 +47,17 @@ The project also gave the trainee practical experience a course alone would not.
 
 ## 5.5 References / Bibliography
 
-The sources drawn on through this report are grouped below by kind, so that the dataset, the papers behind each modelling and explanation technique, the one book, and the web documentation consulted while building the application can each be traced on their own.
+The sources drawn on through this report are grouped below by kind: the source dataset and where it was used, the three papers that define the algorithms actually benchmarked and deployed, the one book, and the web documentation consulted while building the application, each noted against the part of the project it supported.
+
+**Dataset**
+
+1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data. Used as the sole training and evaluation data for all three deployed models (`ml/train.py`): 1,000 applicants, cleaned into the twelve input fields the application scores on, split five ways for cross-validated benchmarking, and held out again for the reported out-of-fold metrics.
 
 **Papers**
 
-1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data
-1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001.
-1. Platt, J. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. *Advances in Large Margin Classifiers*, MIT Press, 1999.
-1. Lundberg, S. M. and Lee, S.-I. A unified approach to interpreting model predictions. *Advances in Neural Information Processing Systems* (NeurIPS), 2017.
-1. Saabas, A. Interpreting random forests. *treeinterpreter* blog post, 2014.
-1. Pedregosa, F. et al. Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2011.
-1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (KDD), 2016.
-1. Niculescu-Mizil, A. and Caruana, R. Predicting good probabilities with supervised learning. *Proceedings of the 22nd International Conference on Machine Learning* (ICML), 2005.
+1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001. The algorithm behind the deployed, tuned Gradient Boosting model.
+1. Breiman, L. Random forests. *Machine Learning*, 45(1), 5 to 32, 2001. The algorithm behind the deployed Random Forest model.
+1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (KDD), 2016. The algorithm behind the deployed XGBoost model.
 
 **Books**
 
@@ -66,9 +65,14 @@ The sources drawn on through this report are grouped below by kind, so that the 
 
 **Web sources / documentation**
 
+1. Scikit-learn developers. Scikit-learn User Guide. https://scikit-learn.org/stable/user_guide.html. Used throughout `ml/train.py` for data preparation, the Logistic Regression and Random Forest estimators, and the cross-validation and hyperparameter search tooling; its calibration guide was the practical reference for the Platt scaling step.
+1. XGBoost developers. XGBoost Documentation. https://xgboost.readthedocs.io. Used to train the XGBoost candidate and to understand `trees_to_dataframe()`, the method the export step relies on to flatten its trees into the dependency-free JSON artifact.
+1. SHAP developers. SHAP Documentation. https://shap.readthedocs.io. Used for the TreeSHAP cross-check in `notebook.ipynb`, which verifies the hand-rolled factor contributions against an independent explanation method.
+1. PyMuPDF developers. PyMuPDF Documentation. https://pymupdf.readthedocs.io. Used throughout the report build: stamping page numbers, embedding the scanned company certificate, and correcting text directly inside the literal cover and certificate PDFs.
+1. Puppeteer developers. Puppeteer Documentation. https://pptr.dev. Used to render the report's diagrams, charts and code figures to PDF through a headless browser.
+1. Mermaid developers. Mermaid Documentation. https://mermaid.js.org. Used for the sequence diagram and several of the report's other figures.
 1. Vercel Inc. Next.js Documentation. https://nextjs.org/docs
 1. Meta Platforms, Inc. React Documentation. https://react.dev
 1. Vercel Inc. Python Runtime Documentation. https://vercel.com/docs/functions/runtimes/python
 1. Tailwind Labs Inc. Tailwind CSS Documentation. https://tailwindcss.com/docs
 1. Recharts. Recharts Documentation. https://recharts.org
-1. Mozilla Foundation. MDN Web Docs. https://developer.mozilla.org

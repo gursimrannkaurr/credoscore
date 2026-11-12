@@ -196,15 +196,14 @@ Future scope for modification includes:
 
 ## K. References and Bibliography
 
-1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data
-1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001.
-1. Platt, J. Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods. *Advances in Large Margin Classifiers*, MIT Press, 1999.
-1. Lundberg, S. M. and Lee, S.-I. A unified approach to interpreting model predictions. *Advances in Neural Information Processing Systems* (NeurIPS), 2017.
-1. Saabas, A. Interpreting random forests. *treeinterpreter* blog post, 2014.
-1. Pedregosa, F. et al. Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2011.
+1. Hofmann, H. Statlog (German Credit Data). UCI Machine Learning Repository, 1994. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data. The sole training and evaluation data for all three deployed models.
+1. Friedman, J. H. Greedy function approximation: a gradient boosting machine. *Annals of Statistics*, 29(5), 2001. The algorithm behind the deployed, tuned Gradient Boosting model.
+1. Breiman, L. Random Forests. *Machine Learning*, 45, 2001. The algorithm behind the deployed Random Forest model.
+1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. Proceedings of KDD, 2016. The algorithm behind the deployed XGBoost model.
 1. Siddiqi, N. *Credit Risk Scorecards: Developing and Implementing Intelligent Credit Scoring*. Wiley, 2006.
-1. Chen, T. and Guestrin, C. XGBoost: A Scalable Tree Boosting System. Proceedings of KDD, 2016.
-1. Breiman, L. Random Forests. Machine Learning, 45, 2001.
+1. Scikit-learn developers. Scikit-learn User Guide. https://scikit-learn.org/stable/user_guide.html. Used for data preparation, the benchmarked estimators, and the Platt scaling calibration step.
+1. XGBoost developers. XGBoost Documentation. https://xgboost.readthedocs.io. Used to train the XGBoost candidate and to export its trees into the dependency-free JSON artifact.
+1. SHAP developers. SHAP Documentation. https://shap.readthedocs.io. Used for the TreeSHAP cross-check in the test suite.
 1. Vercel Inc. Next.js Documentation. https://nextjs.org/docs
 
 </section>
