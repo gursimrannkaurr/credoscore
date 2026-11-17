@@ -103,6 +103,20 @@ CATEGORICAL_FEATURES = [
 ]
 ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
+# Feature selection, not just feature extraction: eight of the twenty raw
+# attributes are read by COLUMN_NAMES above but never mapped into a feature
+# and never added to ALL_FEATURES, on purpose.
+#
+# - personal_status_raw encodes sex and marital status jointly as a single
+#   protected attribute. It is deliberately excluded so the model has no
+#   direct access to it, rather than attempting to scrub bias out after
+#   training. This is a precaution, not a fairness audit: nothing below
+#   checks whether the twelve retained fields act as a proxy for it.
+# - other_debtors_raw, residence_since, property_raw, other_plans_raw,
+#   num_dependents, telephone_raw and foreign_worker_raw are dropped mainly
+#   to keep the live application form to twelve fields a loan officer would
+#   realistically have on hand.
+
 
 def load_clean_dataset() -> pd.DataFrame:
     df = pd.read_csv(RAW_FILE, sep=r"\s+", header=None, names=COLUMN_NAMES)

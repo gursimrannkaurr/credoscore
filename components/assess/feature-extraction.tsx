@@ -125,6 +125,19 @@ export function FeatureExtraction({ contributions }: { contributions: Contributi
             </ul>
           </div>
 
+          <div>
+            <p className="kicker mb-2">4. What&apos;s deliberately left out</p>
+            <p className="text-ink-muted">
+              The source dataset also records the applicant&apos;s sex and marital status, jointly, as a single attribute. It is read
+              in during cleaning but never turned into a feature: including it would let the model learn directly on a protected
+              attribute, and the project leaves it out rather than attempt to clean the bias out after the fact. A handful of other
+              recorded fields (other debtors, residence length, property, other instalment plans, number of dependents, telephone,
+              foreign-worker status) are left out too, mainly to keep the form to a reasonable length. This exclusion is a precaution,
+              not a fairness audit: no analysis has been run to check whether the twelve fields that remain act as a proxy for the
+              one that was removed.
+            </p>
+          </div>
+
           <p className="border-t border-hairline pt-4 text-ink-muted">
             Together: 6 numeric + {ONE_HOT_COUNT} one-hot columns = {6 + ONE_HOT_COUNT} inputs to the model.
           </p>
