@@ -58,17 +58,17 @@ export const CREDIT_HISTORY_LABEL: Record<string, string> = {
 };
 
 export const CHECKING_STATUS_LABEL: Record<string, string> = {
-  less_than_0: "Below 0 DM",
-  "0_to_200": "0 to 200 DM",
-  "200_or_more": "200 DM or more",
+  less_than_0: "Below ₹0",
+  "0_to_200": "₹0 to ₹10,500",
+  "200_or_more": "₹10,500 or more",
   none: "No checking account",
 };
 
 export const SAVINGS_STATUS_LABEL: Record<string, string> = {
-  under_100: "Under 100 DM",
-  "100_to_500": "100 to 500 DM",
-  "500_to_1000": "500 to 1,000 DM",
-  over_1000: "Over 1,000 DM",
+  under_100: "Under ₹5,250",
+  "100_to_500": "₹5,250 to ₹26,250",
+  "500_to_1000": "₹26,250 to ₹52,500",
+  over_1000: "Over ₹52,500",
   none: "No savings account",
 };
 
@@ -113,8 +113,13 @@ export function formatNumber(value: number, digits = 0): string {
   return value.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
+// Temporary INR display/input conversion for viva demonstrations only.
+// 1 EUR = 102.72 INR (ECB, 17 Nov 2026), and 1 EUR = 1.95583 DEM.
+// This is a nominal FX conversion, not purchasing-power or Indian-model calibration.
+export const INR_PER_DM = 102.72 / 1.95583;
+
 export function formatDM(value: number): string {
-  return `${formatNumber(Math.round(value))} DM`;
+  return `₹${formatNumber(Math.round(value * INR_PER_DM))}`;
 }
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {

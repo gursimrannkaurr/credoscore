@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ApiRequestError, predictCompare } from "@/lib/api";
 import {
-  CHECKING_STATUS_LABEL, CREDIT_HISTORY_LABEL, HOUSING_LABEL, JOB_TYPE_LABEL, PURPOSE_LABEL, SAVINGS_STATUS_LABEL,
+  CHECKING_STATUS_LABEL, CREDIT_HISTORY_LABEL, HOUSING_LABEL, INR_PER_DM, JOB_TYPE_LABEL, PURPOSE_LABEL, SAVINGS_STATUS_LABEL,
 } from "@/lib/format";
 import type { CompareResponse, PredictRequest } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -24,8 +24,8 @@ type Errors = Partial<Record<keyof PredictRequest | "form", string>>;
 const BOUNDS: Record<NumericField, { min: number; max: number; step: number; suffix?: string }> = {
   age: { min: 18, max: 100, step: 1, suffix: "yrs" },
   employment_years: { min: 0, max: 50, step: 0.5, suffix: "yrs" },
-  monthly_income: { min: 1, max: 1_000_000, step: 50, suffix: "DM" },
-  loan_amount: { min: 1, max: 1_000_000, step: 100, suffix: "DM" },
+  monthly_income: { min: 50, max: 52_000_000, step: 2500, suffix: "INR" },
+  loan_amount: { min: 50, max: 52_000_000, step: 5000, suffix: "INR" },
   duration_months: { min: 1, max: 120, step: 1, suffix: "mo" },
   existing_credits: { min: 0, max: 20, step: 1 },
 };
@@ -70,8 +70,10 @@ function toPayload(form: FormState): PredictRequest {
     ...form,
     age: Number(form.age),
     employment_years: Number(form.employment_years),
-    monthly_income: Number(form.monthly_income),
-    loan_amount: Number(form.loan_amount),
+    // Convert nominal INR display values into the historical DM feature scale
+    // expected by the German-trained model artifact.
+    monthly_income: Number(form.monthly_income) / INR_PER_DM,
+    loan_amount: Number(form.loan_amount) / INR_PER_DM,
     duration_months: Number(form.duration_months),
     existing_credits: Number(form.existing_credits),
   };
@@ -244,7 +246,9 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
       <Button type="submit" size="lg" className="mt-6 w-full" disabled={loading}>
         {loading ? <><Loader2 className="animate-spin" /> Scoring…</> : <>Score this applicant <ArrowRight /></>}
       </Button>
-      <p className="mt-3 text-center text-xs text-muted-foreground">Amounts are in Deutsche Marks, as in the original 1994 data.</p>
+      <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
+        Amounts display in INR and are converted at a fixed nominal exchange rate to the original DM input scale. The model is still trained on German 1994 records; this is a currency-display demo, not an India-trained credit model.
+      </p>
     </form>
   );
 }
