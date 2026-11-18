@@ -3,8 +3,6 @@ import { IBM_Plex_Mono, Instrument_Sans, Newsreader } from "next/font/google";
 
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteNav } from "@/components/site/site-nav";
-import { modelMeta } from "@/lib/model-meta";
-import { portfolio } from "@/lib/portfolio";
 
 import "./globals.css";
 
@@ -13,9 +11,9 @@ const instrument = Instrument_Sans({ subsets: ["latin"], variable: "--font-instr
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "CredoScore: Loan Default Risk Predictor", template: "%s · CredoScore" },
+  title: { default: "CredoScore: Indian Credit Profile Explorer", template: "%s · CredoScore" },
   description:
-    "A credit risk tool built on the UCI German Credit data. It scores applicants with a calibrated gradient boosting model and explains every score factor by factor.",
+    "An educational multiclass credit-priority model comparison using an Indian bank and CIBIL dataset.",
 };
 
 export const viewport: Viewport = {
@@ -29,11 +27,10 @@ const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const ticker = [
-    { label: "Model", value: `v${modelMeta.version}` },
-    { label: "ROC-AUC", value: portfolio.metrics.roc_auc.toFixed(3) },
-    { label: "KS", value: portfolio.metrics.ks_statistic.toFixed(3) },
-    { label: "Brier", value: portfolio.metrics.brier_score.toFixed(3) },
-    { label: "Sample", value: `${portfolio.total_applicants.toLocaleString("en-US")} · out-of-fold` },
+    { label: "Dataset", value: "Bank + CIBIL" },
+    { label: "Rows", value: "51,336" },
+    { label: "Task", value: "P1–P4 classification" },
+    { label: "Training", value: "3 model families" },
   ];
   return (
     <html lang="en" suppressHydrationWarning className={`${newsreader.variable} ${instrument.variable} ${plexMono.variable}`}>

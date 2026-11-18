@@ -1,0 +1,226 @@
+{
+  "model_version": "indian-bank-cibil-priority-1.0",
+  "source": "Leading Indian Bank & CIBIL Real-World Dataset",
+  "source_rows": 51336,
+  "train_rows": 41068,
+  "test_rows": 10268,
+  "label": "Approved_Flag",
+  "label_meaning": "historical bank priority tier, not future repayment/default",
+  "classes": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "numeric_features": [
+    "AGE",
+    "NETMONTHLYINCOME",
+    "Time_With_Curr_Empr",
+    "Credit_Score",
+    "Total_TL",
+    "Tot_Active_TL",
+    "Tot_Missed_Pmnt",
+    "num_times_delinquent",
+    "num_times_30p_dpd",
+    "num_deliq_12mts",
+    "time_since_recent_payment",
+    "PL_TL",
+    "CC_utilization",
+    "enq_L12m",
+    "Secured_TL",
+    "Unsecured_TL",
+    "active_account_ratio",
+    "missed_payment_rate",
+    "unsecured_account_ratio"
+  ],
+  "categorical_features": [
+    "EDUCATION",
+    "last_prod_enq2",
+    "first_prod_enq2"
+  ],
+  "sensitive_features_excluded": [
+    "GENDER",
+    "MARITALSTATUS",
+    "PROSPECTID"
+  ],
+  "metrics": {
+    "gradient_boosting": {
+      "accuracy": 0.9944487728866381,
+      "balanced_accuracy": 0.9883456639925686,
+      "macro_f1": 0.9890507100620102,
+      "log_loss": 0.011039043961869714,
+      "classification_report": {
+        "P1": {
+          "precision": 0.9893711248892826,
+          "recall": 0.9621016365202412,
+          "f1-score": 0.9755458515283842,
+          "support": 1161.0
+        },
+        "P2": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 6440.0
+        },
+        "P3": {
+          "precision": 0.9710906701708278,
+          "recall": 0.9912810194500336,
+          "f1-score": 0.981081978094922,
+          "support": 1491.0
+        },
+        "P4": {
+          "precision": 0.9991503823279524,
+          "recall": 1.0,
+          "f1-score": 0.9995750106247344,
+          "support": 1176.0
+        },
+        "accuracy": 0.9944487728866381,
+        "macro avg": {
+          "precision": 0.9899030443470158,
+          "recall": 0.9883456639925686,
+          "f1-score": 0.9890507100620102,
+          "support": 10268.0
+        },
+        "weighted avg": {
+          "precision": 0.9945030107945884,
+          "recall": 0.9944487728866381,
+          "f1-score": 0.9944392457595123,
+          "support": 10268.0
+        }
+      }
+    },
+    "xgboost": {
+      "accuracy": 0.9941566030385665,
+      "balanced_accuracy": 0.9878903047917131,
+      "macro_f1": 0.9884800352779793,
+      "log_loss": 0.011307330802083015,
+      "classification_report": {
+        "P1": {
+          "precision": 0.9858906525573192,
+          "recall": 0.9629629629629629,
+          "f1-score": 0.9742919389978214,
+          "support": 1161.0
+        },
+        "P2": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 6440.0
+        },
+        "P3": {
+          "precision": 0.971654581410679,
+          "recall": 0.98859825620389,
+          "f1-score": 0.9800531914893617,
+          "support": 1491.0
+        },
+        "P4": {
+          "precision": 0.9991503823279524,
+          "recall": 1.0,
+          "f1-score": 0.9995750106247344,
+          "support": 1176.0
+        },
+        "accuracy": 0.9941566030385665,
+        "macro avg": {
+          "precision": 0.9891739040739878,
+          "recall": 0.9878903047917131,
+          "f1-score": 0.9884800352779793,
+          "support": 10268.0
+        },
+        "weighted avg": {
+          "precision": 0.9941913593806041,
+          "recall": 0.9941566030385665,
+          "f1-score": 0.9941480777348848,
+          "support": 10268.0
+        }
+      }
+    },
+    "random_forest": {
+      "accuracy": 0.9865601869887027,
+      "balanced_accuracy": 0.97485949287456,
+      "macro_f1": 0.9806126445778713,
+      "log_loss": 0.1731461068568972,
+      "classification_report": {
+        "P1": {
+          "precision": 0.9679930795847751,
+          "recall": 0.9638242894056848,
+          "f1-score": 0.9659041864479931,
+          "support": 1161.0
+        },
+        "P2": {
+          "precision": 0.9859154929577465,
+          "recall": 1.0,
+          "f1-score": 0.9929078014184397,
+          "support": 6440.0
+        },
+        "P3": {
+          "precision": 0.9942979330007128,
+          "recall": 0.9356136820925554,
+          "f1-score": 0.9640635798203179,
+          "support": 1491.0
+        },
+        "P4": {
+          "precision": 0.9991503823279524,
+          "recall": 1.0,
+          "f1-score": 0.9995750106247344,
+          "support": 1176.0
+        },
+        "accuracy": 0.9865601869887027,
+        "macro avg": {
+          "precision": 0.9868392219677966,
+          "recall": 0.97485949287456,
+          "f1-score": 0.9806126445778713,
+          "support": 10268.0
+        },
+        "weighted avg": {
+          "precision": 0.9866220108850356,
+          "recall": 0.9865601869887027,
+          "f1-score": 0.9864296855870328,
+          "support": 10268.0
+        }
+      }
+    }
+  },
+  "test_group_audit": {
+    "GENDER": {
+      "F": {
+        "count": 1163,
+        "priority_distribution": {
+          "P1": 0.10662080825451418,
+          "P2": 0.6345657781599312,
+          "P3": 0.15993121238177127,
+          "P4": 0.09888220120378331
+        }
+      },
+      "M": {
+        "count": 9105,
+        "priority_distribution": {
+          "P1": 0.11389346512904998,
+          "P2": 0.6262493135639758,
+          "P3": 0.14332784184514002,
+          "P4": 0.11652937946183416
+        }
+      }
+    },
+    "MARITALSTATUS": {
+      "Married": {
+        "count": 7526,
+        "priority_distribution": {
+          "P1": 0.14018070688280626,
+          "P2": 0.6251660908849322,
+          "P3": 0.13486579856497474,
+          "P4": 0.09978740366728674
+        }
+      },
+      "Single": {
+        "count": 2742,
+        "priority_distribution": {
+          "P1": 0.03865791393143691,
+          "P2": 0.6327498176513494,
+          "P3": 0.17359591539022612,
+          "P4": 0.1549963530269876
+        }
+      }
+    }
+  },
+  "split": "stratified 80/20, random_state=42"
+}

@@ -1,7 +1,7 @@
 """
-Local development server for the three API endpoints.
+Local development server for the four API endpoints.
 
-Vercel runs api/predict.py, api/portfolio.py and api/predict-compare.py as
+Vercel runs the Python handlers under api/ as
 separate serverless functions in production, each at its own path
 (/api/predict, /api/portfolio, /api/predict-compare). Locally, this script
 runs the three *actual* production handler classes unmodified, each behind
@@ -35,9 +35,15 @@ predict_compare = importlib.util.module_from_spec(_spec)
 assert _spec.loader is not None
 _spec.loader.exec_module(predict_compare)
 
+_cibil_spec = importlib.util.spec_from_file_location("predict_cibil", API_DIR / "predict-cibil.py")
+predict_cibil = importlib.util.module_from_spec(_cibil_spec)
+assert _cibil_spec.loader is not None
+_cibil_spec.loader.exec_module(predict_cibil)
+
 PREDICT_PORT = 8001
 PORTFOLIO_PORT = 8002
 PREDICT_COMPARE_PORT = 8003
+PREDICT_CIBIL_PORT = 8004
 
 
 def serve(handler_cls, port: int, name: str) -> None:
@@ -47,7 +53,7 @@ def serve(handler_cls, port: int, name: str) -> None:
 
 
 if __name__ == "__main__":
-    print("Loan Default Risk Predictor: local API server")
+    print("CredoScore: local API server")
     print("=" * 50)
 
     t1 = threading.Thread(target=serve, args=(predict.handler, PREDICT_PORT, "predict"), daemon=True)
@@ -57,19 +63,23 @@ if __name__ == "__main__":
         args=(predict_compare.handler, PREDICT_COMPARE_PORT, "predict-compare"),
         daemon=True,
     )
+    t4 = threading.Thread(target=serve, args=(predict_cibil.handler, PREDICT_CIBIL_PORT, "predict-cibil"), daemon=True)
     t1.start()
     t2.start()
     t3.start()
+    t4.start()
 
     print("\nnext.config.ts rewrites:")
     print(f"  /api/predict          -> http://127.0.0.1:{PREDICT_PORT}")
     print(f"  /api/portfolio        -> http://127.0.0.1:{PORTFOLIO_PORT}")
     print(f"  /api/predict-compare  -> http://127.0.0.1:{PREDICT_COMPARE_PORT}")
+    print(f"  /api/predict-cibil    -> http://127.0.0.1:{PREDICT_CIBIL_PORT}")
     print("\nPress Ctrl+C to stop.\n")
 
     try:
         t1.join()
         t2.join()
         t3.join()
+        t4.join()
     except KeyboardInterrupt:
         print("\nStopped.")

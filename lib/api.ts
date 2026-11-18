@@ -1,4 +1,4 @@
-import type { ApiError, CompareResponse, PredictRequest, PredictResponse } from "./types";
+import type { ApiError, CibilAssessmentRequest, CibilCompareResponse, CompareResponse, PredictRequest, PredictResponse } from "./types";
 
 export class ApiRequestError extends Error {
   field: string;
@@ -44,4 +44,23 @@ export async function predictCompare(payload: PredictRequest): Promise<CompareRe
     throw new ApiRequestError({ error: "server", message: `The scoring service returned an error (HTTP ${res.status}).` });
   }
   return body as CompareResponse;
+}
+
+export async function predictCibil(payload: CibilAssessmentRequest): Promise<CibilCompareResponse> {
+  let res: Response;
+  try {
+    res = await fetch("/api/predict-cibil", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    throw new ApiRequestError({ error: "network", message: "The Indian credit-profile scoring service can't be reached right now." });
+  }
+  const body: unknown = await res.json().catch(() => null);
+  if (!res.ok || body === null) {
+    if (body && typeof body === "object" && "message" in body) throw new ApiRequestError(body as ApiError);
+    throw new ApiRequestError({ error: "server", message: `The scoring service returned an error (HTTP ${res.status}).` });
+  }
+  return body as CibilCompareResponse;
 }

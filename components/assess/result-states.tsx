@@ -11,15 +11,15 @@ export function EmptySlip({ error }: { error: boolean }) {
       transition={{ duration: 0.3 }}
       className="rounded-xl border-2 border-dashed border-hairline-strong p-8"
     >
-      <p className="kicker">Risk slip</p>
-      <p className="num mt-2 text-6xl text-hairline-strong">-.-%</p>
+      <p className="kicker">Priority tier</p>
+      <p className="num mt-2 text-6xl text-hairline-strong">P–</p>
       <div className="mt-6 space-y-2.5">
         <div className="h-2 w-5/6 rounded bg-hairline" />
         <div className="h-2 w-2/3 rounded bg-hairline" />
         <div className="h-2 w-1/2 rounded bg-hairline" />
       </div>
       <p className="mt-6 text-sm text-muted-foreground">
-        Pick a sample file or fill in the form, then press <strong className="font-medium text-ink">Score this applicant</strong>.
+        Enter a credit profile, then press <strong className="font-medium text-ink">Classify credit profile</strong>.
       </p>
       {error ? <p className="mt-2 text-sm text-band-high">Fix the highlighted field and try again.</p> : null}
     </motion.div>

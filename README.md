@@ -1,328 +1,131 @@
-# CredoScore - Loan Default Risk Predictor
+# CredoScore — Indian Credit Priority Explorer
 
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Python](https://img.shields.io/badge/Python-scoring_API-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-training-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-200_trees-006600)](https://xgboost.readthedocs.io/)
-[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Python](https://img.shields.io/badge/Python-ML_API-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-Multiclass-006600)](https://xgboost.readthedocs.io/)
 [![Vercel](https://img.shields.io/badge/Hosted_on-Vercel-000000?logo=vercel&logoColor=white)](https://credoscore-gk.vercel.app)
 
-**CredoScore estimates loan-default risk and explains how the prediction was calculated.** Enter thirteen applicant details to compare calibrated results from **Gradient Boosting, XGBoost and Random Forest**. The primary Gradient Boosting result includes a risk slip, a factor-by-factor explanation and an adjustable decision cutoff.
+CredoScore is an educational web app for comparing three machine-learning classifiers on an Indian bank and credit-bureau dataset. Enter a borrower profile to see Gradient Boosting, XGBoost, and Random Forest classify the historical bank priority label as **P1, P2, P3, or P4**. Sensitive demographic fields are available for fairness review but are excluded from model training and scoring.
 
-[Live application](https://credoscore-gk.vercel.app) · [Source repository](https://github.com/gursimrannkaurr/credoscore) · [UCI dataset](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data)
+> **Important target limitation:** the dataset label is `Approved_Flag`, a historical bank priority/risk tier. It is not a verified future repayment/default outcome, calibrated probability of default, or recommendation to approve or reject a real applicant. This is a student demonstration, not a lending tool.
 
-This is a student learning project using historical German credit records. It demonstrates model training, evaluation, export, API scoring and an interactive interface. **It is not a validated lending system and should not be used for real credit decisions.**
+[Live app](https://credoscore-gk.vercel.app) · [GitHub repository](https://github.com/gursimrannkaurr/credoscore) · [Dataset source repository](https://github.com/rounak97/Credit-Risk-Modelling-Using-Machine-Learning)
 
-## What you can do
+## What the app does
 
-| Page | What it shows | How to read it |
-| --- | --- | --- |
-| **Brief** (`/`) | Project overview, error costs, model pipeline and calibration | Start here for explanations of default probability and the dataset. |
-| **Assess** (`/assess`) | Applicant form, presets, three model results, primary explanation and cutoff slider | A probability describes estimated risk; a decision is a separate policy rule applied to that probability. |
-| **The book** (`/portfolio`) | Risk bands, approval thresholds, deciles and borrower segments | The book is the 1,000-row historical dataset. Charts use saved Gradient Boosting out-of-fold predictions. |
-| **Methodology** (`/model`) | Benchmarks, hyperparameters, ranking metrics, calibration, feature importance and limitations | Explains what each measurement means and what it cannot establish. |
+The `/` Brief explains the dataset and task. The `/assess` form collects a subset of applicant, bank-account, and credit-bureau fields, then sends them to `POST /api/predict-cibil`. The Python API validates the values, reconstructs the trained feature columns, and calls each fitted classifier. The browser shows the three predicted priority classes and class probabilities, alongside a separate view of label distributions across the held-out gender and marital-status groups.
 
-The assessment form starts with the **Typical file** preset. **Strong file** and **Stretched file** load other examples. A preset fills in input fields; the result is calculated by the live scoring API when the form is submitted.
-
-## How a request becomes a prediction
+The three models each return their own prediction. CredoScore does not average them into a fourth prediction or use a majority vote. “Class probability” is the model's score among P1–P4 classes; it is not calibrated to the real-world frequency of repayment or default.
 
 ```mermaid
-flowchart TD
-    A[Applicant enters thirteen fields] --> B[Browser validates the form]
-    B --> C[POST /api/predict-compare]
-    C --> D[Python validates and creates 37 features]
-    D --> E[Gradient Boosting: add tree corrections]
-    D --> F[XGBoost: add tree corrections]
-    D --> G[Random Forest: average leaf probabilities]
-    E --> H[Apply each model's calibration mapping]
-    F --> H
-    G --> H
-    H --> I[Return separate probabilities, bands, scores and decisions]
-    I --> J[Show comparison and primary Gradient Boosting explanation]
+flowchart LR
+  A[Applicant and credit profile] --> B[Validate fields]
+  B --> C[Feature extraction]
+  C --> D[Gradient Boosting]
+  C --> E[XGBoost]
+  C --> F[Random Forest]
+  D --> G[P1–P4 class and class probabilities]
+  E --> G
+  F --> G
+  H[Gender and marital status] --> I[Holdout group audit only]
+  I --> J[Historical P1–P4 label shares]
 ```
 
-1. **Collect inputs.** The form records applicant details, loan terms and credit-position categories.
-2. **Validate twice.** Browser checks give immediate feedback. The Python handler repeats the checks because browser validation can be bypassed.
-3. **Encode once.** `validate_and_extract()` checks the request; `build_vector()` puts the validated values into the numeric and one-hot-column order recorded in the model artifact.
-4. **Score each model.** The API walks the exported trees. Boosting models add leaf corrections to a starting margin; Random Forest averages leaf probabilities.
-5. **Calibrate.** Each model has its own fitted logistic mapping that converts its raw output into an estimated probability of default.
-6. **Build the response.** The API assigns a risk band, a custom display score and a suggested decision. Boosting models also return tree-path contributions.
-7. **Render results.** The workbench displays all three results. Gradient Boosting drives the main risk slip, waterfall and individual cutoff control.
+## Dataset and target
 
-The three model results are **not averaged into a fourth prediction**, and the app does not use majority voting. They share a dataset and features, so agreement is context rather than independent proof of correctness. Scoring a new applicant does not retrain a model or save the applicant's details.
+The source is a pair of workbooks mirrored in the linked public repository:
 
-## The three deployed models
+| File | Records and fields | What it contains |
+| --- | --- | --- |
+| `case_study1.xlsx` | 51,336 × 26 | Internal bank account counts and activity |
+| `case_study2.xlsx` | 51,336 × 62 | Credit-bureau repayment history, enquiries, account use, profile, and `Approved_Flag` |
 
-| Model | How it learns and scores | Exported configuration | Role |
-| --- | --- | --- | --- |
-| **Gradient Boosting** | Builds trees sequentially, each learning a correction that reduces classification loss; sums the corrections | 120 trees, depth 5, learning rate 0.03, subsample 0.7, minimum 10 samples per leaf | Primary result, displayed explanation and adjustable decision cutoff |
-| **XGBoost** | Uses regularised gradient boosting, with gradient and curvature information to choose useful corrections | 200 trees, depth 3, training learning rate 0.05, positive-class weight 700/300 | Additional probability, risk band, score and decision; contributions are returned by the API |
-| **Random Forest** | Fits separate trees using bootstrap samples and random feature subsets, then averages predicted leaf probabilities | 300 trees, maximum depth 6, balanced class weights | Additional probability, risk band, score and decision; no contribution breakdown in its response |
+The training script joins the workbooks one-to-one on `PROSPECTID` and checks that neither side has duplicate IDs or unmatched rows. The ID is then dropped from the feature matrix. The public source repository does not include an explicit data licence; raw workbooks are therefore excluded from this Git repository and should not be redistributed without checking the source's terms.
 
-XGBoost is a boosting implementation; Random Forest uses bagging. They are not large language models. Claude Code and Codex were development assistants, not the models used to score applicants.
+`Approved_Flag` has four classes, P1–P4. The dataset is imbalanced: the source has 32,199 P2 records, compared with 7,452 P3, 5,882 P4, and 5,803 P1 records. Boosting uses inverse-frequency training weights, and the Random Forest uses balanced subsampling. Evaluation reports balanced accuracy and macro F1 as well as overall accuracy so the common P2 class does not dominate the summary.
 
-### Why export the models as JSON?
+## Feature extraction, in plain terms
 
-Training uses pandas, NumPy, scikit-learn and XGBoost. Inference does not need those libraries: the fitted trees can be represented as arrays of feature indices, thresholds, child indices and leaf values. The JSON files also contain encoding information, calibration coefficients and model metadata.
+Feature extraction is the conversion of source values into consistent, model-ready inputs. The application does not send arbitrary spreadsheet columns to the model:
 
-The production Python functions load that representation and evaluate it with the standard library. **Dependency-free scoring refers to the Python inference code**, not to the frontend or the training environment.
+1. The join uses `PROSPECTID` to align the bank and bureau rows; the identifier is not a predictor.
+2. Source placeholders of `-99999` are changed to missing values. Numeric gaps are filled with the training median; category gaps use the most frequent training value.
+3. Numeric fields describe age, monthly income, employer tenure, CIBIL score, total/active/missed accounts, delinquency counts, recent payment timing, personal-loan accounts, card utilisation, enquiries, and secured/unsecured accounts.
+4. Three derived features are calculated: active accounts divided by all accounts, missed payments per trade line, and unsecured accounts divided by all accounts. Denominators are protected from zero and ratios are limited to 0–1.
+5. Education and first/most-recent product-enquiry categories are one-hot encoded. For example, `education=GRADUATE` becomes a set of zeros and one `GRADUATE` indicator. Unknown categories are rejected by the request validator.
 
-Preserving numerical behaviour matters. The scorer uses `<=` for scikit-learn tree splits and strict `<` for XGBoost. XGBoost leaf corrections already include its training learning rate, so the exported runtime multiplier is 1.0. Export/parity checks compare custom scoring with the fitted library models.
+The fitted pipeline uses 19 numeric columns (16 input values plus 3 derived ratios) and 3 categorical source fields. Numeric values are not standardized; tree models compare feature values with split thresholds and do not need a common scale.
 
-## Data and preprocessing
+### Gender, marital status, and bias review
 
-The source is **UCI Statlog German Credit Data**, associated with 1,000 historical German credit records: 700 good-credit and 300 bad-credit outcomes. The project encodes the target as `0` for good credit and `1` for bad credit/default.
+`GENDER` and `MARITALSTATUS` are available in the source, but the training pipeline excludes them from the feature list. The Assess form keeps the values separate from the scoring features and reports each group's P1–P4 shares on the held-out sample. Changing a protected field does not change a prediction because the model cannot see that field. Group differences in the source label deserve investigation; they do not by themselves show that an individual was treated unfairly. Correlated financial fields can still carry indirect differences, so excluding the two columns is not a complete fairness audit.
 
-| Input group | Fields |
-| --- | --- |
-| Numeric | `age`, `employment_years`, `monthly_income`, `loan_amount`, `duration_months`, `existing_credits` |
-| Categorical | `job_type`, `housing`, `purpose`, `credit_history`, `checking_status`, `savings_status` |
-| Demographic | `personal_status_sex`, the source's combined sex/personal-status group |
+## The three models
 
-The source has twenty attributes. The project retains thirteen inputs and maps category codes into readable labels. Employment-duration buckets become representative years. Monthly income is **derived from loan amount, duration and the instalment-rate bucket**; it is not an independently observed salary and inherits the source bucket's uncertainty. The Assess screen temporarily displays and accepts INR using a nominal fixed DM-to-INR conversion; the model still expects the German dataset's underlying scale, so this changes currency presentation only and does not make the model India-trained.
+All models learn the same four labels from the same training rows and encoded features. Their parameter settings are written in [`ml/train_cibil.py`](./ml/train_cibil.py); fitted pipelines and evaluation metadata are stored under `model/cibil/`.
 
-One-hot encoding turns seven categorical fields into 36 binary columns. Combined with six numeric columns, this produces a **42-column feature vector**. For example, `housing=own` becomes `[free=0, own=1, rent=0]`; the model receives numbers, not category words. This cleaning, derived-value mapping and one-hot encoding are the project's preprocessing and feature engineering (or, broadly, feature extraction). The same encoded row is scored by all three models. Tree-based models split on thresholds, so numeric features are not standardised. Unknown categories are rejected rather than silently assigned a default.
+| Model | How it learns | Configuration in this project |
+| --- | --- | --- |
+| **Gradient Boosting** | Adds small decision trees in sequence; each later tree focuses on errors left by the earlier ensemble. | 220 trees, depth 3, learning rate 0.05, 20-row minimum leaf, 0.85 subsampling; inverse-frequency sample weights |
+| **XGBoost** | A regularised, optimised form of gradient boosting. It adds trees sequentially and penalises overly complex trees. | 350 trees, depth 4, learning rate 0.04, row/column subsampling, L2 regularisation; inverse-frequency sample weights |
+| **Random Forest** | Trains many trees on bootstrap samples and random feature subsets, then averages their class probabilities. | 400 trees, square-root feature sampling, 3-row minimum leaf, balanced bootstrap weights |
 
-The source combines sex and personal status into a single five-category field; the app includes that combined value to support a visible what-if comparison. It cannot independently compare sex while holding marital status constant, or vice versa. A changed output is an association learned from this model and a small 1994 dataset, not proof that a demographic characteristic causes default or should determine loan access. No fairness audit has been conducted, and including the field is not a fairness endorsement. The app is a learning project, not a lending decision tool.
+The saved holdout results are computed by the reproducible 80/20 stratified split (seed 42):
 
-## Training and evaluation
-
-`ml/train.py` performs the offline pipeline:
-
-1. Load and clean the source records; create the retained fields and target.
-2. Benchmark logistic regression, Random Forest, Gradient Boosting and XGBoost using the same stratified five-fold splits.
-3. Try 40 Gradient Boosting hyperparameter combinations with `RandomizedSearchCV`, scoring them by ROC-AUC.
-4. Generate out-of-fold raw scores: each row is predicted by a base model trained on the other folds.
-5. Fit Platt calibration to those raw scores and labels.
-6. Refit production models on all 1,000 rows and export the three model artifacts.
-7. Export `portfolio.json` with Gradient Boosting evaluation metrics, calibration groups, deciles, segments and cutoff outcomes.
-
-**Evaluation limitation:** the base-model predictions are out of fold, but hyperparameter selection reused these folds, and the global calibrator is fitted and assessed on the same out-of-fold pairs. These are development estimates, not an untouched external test. A separate calibration/test split or nested validation would support stronger performance claims.
-
-### Recorded calibrated out-of-fold results
-
-| Model | ROC-AUC ↑ | PR-AUC ↑ | KS ↑ | Brier loss ↓ |
+| Model | Accuracy | Balanced accuracy | Macro F1 | Log loss |
 | --- | ---: | ---: | ---: | ---: |
-| Gradient Boosting | 0.7928 | 0.6344 | 0.4776 | 0.1601 |
-| XGBoost | 0.7869 | 0.6299 | 0.4852 | 0.1619 |
-| Random Forest | 0.7833 | 0.6329 | 0.4371 | 0.1646 |
+| Gradient Boosting | 0.9944 | 0.9883 | 0.9891 | 0.0110 |
+| XGBoost | 0.9942 | 0.9879 | 0.9885 | 0.0113 |
+| Random Forest | 0.9866 | 0.9749 | 0.9806 | 0.1731 |
 
-These values come from the committed model artifacts. The untuned benchmark and tuning-search score describe earlier stages, so their values differ from this table.
+These unusually high scores mean the models reproduce the source's historical tier label on a random split of the same source. The label may be strongly determined by the included credit variables. The scores do **not** measure prediction of future default, and random-split results do not prove performance at another bank or in a later time period. A lending-grade study would need a clearly defined future repayment horizon, a time-based holdout, an external population, probability calibration, and a full fairness and governance review.
 
-- **ROC-AUC** measures ranking: how often a randomly selected defaulted applicant receives a higher risk estimate than a repaid applicant. An AUC near 0.79 does not mean 79% classification accuracy.
-- **PR-AUC** summarises precision and recall for the default class as the threshold changes. It helps evaluate the minority class.
-- **KS** is the largest gap between cumulative score distributions for the two outcome classes.
-- **Brier loss** is the mean squared difference between a predicted probability and the actual 0/1 label. Lower is better; predicting the dataset's 30% default rate for everybody gives 0.21.
-- **Calibration** asks whether group-level probabilities match outcomes. Among 100 comparable applicants assigned roughly 30% risk, about 30 would be expected to default if the model is well calibrated. This is not a claim about which individual will default.
+## Train the models
 
-## Probability, band, display score and decision
+The raw workbooks are ignored by Git. The downloader places them under `data/cibil/`; the training script validates the join, imputes missing values, derives features, creates the holdout, fits the three models, and writes compressed model pipelines plus metrics and group audits.
 
-These are separate outputs:
-
-| Output | Definition |
-| --- | --- |
-| Default probability | Each model's calibrated estimate, from 0 to 1 |
-| Risk band | Low below 15%; medium from 15% to below 35%; high from 35% |
-| Display score | `round(850 - 550 * probability)`; a custom project scale, not an official bureau or FICO score |
-| Recommendation | A rule applied to probability using the selected cutoff |
-
-For cutoff `c`, the individual assessment uses:
-
-```text
-p < 0.6*c            -> Approve
-0.6*c <= p < c       -> Approve with conditions
-c <= p < 1.6*c       -> Refer for review
-p >= 1.6*c           -> Decline
+```powershell
+python -m pip install -r ml/requirements-cibil.txt
+py ml/train_cibil.py --download
+py ml/train_cibil.py
 ```
 
-At the default cutoff of 25%, decision boundaries are 15%, 25% and 40%. These differ from the fixed risk-band boundaries. Moving the individual cutoff changes the **Gradient Boosting recommendation**, not its probability, its risk band, or the other models' displayed decisions.
+Do not balance the held-out test data: the holdout should preserve the source's observed class shares. Training weights address class imbalance without presenting an artificially balanced evaluation as real.
 
-The portfolio explorer is a simpler binary approval simulation. It uses twelve saved cutoffs from 5% to 60% in five-percentage-point steps. The individual slider uses one-percentage-point steps over the same range.
+## Run locally
 
-### Cost assumptions
+Install Node.js dependencies and the Python model dependencies, then start the backend and frontend in separate terminals:
 
-The portfolio simulation assigns 5 cost units to an approved applicant who defaulted and 1 unit to a declined applicant who repaid:
-
-```text
-cost per applicant = (5 * approved defaults + repaid applicants declined) / 1000
+```powershell
+npm install
+python -m pip install -r ml/requirements-cibil.txt
+py ml/dev_server.py
 ```
 
-These are illustrative error costs, not actual financial losses. Perfectly calibrated probabilities would give an equal-expected-cost threshold near 1/(1+5), or 16.7%, under those simplified assumptions. The app's default 25% is a separate project choice; the explorer shows the trade-off against other cutoffs.
-
-## How explanations work
-
-The runtime explanation follows each boosting tree's path and attributes prediction changes to the features used in its splits (a Saabas-style path decomposition). One-hot contributions are grouped back into the original fields and rescaled into probability-point changes.
-
-The baseline plus contributions reconstructs the calculated prediction before response rounding. The comparison API rounds contribution values, so small displayed differences can remain. A +5 percentage-point contribution means a change from 30% to 35%, not a 5% relative increase.
-
-The live explanation is **not full SHAP** and is **not causal**. It explains the model calculation, not what would necessarily happen if a person changed one input. The global importance chart is different again: it summarises impurity reduction across tree splits. Offline TreeSHAP checks in the notebook compare important factors; they do not turn these other methods into SHAP.
-
-## Local setup
-
-### Requirements
-
-- A Node.js version compatible with Next.js 16 (the installed package requires Node.js 20.9 or later) and npm.
-- Python 3.12 for the documented development/training workflow.
-- The committed JSON files in `model/`. You do not need to retrain to run the app.
-
-```bash
-git clone https://github.com/gursimrannkaurr/credoscore.git
-cd credoscore
-npm ci
-```
-
-Start the actual Python handlers in one terminal:
-
-```bash
-python ml/dev_server.py
-```
-
-On Windows with the Python launcher, `py -3.12 ml/dev_server.py` selects Python 3.12 explicitly.
-
-Start Next.js in another terminal:
-
-```bash
+```powershell
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). `next.config.ts` forwards development API requests to these local ports:
+Open [http://localhost:3000](http://localhost:3000). During development, `next.config.ts` forwards `/api/predict-cibil` to the local Python handler on port 8004. The other legacy German-default endpoints remain for earlier academic artifacts; the current Assess screen calls only the CIBIL endpoint.
 
-| Endpoint | Port | Purpose |
-| --- | --- | --- |
-| `POST /api/predict` | 8001 | Primary Gradient Boosting assessment |
-| `GET /api/portfolio` | 8002 | Saved portfolio aggregates |
-| `POST /api/predict-compare` | 8003 | Separate assessments from all three models |
+## API
 
-The Python scoring handlers use the standard library, so a training-library installation is unnecessary for local inference. Start **both** processes: `npm run dev` alone does not start Python.
+`POST /api/predict-cibil` accepts numeric profile inputs (`age`, `monthly_income`, `employer_months`, `credit_score`, account and delinquency counts, utilisation, payment recency and enquiry counts), categorical fields (`education`, `recent_product`, and `first_product`), and audit-only `gender` and `marital_status`.
 
-### Retrain the artifacts
+The response contains a `gradient_boosting`, `xgboost`, and `random_forest` object. Each has `priority_class` and a `class_probabilities` map for P1–P4. The `fairness` object says whether sensitive features were used and includes group-level target shares from the test split. It returns no probability of default or loan approval recommendation.
 
-Use an isolated Python environment and install the versions recorded in the repository:
-
-```bash
-python -m venv .venv
-# Activate .venv using the command for your shell.
-python -m pip install -r ml/requirements-train.txt
-python ml/train.py
-```
-
-Training overwrites the cleaned data and exported model/portfolio artifacts. Review changes to `data/` and `model/` before committing. Model JSON files are required runtime assets and intentionally remain in Git.
-
-## API contract
-
-A valid comparison request contains the twelve fields, for example:
-
-```json
-{
-  "age": 35,
-  "employment_years": 4,
-  "job_type": "skilled",
-  "housing": "own",
-  "monthly_income": 2500,
-  "loan_amount": 5000,
-  "duration_months": 24,
-  "purpose": "car_new",
-  "credit_history": "paid_duly",
-  "checking_status": "0_to_200",
-  "savings_status": "under_100",
-  "existing_credits": 1
-}
-```
-
-Save it as `applicant.json` and, from a shell with curl, send:
-
-```bash
-curl -X POST http://localhost:3000/api/predict-compare -H "Content-Type: application/json" --data-binary @applicant.json
-```
-
-In Windows PowerShell, use `curl.exe` if `curl` resolves to a PowerShell alias. This example input file is optional local test data, not a required configuration file.
-
-The successful response has `gradient_boosting`, `xgboost`, `random_forest` and the primary `cutoff`. Each result has `probability_of_default`, `risk_band`, `score`, `decision`, `cutoff` and `model_version`. Boosting results also include `contributions` and a baseline metadata field. Random Forest has no contribution list.
-
-The server rejects missing fields, invalid numeric types, non-finite numbers, out-of-range values and unknown categories. The cross-field sanity rule is:
+## Project map
 
 ```text
-loan_amount / duration_months <= 4 * monthly_income
+app/                    Next.js pages and shared layout
+components/assess/      Indian credit-profile form and result view
+api/predict-cibil.py    Validated multiclass inference endpoint
+ml/train_cibil.py       CIBIL workbook preparation, feature extraction, training, evaluation
+ml/dev_server.py        Local Python API handlers
+model/cibil/            Compressed stdlib tree artifact and holdout metadata
+data/cibil/             Ignored source spreadsheets downloaded for training
+docs/09-indian-bank-cibil.md  Detailed target, feature, fairness, and evaluation notes
 ```
-
-That rule prevents extreme inputs; it is not a real affordability assessment. Valid requests return HTTP 200. Validation failures return HTTP 400 with `error` and `message`. Browser validation improves feedback but does not replace server validation.
-
-## Repository map
-
-```text
-app/                  Next.js routes, shared layout and global styles
-components/           Form, results, charts, navigation and editorial sections
-lib/                  API client, types, formatting, decision rules and portfolio calculations
-api/                  Production Python handler classes and shared scoring code
-model/                Three exported model files and saved portfolio aggregates
-ml/                   Training pipeline, source data, requirements and local API server
-data/                 Cleaned dataset
-notebook.ipynb        Executable verification of the real scoring implementation
-docs/                 Supporting notes on data, models, backend and deployment
-report/               Editable academic document sources and generation scripts
-```
-
-`app/` pages render the explanatory content and read committed metadata. Interactive forms, sliders and charts use client components. The browser sends applicant requests to Python; it does not evaluate the tree ensembles itself.
-
-## Checks and verification
-
-```bash
-npm run lint
-npx tsc --noEmit
-npm run build
-```
-
-With the Python development server running, the existing API test script exercises the real primary handler:
-
-```bash
-python report/scripts/api_tests.py
-```
-
-The notebook checks artifact integrity, scorer parity, contribution additivity, response behaviour and quality gates. With training/notebook dependencies installed, execute it using:
-
-```bash
-python -m jupyter nbconvert --to notebook --execute notebook.ipynb --output-dir report/data --output notebook-run.ipynb
-```
-
-Saved test evidence is under `report/data/`. The academic report documents 62 cases grouped across model fidelity, multi-model deployment, API validation, model quality, interface behaviour and integration. That is recorded evidence, not a claim that every test reruns automatically during a Next.js build.
-
-When changing scoring or exports, verify library-to-JSON parity and API response behaviour. When changing copy or layout, check all four routes at desktop and mobile widths; the portfolio slider and segment tabs should still work.
-
-## Deployment
-
-The project is configured for Vercel. The `api/` Python files are separate file-based functions; the Next.js application is built with `npm run build`. Development rewrites are disabled when `NODE_ENV` is production.
-
-`vercel.json` excludes training, data, docs, reports and frontend build dependencies from the Python function bundles. It explicitly includes `api/predict.py` so the comparison handler can import the shared scorer in its isolated bundle. The JSON model artifacts must be available at runtime. `npm run start` alone serves the Next.js production build; it does not reproduce Vercel's Python-function hosting locally.
-
-## Local academic files and Git hygiene
-
-PDF reports, covers, certificates, viva guides and reference PDFs are **local-only**. Voice recordings, generated report screenshots, charts, code images, rendered diagrams and scratch output are also ignored. Ignoring a tracked file does not remove its old history; it stops future tracking once the file is removed from the index.
-
-Editable Markdown, styles, diagram definitions, generation scripts, brand source images and saved JSON test evidence remain available. Report-generation scripts currently contain Windows-specific Chrome/Python paths and need local cover/certificate inputs, so they are optional authoring tools rather than part of the app setup. They are not a portable report build on a fresh clone without those inputs.
-
-Keep credentials in ignored environment files and keep required model/data/source files tracked. The technology badges above identify the stack; they do not imply a security audit, a CI pass or a production lending certification.
-
-## Known limitations
-
-- Only 1,000 historical records from one lending context; results may not transfer to a new population.
-- Derived income and coarse source categories limit input precision.
-- Tuning and calibration reuse evaluation data; stronger validation is needed before generalising the metric estimates.
-- No formal fairness, disparate-impact, privacy-security or drift-monitoring audit is claimed.
-- Comparing three models trained on the same data does not eliminate shared mistakes.
-- The display score, error-cost units and recommendation rules are project conventions.
-- No user accounts, persistent applicant history, batch-upload workflow or retraining from the interface is implemented.
-
-## Further reading
-
-- [Data preparation](docs/01-data.md)
-- [Model training](docs/02-modelling.md)
-- [Backend scoring](docs/03-backend.md)
-- [Frontend structure](docs/04-frontend.md)
-- [Python libraries](docs/05-python-libraries.md)
-- [Testing notes](docs/06-testing.md)
-- [Deployment notes](docs/07-deployment.md)
-- [Limitations](docs/08-limitations.md)
-
-The code and committed artifacts are the reference for current behaviour; some supporting notes describe earlier stages of the project.

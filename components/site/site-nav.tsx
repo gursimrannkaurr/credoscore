@@ -29,20 +29,20 @@ export function SiteNav({ ticker }: { ticker: { label: string; value: string }[]
               <span className="opacity-60">{t.label}</span> <span className="tabular-nums">{t.value}</span>
             </span>
           ))}
-          <span className="ml-auto whitespace-nowrap opacity-60">UCI Statlog · German Credit</span>
+          <span className="ml-auto whitespace-nowrap opacity-60">Indian Bank + CIBIL · P1–P4</span>
         </div>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
           <span aria-hidden className="grid size-8 place-items-center rounded-md bg-forest font-mono text-[11px] font-semibold tracking-tight text-mint">
-            PD
+              CS
           </span>
           <span className="flex flex-col gap-0.5">
             <span className="font-serif text-[1.05rem] leading-none tracking-tight">
               Credo<span className="italic text-brand">Score</span>
             </span>
             <span className="font-mono text-[9px] uppercase leading-none tracking-[0.12em] text-muted-foreground">
-              Loan Default Risk Predictor
+              Credit Priority Explorer
             </span>
           </span>
         </Link>
@@ -68,7 +68,7 @@ export function SiteNav({ ticker }: { ticker: { label: string; value: string }[]
         <div className="flex items-center gap-2">
           <Button asChild size="sm" className="hidden lg:inline-flex">
             <Link href="/assess">
-              Assess an applicant <ArrowRight />
+              Assess a profile <ArrowRight />
             </Link>
           </Button>
           <ThemeToggle />

@@ -1,125 +1,59 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Loader2, RotateCcw } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ApiRequestError, predictCompare } from "@/lib/api";
-import {
-  CHECKING_STATUS_LABEL, CREDIT_HISTORY_LABEL, HOUSING_LABEL, INR_PER_DM, JOB_TYPE_LABEL, PURPOSE_LABEL, SAVINGS_STATUS_LABEL,
-} from "@/lib/format";
-import type { CompareResponse, PredictRequest } from "@/lib/types";
+import { ApiRequestError, predictCibil } from "@/lib/api";
+import type { CibilAssessmentRequest, CibilCompareResponse } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-import { PRESETS } from "./presets";
-
-type NumericField = "age" | "employment_years" | "monthly_income" | "loan_amount" | "duration_months" | "existing_credits";
-type CategoricalField = Exclude<keyof PredictRequest, NumericField>;
-export type FormState = { [K in NumericField]: string } & Pick<PredictRequest, CategoricalField>;
-type Errors = Partial<Record<keyof PredictRequest | "form", string>>;
-
-const BOUNDS: Record<NumericField, { min: number; max: number; step: number; suffix?: string }> = {
-  age: { min: 18, max: 100, step: 1, suffix: "yrs" },
-  employment_years: { min: 0, max: 50, step: 0.5, suffix: "yrs" },
-  monthly_income: { min: 50, max: 52_000_000, step: 2500, suffix: "INR" },
-  loan_amount: { min: 50, max: 52_000_000, step: 5000, suffix: "INR" },
-  duration_months: { min: 1, max: 120, step: 1, suffix: "mo" },
-  existing_credits: { min: 0, max: 20, step: 1 },
-};
-
-const OPTIONS: Record<CategoricalField, Record<string, string>> = {
-  job_type: JOB_TYPE_LABEL,
-  housing: HOUSING_LABEL,
-  purpose: PURPOSE_LABEL,
-  credit_history: CREDIT_HISTORY_LABEL,
-  checking_status: CHECKING_STATUS_LABEL,
-  savings_status: SAVINGS_STATUS_LABEL,
-  personal_status_sex: {
-    male_divorced_separated: "Male, divorced or separated",
-    female_divorced_separated_married: "Female, divorced, separated or married",
-    male_single: "Male, single",
-    male_married_widowed: "Male, married or widowed",
-  },
-};
-
-const NUMERIC_FIELDS = Object.keys(BOUNDS) as NumericField[];
-
-function validate(form: FormState): Errors {
-  const errors: Errors = {};
-  for (const f of NUMERIC_FIELDS) {
-    const raw = form[f].trim();
-    const { min, max } = BOUNDS[f];
-    if (raw === "") errors[f] = "Required.";
-    else if (!Number.isFinite(Number(raw))) errors[f] = "Enter a number.";
-    else if (Number(raw) < min || Number(raw) > max) errors[f] = `Enter a value from ${min.toLocaleString("en-US")} to ${max.toLocaleString("en-US")}.`;
-  }
-  if (!errors.loan_amount && !errors.duration_months && !errors.monthly_income) {
-    const instalment = Number(form.loan_amount) / Number(form.duration_months);
-    if (instalment > 4 * Number(form.monthly_income)) {
-      errors.loan_amount = "The monthly instalment (amount ÷ months) can't be more than four times monthly income.";
-    }
-  }
-  return errors;
-}
-
-function toPayload(form: FormState): PredictRequest {
-  return {
-    ...form,
-    age: Number(form.age),
-    employment_years: Number(form.employment_years),
-    // Convert nominal INR display values into the historical DM feature scale
-    // expected by the German-trained model artifact.
-    monthly_income: Number(form.monthly_income) / INR_PER_DM,
-    loan_amount: Number(form.loan_amount) / INR_PER_DM,
-    duration_months: Number(form.duration_months),
-    existing_credits: Number(form.existing_credits),
-  };
-}
 
 interface AssessFormProps {
   onStart: () => void;
-  onResult: (result: CompareResponse) => void;
+  onResult: (result: CibilCompareResponse) => void;
   onError: (message: string) => void;
 }
 
-export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
-  const [form, setForm] = useState<FormState>(PRESETS[0].values);
-  const [errors, setErrors] = useState<Errors>({});
-  const [loading, setLoading] = useState(false);
-  const [preset, setPreset] = useState<string | null>(PRESETS[0].id);
-
-  function set<K extends keyof FormState>(field: K, value: FormState[K]) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setPreset(null);
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+function displayCategory(field: string, value: string): string {
+  if (field === "gender") return value === "F" ? "Woman" : "Man";
+  if (field === "recent_product" || field === "first_product") {
+    return ({ PL: "Personal loan", CC: "Credit card", AL: "Auto loan", HL: "Home loan", ConsumerLoan: "Consumer loan", others: "Other / not specified" } as Record<string, string>)[value] ?? value;
   }
+  if (field === "education") return value === "12TH" ? "Class 12" : value === "SSC" ? "Class 10 (SSC)" : value;
+  return value;
+}
 
-  function applyPreset(id: string) {
-    const p = PRESETS.find((x) => x.id === id);
-    if (!p) return;
-    setForm(p.values);
-    setPreset(id);
-    setErrors({});
+export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
+  const [form, setForm] = useState<CibilAssessmentRequest>({
+    age: 35, monthly_income: 60000, employer_months: 60, credit_score: 720,
+    total_trades: 5, active_trades: 3, missed_payments: 1,
+    delinquency_events: 1, recent_dpd_30_plus: 0, recent_delinquency_12m: 0, personal_loan_accounts: 1,
+    credit_card_utilization: 0.35, recent_enquiries_12m: 2,
+    recent_payment_days: 45, secured_accounts: 2, unsecured_accounts: 3,
+    gender: "M", marital_status: "Married", education: "GRADUATE",
+    recent_product: "PL", first_product: "ConsumerLoan",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof CibilAssessmentRequest | "form", string>>>({});
+  const [loading, setLoading] = useState(false);
+
+  function set<K extends keyof CibilAssessmentRequest>(field: K, value: CibilAssessmentRequest[K]) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const found = validate(form);
-    if (Object.keys(found).length) {
-      setErrors(found);
-      document.getElementById(Object.keys(found)[0])?.focus();
-      return;
-    }
     setLoading(true);
     onStart();
     try {
-      onResult(await predictCompare(toPayload(form)));
+      const scored = await predictCibil(form);
+      onResult(scored);
     } catch (err) {
       const message = err instanceof ApiRequestError ? err.message : "Something went wrong while scoring.";
-      const field = err instanceof ApiRequestError && err.field in form ? (err.field as keyof PredictRequest) : "form";
+      const field = err instanceof ApiRequestError && err.field in form ? (err.field as keyof CibilAssessmentRequest) : "form";
       setErrors({ [field]: message });
       if (field !== "form") document.getElementById(field)?.focus();
       onError(message);
@@ -128,22 +62,22 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
     }
   }
 
-  const numeric = (f: NumericField, label: string, className?: string) => (
+  const numeric = (f: keyof Pick<CibilAssessmentRequest, "age" | "monthly_income" | "employer_months" | "credit_score" | "total_trades" | "active_trades" | "missed_payments" | "delinquency_events" | "recent_dpd_30_plus" | "recent_delinquency_12m" | "personal_loan_accounts" | "credit_card_utilization" | "recent_enquiries_12m" | "recent_payment_days" | "secured_accounts" | "unsecured_accounts">, label: string, suffix?: string, className?: string) => (
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={f} className="flex items-baseline justify-between text-[13px]">
         <span>{label}</span>
-        <span className="num text-[11px] text-muted-foreground">{BOUNDS[f].suffix}</span>
+        <span className="num text-[11px] text-muted-foreground">{suffix}</span>
       </Label>
       <Input
         id={f}
         name={f}
         type="number"
         inputMode="decimal"
-        min={BOUNDS[f].min}
-        max={BOUNDS[f].max}
-        step={BOUNDS[f].step}
+        min={f === "credit_score" ? 300 : 0}
+        max={f === "credit_score" ? 900 : f === "credit_card_utilization" ? 1 : undefined}
+        step={f === "monthly_income" ? 1000 : f === "credit_card_utilization" ? 0.01 : 1}
         value={form[f]}
-        onChange={(e) => set(f, e.target.value)}
+        onChange={(e) => set(f, Number(e.target.value))}
         aria-invalid={errors[f] ? true : undefined}
         aria-describedby={errors[f] ? `${f}-error` : undefined}
       />
@@ -151,16 +85,16 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
     </div>
   );
 
-  const category = (f: CategoricalField, label: string, className?: string) => (
+  const category = (f: keyof Pick<CibilAssessmentRequest, "gender" | "marital_status" | "education" | "recent_product" | "first_product">, label: string, options: string[], className?: string) => (
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={f} className="text-[13px]">{label}</Label>
-      <Select value={form[f]} onValueChange={(v) => set(f, v as FormState[typeof f])}>
+      <Select value={form[f]} onValueChange={(v) => set(f, v as CibilAssessmentRequest[typeof f])}>
         <SelectTrigger id={f} className="w-full" aria-invalid={errors[f] ? true : undefined} aria-describedby={errors[f] ? `${f}-error` : undefined}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {Object.entries(OPTIONS[f]).map(([value, text]) => (
-            <SelectItem key={value} value={value}>{text}</SelectItem>
+          {options.map((value) => (
+            <SelectItem key={value} value={value}>{displayCategory(f, value)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -185,56 +119,40 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
           <p className="kicker">Application form</p>
           <p className="mt-1 font-serif text-2xl">Applicant details</p>
         </div>
-        <Button type="button" variant="ghost" size="sm" onClick={() => applyPreset(PRESETS[0].id)} aria-label="Reset the form to the typical file">
-          <RotateCcw /> Reset
-        </Button>
-      </div>
-
-      <div className="mt-5">
-        <p className="kicker mb-2">Load a sample file</p>
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Sample files">
-          {PRESETS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => applyPreset(p.id)}
-              aria-pressed={preset === p.id}
-              title={p.note}
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
-                preset === p.id ? "border-brand bg-secondary text-ink" : "border-hairline text-ink-muted hover:border-ink hover:text-ink",
-              )}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
+        <span className="text-xs text-muted-foreground">Indian CIBIL profile</span>
       </div>
 
       <div className="mt-6 space-y-6">
-        {group("01", "Applicant", <>
-          {numeric("age", "Age")}
-          {numeric("employment_years", "Years employed")}
-          {category("job_type", "Job type")}
-          {category("housing", "Housing")}
-          {numeric("monthly_income", "Monthly income", "col-span-2")}
+        {group("01", "Applicant profile", <>
+          {numeric("age", "Age", "years")}
+          {numeric("monthly_income", "Net monthly income", "INR", "col-span-2")}
+          {numeric("employer_months", "Time with current employer", "months", "col-span-2")}
+          {category("education", "Education", ["SSC", "12TH", "UNDER GRADUATE", "GRADUATE", "POST-GRADUATE", "PROFESSIONAL", "OTHERS"], "col-span-2")}
         </>)}
-        {group("02", "Loan", <>
-          {numeric("loan_amount", "Amount")}
-          {numeric("duration_months", "Duration")}
-          {category("purpose", "Purpose", "col-span-2")}
+        {group("02", "Credit profile", <>
+          {numeric("credit_score", "CIBIL score", "/ 900")}
+          {numeric("total_trades", "Total credit accounts")}
+          {numeric("active_trades", "Active accounts")}
+          {numeric("missed_payments", "Missed payments")}
+          {numeric("delinquency_events", "Past delinquency events")}
+          {numeric("recent_dpd_30_plus", "30+ DPD events")}
+          {numeric("recent_delinquency_12m", "Delinquencies (12 months)")}
+          {numeric("recent_payment_days", "Days since recent payment", "days")}
+          {numeric("personal_loan_accounts", "Personal loan accounts")}
+          {numeric("credit_card_utilization", "Credit card utilisation", "0–1")}
+          {numeric("recent_enquiries_12m", "Credit enquiries (12 months)")}
+          {numeric("secured_accounts", "Secured accounts")}
+          {numeric("unsecured_accounts", "Unsecured accounts")}
         </>)}
-        {group("03", "Credit position", <>
-          {category("credit_history", "Credit history", "col-span-2")}
-          {category("checking_status", "Checking account")}
-          {category("savings_status", "Savings account")}
-          {numeric("existing_credits", "Existing credit lines", "col-span-2")}
+        {group("03", "Other credit activity", <>
+          {category("recent_product", "Most recent product enquiry", ["others", "ConsumerLoan", "PL", "CC", "AL", "HL"], "col-span-2")}
+          {category("first_product", "First recorded product enquiry", ["others", "ConsumerLoan", "PL", "CC", "AL", "HL"], "col-span-2")}
         </>)}
-        {group("04", "Recorded demographic group", <>
-          {category("personal_status_sex", "Personal status and sex", "col-span-2")}
+        {group("04", "Fairness check (not used to score)", <>
+          {category("gender", "Gender", ["M", "F"], "col-span-1")}
+          {category("marital_status", "Marital status", ["Married", "Single"], "col-span-1")}
           <p className="col-span-2 text-xs leading-relaxed text-muted-foreground">
-            The 1994 dataset combines sex and marital status in one field. Selecting a group lets you compare model outputs;
-            it cannot show whether a difference is caused by sex, marital status or other differences in these historical records.
+            Gender and marital status are excluded from model features. They are used only to select a matching holdout group for the fairness summary; changing either field never changes the submitted model score. This check is educational and does not establish fairness or causation.
           </p>
         </>)}
       </div>
@@ -244,10 +162,10 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
       ) : null}
 
       <Button type="submit" size="lg" className="mt-6 w-full" disabled={loading}>
-        {loading ? <><Loader2 className="animate-spin" /> Scoring…</> : <>Score this applicant <ArrowRight /></>}
+        {loading ? <><Loader2 className="animate-spin" /> Classifying…</> : <>Classify credit profile <ArrowRight /></>}
       </Button>
       <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
-        Amounts display in INR and are converted at a fixed nominal exchange rate to the original DM input scale. The model is still trained on German 1994 records; this is a currency-display demo, not an India-trained credit model.
+        The model predicts the dataset&apos;s historical P1–P4 bank priority category. It does not predict default probability or approve a real loan.
       </p>
     </form>
   );

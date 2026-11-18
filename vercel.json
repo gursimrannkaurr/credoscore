@@ -3,7 +3,7 @@
   "functions": {
     "api/**/*.py": {
       "excludeFiles": "{ml/**,data/**,docs/**,report/**,notebook.ipynb,node_modules/**,.next/**}",
-      "includeFiles": "api/predict.py"
+      "includeFiles": "{api/predict.py,model/cibil/**}"
     }
   }
 }

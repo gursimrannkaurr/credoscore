@@ -65,6 +65,57 @@ export interface PredictRequest {
   existing_credits: number;
 }
 
+// Current Indian bank/CIBIL demo predicts Approved_Flag priority tiers (P1–P4).
+// These are deliberately separate from PredictRequest's German default target.
+export interface CibilAssessmentRequest {
+  age: number;
+  monthly_income: number;
+  employer_months: number;
+  credit_score: number;
+  total_trades: number;
+  active_trades: number;
+  missed_payments: number;
+  delinquency_events: number;
+  recent_dpd_30_plus: number;
+  recent_delinquency_12m: number;
+  personal_loan_accounts: number;
+  credit_card_utilization: number;
+  recent_enquiries_12m: number;
+  recent_payment_days: number;
+  secured_accounts: number;
+  unsecured_accounts: number;
+  gender: "M" | "F";
+  marital_status: "Married" | "Single";
+  education: string;
+  recent_product: string;
+  first_product: string;
+}
+
+export type PriorityClass = "P1" | "P2" | "P3" | "P4";
+
+export interface CibilModelResult {
+  priority_class: PriorityClass;
+  confidence: number;
+  class_probabilities: Record<PriorityClass, number>;
+}
+
+export interface CibilCompareResponse {
+  gradient_boosting: CibilModelResult;
+  xgboost: CibilModelResult;
+  random_forest: CibilModelResult;
+  fairness: {
+    gender: "M" | "F";
+    marital_status: "Married" | "Single";
+    current_priority: PriorityClass;
+    other_gender_priority: PriorityClass;
+    other_marital_priority: PriorityClass;
+    sensitive_features_used_for_scoring: false;
+    test_group_audit: Record<string, Record<string, { count: number; priority_distribution: Record<PriorityClass, number> }>>;
+  };
+  label: "Approved_Flag";
+  meaning: "historical_bank_priority_tier";
+}
+
 export type RiskBand = "low" | "medium" | "high";
 
 export type Decision =

@@ -1,5 +1,9 @@
 import { INR_PER_DM } from "@/lib/format";
-import type { FormState } from "./assess-form";
+import type { PredictRequest } from "@/lib/types";
+
+type NumericField = "age" | "employment_years" | "monthly_income" | "loan_amount" | "duration_months" | "existing_credits";
+type CategoricalField = Exclude<keyof PredictRequest, NumericField>;
+type FormState = { [K in NumericField]: string } & Pick<PredictRequest, CategoricalField>;
 
 export const PRESETS: { id: string; label: string; note: string; values: FormState }[] = [
   {
