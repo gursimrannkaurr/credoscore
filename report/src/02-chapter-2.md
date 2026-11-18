@@ -26,7 +26,7 @@ The cost of the system is effectively zero: the dataset is CC BY 4.0, every libr
 
 #### Operational Feasibility
 
-The interface follows the pattern of an ordinary web form: labelled fields, a submit button, a results panel. A loan officer needs no training to fill in twelve fields or read a probability, a band and a recommendation, and a risk analyst reads the portfolio pages like any dashboard, so operational acceptance is expected to be high.
+The interface follows the pattern of an ordinary web form: labelled fields, a submit button and a results panel. Users fill in thirteen fields and read a probability, risk band and suggested decision. The combined sex/personal-status selector is an educational what-if control, not an operational underwriting recommendation.
 
 #### Schedule Feasibility
 

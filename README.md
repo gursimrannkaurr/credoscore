@@ -9,7 +9,7 @@
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Hosted_on-Vercel-000000?logo=vercel&logoColor=white)](https://credoscore-gk.vercel.app)
 
-**CredoScore estimates loan-default risk and explains how the prediction was calculated.** Enter twelve applicant details to compare calibrated results from **Gradient Boosting, XGBoost and Random Forest**. The primary Gradient Boosting result includes a risk slip, a factor-by-factor explanation and an adjustable decision cutoff.
+**CredoScore estimates loan-default risk and explains how the prediction was calculated.** Enter thirteen applicant details to compare calibrated results from **Gradient Boosting, XGBoost and Random Forest**. The primary Gradient Boosting result includes a risk slip, a factor-by-factor explanation and an adjustable decision cutoff.
 
 [Live application](https://credoscore-gk.vercel.app) · [Source repository](https://github.com/gursimrannkaurr/credoscore) · [UCI dataset](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data)
 
@@ -30,7 +30,7 @@ The assessment form starts with the **Typical file** preset. **Strong file** and
 
 ```mermaid
 flowchart TD
-    A[Applicant enters twelve fields] --> B[Browser validates the form]
+    A[Applicant enters thirteen fields] --> B[Browser validates the form]
     B --> C[POST /api/predict-compare]
     C --> D[Python validates and creates 37 features]
     D --> E[Gradient Boosting: add tree corrections]
@@ -57,7 +57,7 @@ The three model results are **not averaged into a fourth prediction**, and the a
 
 | Model | How it learns and scores | Exported configuration | Role |
 | --- | --- | --- | --- |
-| **Gradient Boosting** | Builds trees sequentially, each learning a correction that reduces classification loss; sums the corrections | 250 trees, depth 3, learning rate 0.05, subsample 0.8, minimum 20 samples per leaf | Primary result, displayed explanation and adjustable decision cutoff |
+| **Gradient Boosting** | Builds trees sequentially, each learning a correction that reduces classification loss; sums the corrections | 120 trees, depth 5, learning rate 0.03, subsample 0.7, minimum 10 samples per leaf | Primary result, displayed explanation and adjustable decision cutoff |
 | **XGBoost** | Uses regularised gradient boosting, with gradient and curvature information to choose useful corrections | 200 trees, depth 3, training learning rate 0.05, positive-class weight 700/300 | Additional probability, risk band, score and decision; contributions are returned by the API |
 | **Random Forest** | Fits separate trees using bootstrap samples and random feature subsets, then averages predicted leaf probabilities | 300 trees, maximum depth 6, balanced class weights | Additional probability, risk band, score and decision; no contribution breakdown in its response |
 
@@ -79,12 +79,13 @@ The source is **UCI Statlog German Credit Data**, associated with 1,000 historic
 | --- | --- |
 | Numeric | `age`, `employment_years`, `monthly_income`, `loan_amount`, `duration_months`, `existing_credits` |
 | Categorical | `job_type`, `housing`, `purpose`, `credit_history`, `checking_status`, `savings_status` |
+| Demographic | `personal_status_sex`, the source's combined sex/personal-status group |
 
-The source has twenty attributes. The project retains twelve inputs and maps category codes into readable labels. Employment-duration buckets become representative years. Monthly income is **derived from loan amount, duration and the instalment-rate bucket**; it is not an independently observed salary and inherits the source bucket's uncertainty. Amounts remain in **Deutsche Marks (DM)**.
+The source has twenty attributes. The project retains thirteen inputs and maps category codes into readable labels. Employment-duration buckets become representative years. Monthly income is **derived from loan amount, duration and the instalment-rate bucket**; it is not an independently observed salary and inherits the source bucket's uncertainty. Amounts remain in **Deutsche Marks (DM)**.
 
-One-hot encoding turns six categorical fields into 31 binary columns. Combined with six numeric columns, this produces a **37-column feature vector**. Tree-based models split on thresholds, so these numeric features are not standardised. Unknown categories are rejected rather than silently assigned a default.
+One-hot encoding turns seven categorical fields into 36 binary columns. Combined with six numeric columns, this produces a **42-column feature vector**. For example, `housing=own` becomes `[free=0, own=1, rent=0]`; the model receives numbers, not category words. This cleaning, derived-value mapping and one-hot encoding are the project's preprocessing and feature engineering (or, broadly, feature extraction). The same encoded row is scored by all three models. Tree-based models split on thresholds, so numeric features are not standardised. Unknown categories are rejected rather than silently assigned a default.
 
-The personal-status/sex field is excluded. This does not remove proxy discrimination or establish fairness: age, housing, income and employment can still encode sensitive differences.
+The source combines sex and personal status into a single five-category field; the app includes that combined value to support a visible what-if comparison. It cannot independently compare sex while holding marital status constant, or vice versa. A changed output is an association learned from this model and a small 1994 dataset, not proof that a demographic characteristic causes default or should determine loan access. No fairness audit has been conducted, and including the field is not a fairness endorsement. The app is a learning project, not a lending decision tool.
 
 ## Training and evaluation
 

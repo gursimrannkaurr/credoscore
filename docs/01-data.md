@@ -30,7 +30,7 @@ that `ml/train.py` maps to readable values:
 | 6 | Savings account/bonds | categorical | Balance bracket, or no savings account |
 | 7 | Present employment since | categorical | Unemployed up to 7+ years |
 | 8 | Installment rate | numeric | The monthly installment as a percentage of disposable income |
-| 9 | Personal status and sex | categorical | *Excluded from this project — see below* |
+| 9 | Personal status and sex | categorical | Included as one combined five-category feature for a bias what-if comparison; see limitations below |
 | 10 | Other debtors/guarantors | categorical | *Excluded* |
 | 11 | Present residence since | numeric | *Excluded* |
 | 12 | Property | categorical | *Excluded* |
@@ -46,15 +46,15 @@ that `ml/train.py` maps to readable values:
 
 ## What was deliberately excluded, and why
 
-The model trains on twelve of the twenty original fields. Eight were left
+The model trains on thirteen of the twenty original fields. Seven were left
 out:
 
-- **Personal status and sex (#9)** is excluded on purpose. It's the one
-  field in the dataset that functions as a protected attribute, and a
-  project whose whole point is an honest credit model shouldn't hand it to
-  the model without at least being asked to justify that choice — and
-  nothing about the stated brief (income, credit history, loan amount,
-  employment type) required it.
+- **Personal status and sex (#9)** combines sex and personal status into
+  five categories. It is included as one categorical feature for an
+  explicit what-if comparison. Because the source joins the two attributes,
+  the project cannot estimate their separate effects. This is a learning
+  demonstration, not a fairness audit or justification for using protected
+  characteristics in real credit decisions.
 - **Other debtors, residence tenure, property type, other installment
   plans, dependents, telephone, and foreign-worker status (#10–12, 14,
   18–20)** were excluded because they add categorical surface area without
@@ -64,8 +64,9 @@ out:
   assessment form on `/assess` something a person can fill in without a
   glossary.
 
-This is a feature-selection decision, not a data-cleaning necessity — it's
-recorded here so it's visible rather than silently baked into the code.
+This is a feature-selection decision, not a data-cleaning necessity. The
+combined demographic input makes potential model sensitivity inspectable,
+but no fairness metric or disparate-impact analysis has been run.
 
 ## Deriving income
 

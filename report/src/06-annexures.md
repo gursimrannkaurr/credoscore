@@ -91,11 +91,41 @@ These fresh captures show the live result, its complete factor breakdown, portfo
 
 </div>
 
-Selected source code of the model, scoring API and front end follows.
+Selected source code of the model, scoring API and front end follows. Figures A-13 and A-14 show the added demographic-field mapping and runtime encoding.
 
 ## A-3 Coding
 
 #### A-3.1 api/predict.py (validate_and_extract)
+
+#### A-3.1a ml/train.py (mapping the combined demographic category)
+
+The dataset does not provide a marital-status-only field. The training pipeline preserves the five original combined sex/personal-status groups and passes the mapped value to the categorical encoder.
+
+![Figure A-13 Training code mapping the dataset's combined personal-status and sex groups](../assets/code/personal-status-feature.png)
+
+At prediction time, the API validates the selected group against the categories stored in the model artifact, then creates its one-hot indicators in the saved order. That same feature vector is sent to all three model scorers.
+
+![Figure A-14 API code validating and one-hot encoding the selected demographic group](../assets/code/personal-status-encoding.png)
+
+#### A-3.1a ml/train.py (mapping the combined demographic category)
+
+The source attribute is not a marital-status-only field. The training pipeline preserves its five original groups and includes the mapped value among the categorical inputs. The encoder then creates one indicator column per observed group.
+
+![Figure A-13 Training code mapping the dataset's combined personal-status and sex groups](../assets/code/personal-status-feature.png)
+
+At prediction time, the chosen value is validated against the model artifact's saved category list. The API then creates a one-hot block in that same order, so the value reaches Gradient Boosting, XGBoost and Random Forest consistently.
+
+![Figure A-14 API code validating and one-hot encoding the selected demographic group](../assets/code/personal-status-encoding.png)
+
+#### A-3.1a ml/train.py (mapping the combined demographic category)
+
+The source attribute is not a marital-status-only field. The training pipeline preserves its five original groups and includes the mapped value among the categorical inputs. The encoder then creates one indicator column per observed group.
+
+![Figure A-13 Training code mapping the dataset's combined personal-status and sex groups](../assets/code/personal-status-feature.png)
+
+At prediction time, the chosen value is validated against the model artifact's saved category list. The API then creates a one-hot block in that same order, so the value reaches Gradient Boosting, XGBoost and Random Forest consistently.
+
+![Figure A-14 API code validating and one-hot encoding the selected demographic group](../assets/code/personal-status-encoding.png)
 
 Every field is checked before a vector is ever built. Numeric fields are checked for type, for being finite and for their stated bounds; categorical fields are checked against the exact category list the model was trained on; and a cross-field rule rejects a loan whose implied monthly instalment is more than four times the applicant's income.
 

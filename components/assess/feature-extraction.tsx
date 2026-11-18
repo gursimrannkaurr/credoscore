@@ -22,6 +22,7 @@ const CATEGORY_ORDER: Record<string, string[]> = {
   credit_history: ["all_paid", "critical", "delayed_past", "no_credits", "paid_duly"],
   checking_status: ["0_to_200", "200_or_more", "less_than_0", "none"],
   savings_status: ["100_to_500", "500_to_1000", "none", "over_1000", "under_100"],
+  personal_status_sex: ["female_divorced_separated_married", "male_divorced_separated", "male_married_widowed", "male_single"],
 };
 
 const CATEGORICAL_FIELDS = Object.keys(CATEGORY_ORDER);
@@ -69,7 +70,7 @@ export function FeatureExtraction({ contributions }: { contributions: Contributi
       {open ? (
         <div className="space-y-6 border-t border-hairline px-5 py-5 text-sm leading-relaxed sm:px-6">
           <p className="text-ink-muted">
-            The twelve fields you entered are turned into 37 numbers before the model ever sees them.
+            The thirteen fields you entered are turned into 42 numbers before the model ever sees them.
           </p>
 
           <div>
@@ -126,20 +127,20 @@ export function FeatureExtraction({ contributions }: { contributions: Contributi
           </div>
 
           <div>
-            <p className="kicker mb-2">4. What&apos;s deliberately left out</p>
+            <p className="kicker mb-2">4. Demographic category and bias</p>
             <p className="text-ink-muted">
-              The source dataset also records the applicant&apos;s sex and marital status, jointly, as a single attribute. It is read
-              in during cleaning but never turned into a feature: including it would let the model learn directly on a protected
-              attribute, and the project leaves it out rather than attempt to clean the bias out after the fact. A handful of other
-              recorded fields (other debtors, residence length, property, other instalment plans, number of dependents, telephone,
-              foreign-worker status) are left out too, mainly to keep the form to a reasonable length. This exclusion is a precaution,
-              not a fairness audit: no analysis has been run to check whether the twelve fields that remain act as a proxy for the
-              one that was removed.
+              The historical source records sex and personal status together in one field, so this form uses those same five groups
+              rather than pretending it can independently select “woman/man” and “single/married.” The selected group is one-hot
+              encoded and is used by all three models. Changing it can change a prediction because the trained trees may split on
+              it; that is a model association, not evidence that sex or marriage causes default or should determine loan access.
+              The dataset is small and from 1994, and this project has not run a fairness audit. Other recorded fields (such as
+              property, dependents, telephone and foreign-worker status) remain excluded.
             </p>
           </div>
 
           <p className="border-t border-hairline pt-4 text-ink-muted">
-            Together: 6 numeric + {ONE_HOT_COUNT} one-hot columns = {6 + ONE_HOT_COUNT} inputs to the model.
+            Together: 6 numeric + {ONE_HOT_COUNT} one-hot columns = {6 + ONE_HOT_COUNT} inputs to the model. The feature vector is
+            identical for Gradient Boosting, XGBoost and Random Forest.
           </p>
         </div>
       ) : null}

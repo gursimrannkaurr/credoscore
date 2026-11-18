@@ -22,7 +22,7 @@ export default function LandingPage() {
           <span className="italic text-brand">Understand the prediction.</span>
         </h1>
         <p className="lede mt-6 max-w-xl">
-          Enter twelve applicant details to compare Gradient Boosting, XGBoost and Random Forest. Each model estimates the probability of default: the chance that a borrower will fail to repay. The main result uses Gradient Boosting and shows which inputs raised or lowered its estimate. The models were trained on 1,000 historical German credit records.
+          Enter thirteen applicant details, including the source dataset&apos;s combined sex and personal-status group, to compare Gradient Boosting, XGBoost and Random Forest. Each model estimates the probability of default: the chance that a borrower will fail to repay. The main result uses Gradient Boosting and shows which inputs raised or lowered its estimate. The models were trained on 1,000 historical German credit records.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">

@@ -91,6 +91,7 @@ export const FEATURE_LABEL: Record<string, string> = {
   credit_history: "Credit history",
   checking_status: "Checking account status",
   savings_status: "Savings account status",
+  personal_status_sex: "Personal status and sex group",
 };
 
 export const EMPLOYMENT_YEARS_LABEL: Record<string, string> = {

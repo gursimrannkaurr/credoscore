@@ -47,15 +47,14 @@ claim as "the model learned something true in general."
 
 ## No fairness or disparate-impact audit
 
-The original dataset's "personal status and sex" field was deliberately
-excluded from the model's inputs (see [01-data.md](./01-data.md)), on the
-reasoning that a credit model shouldn't be handed a protected attribute
-without a specific, justified reason to. That is a precaution, not an
-audit. No analysis has been run to check whether any of the twelve
-retained fields act as a proxy for a protected characteristic, whether the
-model's error rates differ meaningfully across demographic groups, or
-whether the approval cutoff produces disparate impact by any legally
-relevant category. A model intended for real use would need that analysis
+The source's "personal status and sex" field is included as a combined
+feature to support a visible what-if comparison in Assess (see
+[01-data.md](./01-data.md)). Because the dataset joins sex and personal
+status, it cannot isolate the effect of either one. This inclusion does
+not make the model fair or justify using protected attributes in real
+lending. No analysis has been run to test proxy effects, group-specific
+error rates, or disparate impact at the decision cutoff. A model intended
+for real use would need a careful, independently reviewed fairness audit
 before anything else.
 
 ## The calibration is good, but not certified

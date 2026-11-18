@@ -44,10 +44,10 @@ export function referenceDiagram(name) {
     d.path('M555,308 V322 H210 V308',true);d.text(380,318,'Export files',10);
   } else if(name === 'fig-synopsis-model-comparison') {
     d=drawing(800,355);
-    d.rect(270,10,260,40,'Twelve applicant fields',C.blue,15);
+    d.rect(270,10,260,40,'Thirteen applicant fields',C.blue,15);
     d.line(400,50,400,75,true);
     d.rect(245,75,310,42,'Validate and encode once',C.blue,15);
-    const models=[['Gradient Boosting','250 trees'],['XGBoost','200 trees'],['Random Forest','300 trees']];
+    const models=[['Gradient Boosting','120 trees'],['XGBoost','200 trees'],['Random Forest','300 trees']];
     models.forEach(([name,detail],i)=>{
       const x=20+i*263;
       d.path(`M400,117 V140 H${x+117} V164`,true);

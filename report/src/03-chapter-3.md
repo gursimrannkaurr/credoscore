@@ -95,7 +95,7 @@ The training dataset's twelve retained fields are structured as shown in Table 3
 | checking_status | Categorical | 0_to_200, 200_or_more, less_than_0, none | Attribute 1 |
 | savings_status | Categorical | 100_to_500, 500_to_1000, none, over_1000, under_100 | Attribute 6 |
 
-monthly_income does not exist as a UCI attribute; it is engineered at load time as `(loan_amount / duration_months) / (installment_rate / 100)`, so a 1,169 DM loan over 6 months at an installment rate of 4% implies a monthly income of 4,870.83 DM. Attribute 9 (personal status and sex) is excluded as a protected attribute; Attributes 10, 11, 12, 14, 18, 19 and 20 are excluded to keep the applicant form short.
+monthly_income does not exist as a UCI attribute; it is engineered at load time as `(loan_amount / duration_months) / (installment_rate / 100)`, so a 1,169 DM loan over 6 months at an installment rate of 4% implies a monthly income of 4,870.83 DM. Attribute 9 combines sex and personal status into one category. This project includes that combined category in training and in the Assess form for a possible-bias comparison. It cannot identify a separate sex effect or marital-status effect; a changed prediction only shows how this fitted model responds to a changed recorded category alongside patterns in these historical records. Attributes 10, 11, 12, 14, 18, 19 and 20 are excluded to keep the applicant form short. No fairness audit has been conducted, and these outputs must not be treated as a basis for real lending decisions.
 
 Each of the six categorical fields is one-hot encoded; Table 3.3 gives the resulting column counts.
 
@@ -110,7 +110,7 @@ Each of the six categorical fields is one-hot encoded; Table 3.3 gives the resul
 | checking_status | 4 | 4 |
 | savings_status | 5 | 5 |
 
-The six numeric fields pass through unscaled, so the full feature vector that the ensemble sees has 6 + 31 = 37 columns. The A47 vacation purpose code is absent from the data entirely, and A48 (retraining) is present in only 9 of the 1,000 rows.
+The six numeric fields pass through unscaled. Seven categorical fields, including the four personal-status/sex groups observed in these 1,000 rows, become 35 binary columns; the full vector therefore has 6 + 35 = 41 columns. For example, selecting `male_single` sets its matching indicator to 1 and the other three observed group indicators to 0. The same vector is supplied to Gradient Boosting, XGBoost and Random Forest. The dataset's fifth documented group (`female_single`) has no examples among the 1,000 records, so it is not offered as a prediction input. The A47 vacation purpose code is absent from the data entirely, and A48 (retraining) is present in only 9 of the 1,000 rows.
 
 `model/model.json`, the deployed artifact, is structured as shown in Table 3.4.
 
@@ -126,7 +126,7 @@ The six numeric fields pass through unscaled, so the full feature vector that th
 | learning_rate | Number | 0.05. |
 | base_value | Number | The ensemble's starting log-odds, ln(0.3 / 0.7). |
 | platt_a, platt_b | Number | The Platt scaling coefficients fitted on out-of-fold margins. |
-| trees | Array of Object | 250 trees, each with left, right, feature, threshold and value arrays. |
+| trees | Array of Object | 120 fitted trees in this retraining run, each with left, right, feature, threshold and value arrays. |
 | base_rate | Number | 0.30, the dataset's observed default rate. |
 | cutoff | Number | 0.25, the deployed approval cutoff. |
 | metrics, benchmark | Object | Out-of-fold evaluation metrics and the cross-validated model comparison. |
@@ -134,16 +134,16 @@ The six numeric fields pass through unscaled, so the full feature vector that th
 
 #### Validations, Verifications and Normalization
 
-- Field-level validation: the API checks that all twelve fields are present, that the six numeric fields are finite numbers within their documented bounds, and that the six categorical fields hold a value from the trained category list; any failure is rejected before scoring.
+- Field-level validation: the API checks that all thirteen fields are present, that the six numeric fields are finite numbers within their documented bounds, and that the seven categorical fields hold a value from the trained category list; any failure is rejected before scoring.
 - Cross-field validation: the implied monthly instalment, loan_amount divided by duration_months, may not exceed four times monthly_income.
 - Parity check: at export time, the hand-written tree walk in `api/predict.py` is compared against the fitted scikit-learn pipeline's output, and the exported artifact is accepted only when the maximum difference across the training rows is below 1e-9.
 - Additivity check: the per-factor contributions produced during explanation are summed and compared against the probability minus the base rate; the notebook asserts this difference stays below 1e-14.
 - Encoding normalisation: an unseen category in the request is rejected outright rather than silently mapped to a default, since the one-hot scheme has no "unknown" column.
-- Privacy: the protected attribute (personal status and sex) is excluded from training altogether, and no applicant's input or output is persisted anywhere; the API is stateless.
+- Privacy: personal status and sex are represented in the historical data as one combined feature and used for the requested bias comparison; no applicant's input or output is persisted anywhere, and the API is stateless. The project has not completed a fairness audit.
 
 ### 3.2.2 DFD
 
-Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. The model-file connections supply the encoding settings, fitted trees and calibration parameters.
+Figure 3.4 is the context-level diagram (Level 0), which treats scoring and analytics as a single process bounded by three external entities. Figure 3.5 breaks that process into six processes at Level 1. The model-file connections supply the encoding settings, fitted trees and calibration parameters; the encoded applicant row contains 42 values, including indicators for the combined personal-status/sex group.
 
 ![Figure 3.4 Context Level DFD (Level 0)](../assets/figures/fig-3-4-dfd0.png)
 
@@ -153,9 +153,9 @@ Figure 3.4 is the context-level diagram (Level 0), which treats scoring and anal
 
 | No. | Process | Description |
 | --- | --- | --- |
-| 1.0 | Validate input | Checks that all twelve fields are present, numeric fields are in bounds, categorical fields are known, and the instalment-to-income rule holds; rejects with a field-level 400 otherwise. |
-| 2.0 | Encode features | Builds the 37-column vector from the validated fields, in the exact numeric-then-categorical order recorded in D1. |
-| 3.0 | Score ensemble | Walks all 250 trees of the gradient boosting ensemble, accumulating a raw log-odds margin and a per-feature path contribution. |
+| 1.0 | Validate input | Checks that all thirteen fields are present, numeric fields are in bounds, categorical fields are known, and the instalment-to-income rule holds; rejects with a field-level 400 otherwise. |
+| 2.0 | Encode features | Builds the 42-column vector (6 numeric values plus 36 one-hot indicators) from the validated fields, in the exact numeric-then-categorical order recorded in D1. |
+| 3.0 | Score ensemble | Walks all 120 trees in the current gradient boosting ensemble, accumulating a raw log-odds margin and a per-feature path contribution. |
 | 4.0 | Calibrate & band | Applies Platt scaling to the raw margin to obtain a probability of default, then assigns a risk band and a decision using the stored cutoff. |
 | 5.0 | Explain | Groups the per-feature contributions by source field and rescales them so they sum exactly to the probability minus the base rate. |
 | 6.0 | Serve portfolio analytics | Reads D2 and returns the precomputed cutoff curve, deciles, calibration bins, feature importance and segments without any further computation. |
@@ -174,7 +174,7 @@ Three actors use the system: a loan officer, who scores individual applicants; a
 | --- | --- |
 | Actor | Loan officer |
 | Pre-condition | The officer has opened the Assess page and has the applicant's twelve field values, or chooses a sample file instead. |
-| Main flow | 1. The officer fills in the applicant form, or loads a sample file. 2. The officer submits the form. 3. The browser posts the twelve fields to `/api/predict`. 4. The server validates, scores, calibrates and explains the result. 5. The server returns the probability of default, the risk band, the score, the recommended decision and the per-factor contributions. 6. The browser renders the risk slip, the PD meter and the contribution waterfall. |
+| Main flow | 1. The officer fills in the applicant form, or loads a sample file. 2. The officer submits the form. 3. The browser posts thirteen fields to `/api/predict-compare`. 4. The server validates and encodes the fields, then scores and calibrates all three models. 5. The server returns each probability, risk band, score and recommendation. 6. The browser renders the comparison and Gradient Boosting explanation. |
 | Alternate flow | Validation fails: the offending field is highlighted with an inline message and focus moves to it, and nothing is submitted. Scoring service unreachable: a friendly error replaces the result panel and the form stays filled in so the officer can retry. |
 | Post-condition | A risk slip with the probability of default, the band, the score and the decision is shown, and the officer may move the what-if cutoff slider to see how the recommendation would change. |
 
@@ -217,7 +217,7 @@ A cross-field rule runs after the four sections: the implied monthly instalment 
 
 | Field | Control | Values |
 | --- | --- | --- |
-| Sample file | Toggle buttons | Typical file, Strong file, Stretched file; each loads a complete, realistic set of the twelve fields |
+| Sample file | Toggle buttons | Typical file, Strong file, Stretched file; each loads a complete, realistic set of the thirteen fields |
 | What-if cutoff | Slider | 5%–60%, 1-point steps, starting at the deployed cutoff (25%) |
 
 ## 3.4 Output Design
@@ -274,13 +274,13 @@ Security was treated as a design requirement from the start, even though the sys
 - Statelessness: nothing an applicant submits is written anywhere; each request is scored and forgotten.
 - No secrets: the deployed functions need no API key, database password or signing secret.
 - Open CORS by design: `Access-Control-Allow-Origin: *` is set on every endpoint, acceptable because every endpoint is read-only, stateless and free of personal data.
-- The protected attribute (personal status and sex) is excluded from the model, so it cannot leak into a decision even indirectly.
+- The model uses the dataset's combined personal-status/sex category. This enables a what-if comparison but also gives the models direct access to demographic information. The category combines two characteristics, so a prediction change cannot be attributed to sex alone or marital status alone. No fairness audit has tested disparities or proxy effects; a difference is an association learned from this small 1994 dataset, not a causal claim or lending recommendation.
 - Deployment hygiene: `vercel.json`'s `excludeFiles` keeps the dataset, the notebook and the documentation out of the deployed function bundle.
 - Validation is mirrored, not shared: the same bounds and instalment rule are enforced independently in `assess-form.tsx` and `api/predict.py`, so a request can never bypass the rule by skipping the browser.
 
 ### 3.5.3 Important Code Segments
 
-Scoring loop (`api/predict.py`). Each tree's path contribution is attributed from a virtual root value of 0, not the tree's real root value, which is what makes the contributions exactly additive across the whole ensemble. The same function now also decides the split direction per model type, since gradient boosting and XGBoost do not agree on how a tie at the threshold is routed (§3.6.8 explains why).
+Scoring loop (`api/predict.py`). Each tree's path contribution is attributed from a virtual root value of 0, not the tree's real root value, which is what makes the contributions exactly additive across the whole ensemble. The same function also decides the split direction per model type, since Gradient Boosting and XGBoost do not agree on how a tie at the threshold is routed (§3.6.8 explains why).
 
 ![Figure 3.16 score(): walking the tree ensemble to accumulate the raw margin and its factor contributions](../assets/code/score-tree-walk.png)
 
@@ -294,7 +294,9 @@ The raw, log-odds-space contributions are rescaled afterwards into probability s
 
 ### 3.6.1 Data Preparation
 
-The training pipeline, `ml/train.py`, loads the raw UCI Statlog (German Credit Data) file, 1,000 rows with 700 good and 300 bad accounts, and keeps twelve of its twenty attributes, dropping personal status and sex as a protected attribute and six further attributes to keep the applicant form short. The employment attribute's five coded buckets (A71–A75) are mapped to numeric midpoints (0, 0.5, 2.5, 5.5 and 10 years), and monthly income is engineered from the loan amount, the duration and the instalment rate, since the dataset carries no income field of its own. The twelve retained fields are then split into six numeric columns, passed through unscaled, and six categorical columns, one-hot encoded into 31 columns, for a 37-column feature vector overall.
+The training pipeline, `ml/train.py`, loads the raw UCI Statlog (German Credit Data) file: 1,000 rows with 700 good and 300 bad accounts. Thirteen fields are used; seven further fields are excluded to keep the form short. Attribute 9, which joins sex and personal status, is intentionally included as a combined feature for the requested bias comparison. It cannot support a clean comparison of sex independently from marital status. Employment's five coded buckets (A71–A75) map to numeric midpoints (0, 0.5, 2.5, 5.5 and 10 years), and monthly income is engineered from loan amount, duration and instalment rate, since the dataset has no income field of its own. The six numeric fields pass through unscaled; six ordinary categorical fields plus the four demographic groups observed in the source produce 35 one-hot columns. The resulting feature vector has 41 values and is shared by all three models. A fifth published demographic group has no examples in this dataset and is omitted from the prediction selector.
+
+**Feature extraction in plain language.** The model cannot use category words directly. Cleaning translates codes into readable category values, maps employment bands to representative years, and derives monthly income. At prediction time, the API validates the thirteen fields, keeps the six numeric values, then expands each category into one indicator per category in the model's saved order. For example, `housing = own` becomes `[free=0, own=1, rent=0]`. Combining those numeric and indicator values makes one fixed 41-number row; each model traverses that same row through its trees. This is preprocessing and feature engineering (often described broadly as feature extraction), not an image or text embedding step.
 
 ### 3.6.2 Model Selection
 
@@ -304,11 +306,11 @@ Four candidate models were benchmarked with five-fold stratified cross-validatio
 
 | Model | ROC-AUC (± std) | PR-AUC |
 | --- | --- | --- |
-| Logistic regression | 0.7737 ± 0.0212 | 0.5757 |
-| Random forest (300 trees, depth 6) | 0.7883 ± 0.0277 | 0.6329 |
-| Gradient boosting (150 trees, depth 3, lr 0.05) | 0.7859 ± 0.0188 | 0.6243 |
-| XGBoost (200 trees, depth 3, lr 0.05, scale_pos_weight 700/300) | 0.7893 ± 0.0193 | 0.6299 |
-| Gradient boosting, tuned | 0.7965 | n/a |
+| Logistic regression | 0.7765 ± 0.0210 | 0.5787 |
+| Random forest (300 trees, depth 6) | 0.7895 ± 0.0311 | 0.6351 |
+| Gradient boosting (150 trees, depth 3, lr 0.05) | 0.7882 ± 0.0238 | 0.6276 |
+| XGBoost (200 trees, depth 3, lr 0.05, scale_pos_weight 700/300) | 0.7932 ± 0.0213 | 0.6345 |
+| Gradient boosting, tuned (120 trees, depth 5, lr 0.03, subsample 0.7) | 0.7955 | n/a |
 
 ![Figure 3.10 Cross-validated ROC-AUC of the candidate models](../assets/charts/fig-3-15-benchmark.png)
 
@@ -320,10 +322,14 @@ Table 3.11 compares the four candidates on numbers alone. The reasoning behind e
 
 | Model | Why it was implemented | Why it was chosen as a candidate | What distinguishing quality led to the final choice |
 | --- | --- | --- | --- |
-| Logistic regression | Fitted with `class_weight="balanced"` as the baseline entry in the four-model benchmark, so the project had an honest linear reference point before judging any ensemble against it. | A linear model is the simplest classifier that could plausibly separate good and bad accounts, and if it were not beaten by more complex candidates, the added complexity of an ensemble would not have been justified. | It returned the lowest ROC-AUC (0.7737) and PR-AUC (0.5757) of the four, which indicated that the boundary between a good and a bad account in this dataset is not a straight line, and settled the case for a tree-based model instead. |
-| Random forest | Benchmarked at 300 trees and a maximum depth of 6, also class-weighted, as the first tree ensemble in the comparison. | Averaging many decorrelated trees handles a mixed numeric and categorical feature set without any manual interaction terms, and bagging keeps individual trees from overfitting the training folds. | Its untuned ROC-AUC (0.7883) and PR-AUC (0.6329) were the strongest of the three ensembles before tuning, but gradient boosting was the family actually carried forward into the hyperparameter search, and once tuned it overtook random forest's untuned figure. |
-| Gradient boosting (tuned, deployed) | Benchmarked at 150 trees, depth 3 and a learning rate of 0.05, then carried into the hyperparameter search described in §3.6.3 once selected. | Additive boosting corrects the errors of earlier trees rather than simply averaging independent ones, which gave it more headroom to improve under tuning than a model that was already averaging its component trees. | Once tuned it reached a ROC-AUC of 0.7965, ahead of every other candidate at any stage, and its trees export as a flat JSON structure that `score()` walks by hand, so the deployed function needs neither scikit-learn nor xgboost at inference, the dependency-free deployment this report returns to throughout §3.6. |
-| XGBoost | Benchmarked at 200 trees, depth 3 and a learning rate of 0.05, with `scale_pos_weight` set to the dataset's 700:300 class ratio. | A histogram-based, regularised implementation of the same boosting idea, included to check whether a more heavily engineered boosting library would out-benchmark scikit-learn's own gradient boosting. | It posted the single highest untuned ROC-AUC (0.7893) of the four, but gradient boosting was the family taken forward for tuning, and once tuned it moved ahead; keeping XGBoost as the primary, explained model would also have tied inference to the separate `xgboost` package rather than the dependency-free export gradient boosting allowed. |
+| Logistic regression | Fitted with balanced class weights as a simple linear baseline before comparing tree ensembles. | It tests whether a straight-line decision boundary is sufficient for this mixed financial dataset. | ROC-AUC **0.7765 ± 0.0210**, PR-AUC **0.5787**; the lowest of the four candidates in this run, so non-linear tree models warranted comparison. |
+| Random Forest | 300 trees, maximum depth 6, balanced class weights. | Independently trained trees use bootstrap samples and random feature subsets; averaging their leaf probabilities reduces reliance on one tree. | Untuned ROC-AUC **0.7895 ± 0.0311**, PR-AUC **0.6351**, the strongest untuned PR-AUC here. It provides a bagging-based contrast to boosting. |
+| Gradient Boosting (deployed primary) | Benchmarked at 150 trees, depth 3, learning rate 0.05; then tuned with 40 random combinations using five-fold ROC-AUC. | Trees are built in sequence, with each new tree correcting errors left by the current ensemble. | The selected tuned configuration (120 trees, depth 5, learning rate 0.03, subsample 0.7, minimum leaf 10) reached **0.7955** mean CV ROC-AUC. It is the primary explained result and exports to a compact tree format the API can score without ML libraries. |
+| XGBoost | 200 trees, depth 3, learning rate 0.05, positive-class weight 700/300. | A regularised, histogram-based gradient-boosting implementation checks whether XGBoost's added optimisation and regularisation improve the same task. | ROC-AUC **0.7932 ± 0.0213**, PR-AUC **0.6345**. It provides a second boosting implementation and an independently fitted comparison result. |
+
+**How feature extraction/preprocessing is used.** Before any algorithm can score an application, `ml/train.py` maps the source's short category codes to meaningful values, converts the five employment bands to representative years, and derives a monthly-income estimate because the source does not record income directly. It keeps six numeric fields in their original scale and converts seven categorical fields into binary one-hot indicators. The six numeric values plus 36 categorical indicators form a fixed 42-value feature vector. At request time, `api/predict.py` validates every submitted value and rebuilds that vector in the exact feature order saved with the model; `/api/predict-compare` supplies the same vector to Gradient Boosting, XGBoost and Random Forest. For example, `housing = own` becomes `[free=0, own=1, rent=0]`. This is the project's feature extraction in the broad practical sense: transforming raw application fields into consistent model-ready features. It is not extracting image or text embeddings.
+
+**Demographic bias field.** The German dataset combines sex and personal status in one field with five observed groups. This combined category is included in the feature vector so the Assess form can compare how the model outputs change when that recorded group changes. The data cannot isolate the separate effect of being a woman/man from being single/married, and the prediction difference is not evidence that either trait causes default or should affect loan access. The records are only 1,000 cases from 1994, and the project has not conducted a fairness or disparate-impact audit. Treat this as a demonstration of model sensitivity, not a lending rule.
 
 ### 3.6.3 Hyperparameter Tuning
 
@@ -416,7 +422,7 @@ The grid's cost minimum is at a cutoff of 0.15, not 0.25. The 0.25 cutoff was ke
 
 ### 3.6.7 Explaining Individual Scores
 
-Every prediction carries its own explanation rather than relying on a separate, dataset-wide importance ranking. The method is a Saabas decomposition of the boosted ensemble: for each tree, the path an applicant's vector takes from the root to its leaf is walked, and the change in the tree's output at every split along that path is attributed to the feature that split tested, starting from a virtual value of 0 rather than the tree's actual root value. Summed across all 250 trees and scaled by the learning rate, these per-tree, per-feature deltas add up to exactly `raw_margin - base_value` in log-odds space. They are then rescaled into probability space so that they sum to `probability - base_probability`, which the notebook's additivity test confirms to within 5.77e-15.
+Every prediction carries its own explanation rather than relying on a separate, dataset-wide importance ranking. The method is a Saabas decomposition of the boosted ensemble: for each tree, the path an applicant's vector takes from the root to its leaf is walked, and the change in the tree's output at every split along that path is attributed to the feature that split tested, starting from a virtual value of 0 rather than the tree's actual root value. Summed across all 120 trees in the current artifact and scaled by the learning rate, these per-tree, per-feature deltas add up to exactly `raw_margin - base_value` in log-odds space. They are then rescaled into probability space so that they sum to `probability - base_probability`, which the notebook's additivity check is designed to verify.
 
 A worked example from the documentation illustrates the method: an applicant aged 35, employed 4 years, skilled, owning their home, 2,500 DM monthly income, asking for a 5,000 DM loan over 24 months for a new car, paying debts duly, 0–200 DM checking and under 100 DM savings, one existing credit line, scores a probability of default of 0.5718 (high band, score 536, decline at the 0.25 cutoff). The largest driver is the loan amount, +0.0746, followed by the low savings balance and modest income; all twelve contributions sum to exactly the 0.2591-point gap between this probability and the model's own baseline (0.5718 − 0.3126), so the officer sees the whole explanation accounted for, not an approximation of it.
 
@@ -438,8 +444,8 @@ Both new artifacts were parity-checked against the fitted pipelines across the f
 
 | Model | ROC-AUC | PR-AUC | KS | Brier | Parity (pure-Python vs. fitted model, full dataset) |
 | --- | --- | --- | --- | --- | --- |
-| Gradient boosting (250 trees) | 0.7928 | 0.6344 | 0.4776 | 0.1601 | 5.55 × 10⁻¹⁶ |
-| XGBoost (200 trees) | 0.7869 | 0.6299 | 0.4852 | 0.1619 | 1.79 × 10⁻⁶ |
-| Random forest (300 trees) | 0.7833 | 0.6329 | 0.4371 | 0.1646 | 0.00 (exact) |
+| Gradient boosting (120 trees) | 0.7919 | 0.6257 | 0.4762 | 0.1603 | 3.89 × 10⁻¹⁶ |
+| XGBoost (200 trees) | 0.7899 | 0.6345 | 0.4662 | 0.1609 | 2.26 × 10⁻⁷ |
+| Random forest (300 trees) | 0.7849 | 0.6351 | 0.4471 | 0.1640 | 0.00 (exact) |
 
-All three models rank applicants comparably, within a few points of ROC-AUC and KS of one another: models that broadly agree this way are a stronger trust signal than any one model's own reported accuracy. On the typical, strong and stretched sample files, all three land in the same risk band and decision every time (T62, Chapter 4); the deployed cutoff slider stays gradient-boosting-only, since that is the model whose explanation drives the waterfall.
+All three models rank applicants comparably on this run. Agreement is context, not proof of fairness or correctness; all three use the same data and include the same combined demographic category. The demographic field is a sensitivity demonstration only, and the available combined category cannot isolate sex from personal status. The deployed cutoff slider stays gradient-boosting-only, since that is the model whose explanation drives the waterfall.

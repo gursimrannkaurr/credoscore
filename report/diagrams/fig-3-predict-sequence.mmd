@@ -9,7 +9,7 @@ sequenceDiagram
     Assess->>API: 2. POST applicant payload
     activate API
     API->>API: 3. Validate fields and bounds
-    API->>Model: 4. Build 37-column feature vector
+    API->>Model: 4. Build 42-column feature vector
     activate Model
     API->>API: 5. Walk trees - Gradient Boosting, XGBoost, Random Forest
     Model-->>API: 6. Raw margins / raw scores per model

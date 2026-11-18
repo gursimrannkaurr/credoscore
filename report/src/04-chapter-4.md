@@ -45,7 +45,7 @@ Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.
 <colgroup><col style="width:6%"><col style="width:20%"><col style="width:27%"><col style="width:33%"><col style="width:9%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T1</td><td>Artifact integrity</td><td><code>model.json</code>: version, tree count, base value, Platt A/B, node values</td><td>version 1.0.0, 250 trees, all node values finite</td><td>Pass</td></tr>
+<tr><td>T1</td><td>Artifact integrity</td><td><code>model.json</code>: version, tree count, base value, Platt A/B, node values</td><td>Retrained artifact: 120 trees, all node values finite</td><td>Pass (training export parity check, max probability difference 3.89e-16)</td></tr>
 <tr><td>T2</td><td>Parity between the stdlib scorer and scikit-learn</td><td>All 1,000 training rows scored both ways</td><td>Max |probability difference| &lt; 1e-9</td><td>Pass (max diff 3.33e-16)</td></tr>
 <tr><td>T3</td><td>Strong applicant scores a low band</td><td>Strong-file preset values</td><td>PD below cutoff, band low</td><td>Pass (PD 0.0673, band low)</td></tr>
 <tr><td>T4</td><td>Weak applicant scores a high band</td><td>Stretched-file preset values</td><td>Band high, decision decline</td><td>Pass (PD 0.9645, decline)</td></tr>
@@ -74,7 +74,7 @@ Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.
 <colgroup><col style="width:6%"><col style="width:20%"><col style="width:27%"><col style="width:33%"><col style="width:9%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T8&ndash;T10</td><td>Valid applicant payload accepted (3 cases: typical, strong, stretched)</td><td>Full 12-field payloads for the three sample files</td><td>200, full result shape; PD and band consistent with the applicant's strength</td><td>Pass (3/3; typical full shape, strong PD 0.0325 approve, stretched PD 0.9589 decline)</td></tr>
+<tr><td>T8&ndash;T10</td><td>Valid applicant payload accepted (3 cases: typical, strong, stretched)</td><td>Full 13-field payloads for the three sample files, including the combined personal-status/sex category</td><td>200, full result shape; PD and band consistent with the applicant's strength</td><td>Pass (3/3; typical full shape, strong PD 0.0325 approve, stretched PD 0.9589 decline)</td></tr>
 <tr><td>T11&ndash;T13</td><td>Missing required field (3 fields tested: age, checking_status, loan_amount)</td><td>Payload with one of the three fields removed, one case each</td><td>400, with the missing field named in the error</td><td>Pass (3/3)</td></tr>
 <tr><td>T14&ndash;T16</td><td>Wrong type or malformed numeric value (3 cases: string age, boolean existing_credits, NaN income)</td><td><code>age: "35"</code>; <code>existing_credits: true</code>; <code>monthly_income: "NaN"</code></td><td>400, field rejected as not a valid number</td><td>Pass (3/3)</td></tr>
 <tr><td>T17&ndash;T18</td><td>Unknown category value (2 cases: housing, purpose)</td><td><code>housing: "mansion"</code>; <code>purpose: "vacation"</code> (the A47 code absent from training)</td><td>400, unknown category</td><td>Pass (2/2)</td></tr>
@@ -91,7 +91,7 @@ Test cases were grouped by what they exercised and are given in Tables 4.1 to 4.
 <colgroup><col style="width:6%"><col style="width:20%"><col style="width:27%"><col style="width:33%"><col style="width:9%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T33</td><td>Quality gate on out-of-fold predictions</td><td>1,000 out-of-fold probabilities</td><td>ROC-AUC &ge; 0.75, KS &ge; 0.35</td><td>Pass (AUC 0.7928, KS 0.4776, Brier 0.1601 against a 0.2100 flat-guess baseline)</td></tr>
+<tr><td>T33</td><td>Retrained-model quality snapshot (not the previous report test suite)</td><td>1,000 out-of-fold probabilities with the combined personal-status/sex feature</td><td>ROC-AUC &ge; 0.75, KS &ge; 0.35</td><td>Pass (AUC 0.7919, KS 0.4762, Brier 0.1603 against a 0.2100 flat-guess baseline)</td></tr>
 <tr><td>T34</td><td>Calibration within 2 percentage points</td><td>10 calibration bins</td><td>Weighted mean |predicted &#8722; observed| &le; 0.02</td><td>Pass (0.0195)</td></tr>
 <tr><td>T35</td><td>Latency over 1,000 predictions</td><td>1,000 repeated calls to <code>predict()</code> on the test machine</td><td>Sub-millisecond order of magnitude, acceptable for an interactive form</td><td>Pass (mean 1.019 ms, p95 2.805 ms, max 17.836 ms; see note below)</td></tr>
 </tbody>
@@ -105,7 +105,7 @@ The latency figures in T35 were taken from re-executing the notebook while the d
 <colgroup><col style="width:6%"><col style="width:18%"><col style="width:29%"><col style="width:30%"><col style="width:11%"></colgroup>
 <thead><tr><th>ID</th><th>Test case</th><th>Test data</th><th>Expected result</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>T36&ndash;T37</td><td>Page load and sample-file presets (2 cases)</td><td>Fresh load of /assess; click the Strong file chip</td><td>Typical preset pre-filled on load; all 12 fields repopulate and the chip shows pressed on selection</td><td>Pass (2/2)</td></tr>
+<tr><td>T36&ndash;T37</td><td>Page load and sample-file presets (2 cases)</td><td>Fresh load of /assess; click the Strong file chip</td><td>Typical preset pre-filled on load; all 13 fields repopulate and the chip shows pressed on selection</td><td>Pass (2/2)</td></tr>
 <tr><td>T38&ndash;T39</td><td>Submit and read a result (2 cases: strong, stretched)</td><td>Strong-file and stretched-file presets, each submitted</td><td>Low band / Approve for the strong file, high band / Decline for the stretched file, waterfall sorted by magnitude</td><td>Pass (strong PD 3.3%, score 832/850; stretched PD 95.9%, score 323/850)</td></tr>
 <tr><td>T40&ndash;T43</td><td>Form validation and error handling (4 cases)</td><td>Age cleared; age set to 15; income 500 / loan 100,000 / duration 6; Python server stopped then submit</td><td>Inline required/range/instalment message on the right field, focus moved, no request sent where applicable; a stopped server shows a friendly inline error, not a crash</td><td>Pass (4/4)</td></tr>
 <tr><td>T44&ndash;T45</td><td>Decision controls (2 cases: what-if cutoff, score-drivers waterfall)</td><td>Cutoff slider dragged 25% &rarr; 49%; typical result cross-checked against the docs example</td><td>Decision stamp updates live with a Back-to-25% link; waterfall rows sorted by size, contributions sum to PD</td><td>Pass (2/2)</td></tr>
@@ -200,7 +200,7 @@ The system is deployed on Vercel, whose build is shown in Figure 4.1.
 
 | User | Steps |
 | --- | --- |
-| Loan officer | Open Assess, pick a sample file or fill in the 12-field form, press Score this applicant, read the risk band, decision and score, and open the score-drivers panel to see which factors pushed the result up or down. |
+| Loan officer | Open Assess, pick a sample file or fill in the 13-field form, press Score this applicant, read the risk band, decision and score, and open the score-drivers panel to see which factors pushed the result up or down. The combined personal-status/sex field supports a model what-if comparison, not a fair or causal lending decision. |
 | Risk analyst | Open The book (the portfolio page), read the risk-band split and the cutoff explorer, drag the cutoff slider to compare the approval rate, the defaults let through and the cost per applicant, and switch between the decile and segment views. |
 | Model maintainer | Open Methodology to review the three-model benchmark, the calibration curve and the stated limitations; to retrain, run `ml/train.py` against updated data and redeploy the four regenerated JSON artifacts. |
 

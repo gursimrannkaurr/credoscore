@@ -37,6 +37,12 @@ const OPTIONS: Record<CategoricalField, Record<string, string>> = {
   credit_history: CREDIT_HISTORY_LABEL,
   checking_status: CHECKING_STATUS_LABEL,
   savings_status: SAVINGS_STATUS_LABEL,
+  personal_status_sex: {
+    male_divorced_separated: "Male, divorced or separated",
+    female_divorced_separated_married: "Female, divorced, separated or married",
+    male_single: "Male, single",
+    male_married_widowed: "Male, married or widowed",
+  },
 };
 
 const NUMERIC_FIELDS = Object.keys(BOUNDS) as NumericField[];
@@ -221,6 +227,13 @@ export function AssessForm({ onStart, onResult, onError }: AssessFormProps) {
           {category("checking_status", "Checking account")}
           {category("savings_status", "Savings account")}
           {numeric("existing_credits", "Existing credit lines", "col-span-2")}
+        </>)}
+        {group("04", "Recorded demographic group", <>
+          {category("personal_status_sex", "Personal status and sex", "col-span-2")}
+          <p className="col-span-2 text-xs leading-relaxed text-muted-foreground">
+            The 1994 dataset combines sex and marital status in one field. Selecting a group lets you compare model outputs;
+            it cannot show whether a difference is caused by sex, marital status or other differences in these historical records.
+          </p>
         </>)}
       </div>
 

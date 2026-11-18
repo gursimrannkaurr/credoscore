@@ -225,6 +225,7 @@ FEATURE_LABELS = {
     "credit_history": "Credit history",
     "checking_status": "Checking account status",
     "savings_status": "Savings account status",
+    "personal_status_sex": "Recorded personal-status/sex group",
 }
 
 

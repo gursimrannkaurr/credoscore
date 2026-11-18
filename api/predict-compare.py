@@ -117,7 +117,7 @@ def _forest_result(vector: list[float], model: dict[str, Any]) -> dict[str, Any]
 
 def predict_compare(payload: dict[str, Any]) -> dict[str, Any]:
     gb_model = load_model(GB_PATH)
-    # All three models share the identical 12 input fields and 37-column
+    # All three models share the identical 13 input fields and 42-column
     # vector, so validation only needs to run once, against GB's
     # categories/bounds.
     cleaned = validate_and_extract(payload, gb_model)

@@ -99,7 +99,7 @@ NUMERIC_FEATURES = [
 ]
 CATEGORICAL_FEATURES = [
     "job_type", "housing", "purpose", "credit_history",
-    "checking_status", "savings_status",
+    "checking_status", "savings_status", "personal_status_sex",
 ]
 ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 
@@ -107,11 +107,11 @@ ALL_FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 # attributes are read by COLUMN_NAMES above but never mapped into a feature
 # and never added to ALL_FEATURES, on purpose.
 #
-# - personal_status_raw encodes sex and marital status jointly as a single
-#   protected attribute. It is deliberately excluded so the model has no
-#   direct access to it, rather than attempting to scrub bias out after
-#   training. This is a precaution, not a fairness audit: nothing below
-#   checks whether the twelve retained fields act as a proxy for it.
+# - personal_status_raw encodes sex and marital status jointly. It is kept as
+#   a visible, selectable feature for the requested bias demonstration, but
+#   the source data cannot separate the effect of sex from marital status.
+#   Its inclusion is not a fairness audit and must not be read as evidence
+#   that either attribute causes a particular lending outcome.
 # - other_debtors_raw, residence_since, property_raw, other_plans_raw,
 #   num_dependents, telephone_raw and foreign_worker_raw are dropped mainly
 #   to keep the live application form to twelve fields a loan officer would
@@ -128,6 +128,13 @@ def load_clean_dataset() -> pd.DataFrame:
     df["employment_years"] = df["employment_raw"].map(EMPLOYMENT_YEARS_MAP)
     df["housing"] = df["housing_raw"].map(HOUSING_MAP)
     df["job_type"] = df["job_raw"].map(JOB_MAP)
+    df["personal_status_sex"] = df["personal_status_raw"].map({
+        "A91": "male_divorced_separated",
+        "A92": "female_divorced_separated_married",
+        "A93": "male_single",
+        "A94": "male_married_widowed",
+        "A95": "female_single",
+    })
 
     # Attribute 8 is defined as the monthly installment expressed as a
     # percentage of disposable income. That definition inverts exactly:

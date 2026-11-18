@@ -36,6 +36,44 @@ const HLJS_THEME_CSS = path.resolve(ROOT, "node_modules/highlight.js/styles/atom
 // ---------------------------------------------------------------------------
 const ENTRIES = [
   {
+    id: "personal-status-feature",
+    lang: "python",
+    caption: "Figure A-13: ml/train.py, mapping the dataset's combined personal-status and sex category into a model feature",
+    code: `df["personal_status_sex"] = df["personal_status_raw"].map({
+    "A91": "male_divorced_separated",
+    "A92": "female_divorced_separated_married",
+    "A93": "male_single",
+    "A94": "male_married_widowed",
+})
+
+CATEGORICAL_FEATURES = [
+    "job_type", "housing", "purpose", "credit_history",
+    "checking_status", "savings_status", "personal_status_sex",
+]
+
+OneHotEncoder(handle_unknown="ignore")`,
+  },
+  {
+    id: "personal-status-encoding",
+    lang: "python",
+    caption: "Figure A-14: api/predict.py, validating the selected demographic group and encoding it in the shared feature vector",
+    code: `for field in model["categorical_features"]:
+    if field not in payload:
+        raise ValidationError(field, f"'{field}' is required.")
+    value = payload[field]
+    allowed = model["categories"][field]
+    if value not in allowed:
+        raise ValidationError(field, "Choose a category used during training.")
+    cleaned[field] = value
+
+vector = [cleaned[f] for f in model["numeric_features"]]
+for field in model["categorical_features"]:
+    for category in model["categories"][field]:
+        vector.append(1.0 if cleaned[field] == category else 0.0)
+
+# The same validated vector is scored by all three models.`,
+  },
+  {
     id: "score-tree-walk",
     lang: "python",
     caption: "Figure 3.16: score(), walking the tree ensemble to accumulate the raw margin and its factor contributions",

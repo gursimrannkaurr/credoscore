@@ -42,6 +42,13 @@ export type SavingsStatus =
   | "over_1000"
   | "none";
 
+export type PersonalStatusSex =
+  | "male_divorced_separated"
+  | "female_divorced_separated_married"
+  | "male_single"
+  | "male_married_widowed"
+  | "female_single";
+
 export interface PredictRequest {
   age: number;
   employment_years: number;
@@ -54,6 +61,7 @@ export interface PredictRequest {
   credit_history: CreditHistory;
   checking_status: CheckingStatus;
   savings_status: SavingsStatus;
+  personal_status_sex: PersonalStatusSex;
   existing_credits: number;
 }
 
